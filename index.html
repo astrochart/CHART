@@ -146,9 +146,69 @@ body {
         <li><p><b>GNURadio</b> - This will be installed via the command prompt on the Ubuntu Mate OS</p></li>
       </ul>
 
+<div class="card">
+      <h2>Setting Up Your Raspberry Pi</h2>
+      <h5>Last Updated July 2018</h5>
+      <p>Before this step, it would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
+      since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
+      <p>Here are some links to get you started on this:</p>
+      <ul style="list-style: none;">
+        <li><p><a href="https://www.tutorialspoint.com/python/index.htm" target="_blank">Python for Beginners</a></p></li>
+        <li><p><a href="https://maker.pro/linux/tutorial/basic-linux-commands-for-beginners" target="_blank">Basic Linux Commands</a></p></li>
+      </ul>
+      <p>After brushing up these skills, you are ready to get started on your first data collecting project. This is a very brief tutorial. Click <a href="https://docs.google.com/document/d/1R4tTBSVAoEX3Kd77x5wUabNQipL_P9JzUQbgOKLJxaQ/edit" target="_blank">here</a> if you would like a tutorial that goes into more detail.</p>
+      <ul style="list-style: none;">
+        <li><b>1.</b> Plug in your RTL-SDR device. To install gnuradio on Ubuntu, open up your terminal and type in the following command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">sudo apt install gnuradio-dev gr-osmosdr soapysdr-module-all librtlsdr-dev build-essential git cmake ipython</font></li>
+        <li><b>2.</b> Next, open up your newly installed gnuradio by typing in this command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">gnuradio-companion</font></li>
+        <li><b>3.</b> After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together.</li>
+        <li><b>4.</b> Select a location to save your file to in the QT GUI Sink block.</li>
+        <li><b>5.</b> Generate your flow chart.</li>
+        <li><b>6.</b> Return to your terminal. Press Ctrl+Z and then enter 'bg' so that you can continue using the terminal while gnuradio is running the background.</li>
+        <li><b>7.</b> Type in the command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">python top_block.py</font></li>
+        <li><b>8.</b> Hit enter to stop collecting data. The longer you wait to hit enter, the more data will be collected.</li>
+        <li>Add more steps...</li>
+      </ul>
+      <p>You have now created the most simple flow chart to collect data. To learn how to create data in which you can manipulate into graph form or for other uses, click here. (link not actually provided yet).</p>
+      <p>Images will be included for the steps above.</p>
     </div>
-    <div class="tutorial1">
+  </div>
+
+    </div>
+    <div class="card">
       <h2>Collect Your First Data!</h2>
+      <h5>Last Updated July 2018</h5>
+      <p>Before this step, it would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
+      since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
+      <p>Here are some links to get you started on this:</p>
+      <ul style="list-style: none;">
+        <li><p><a href="https://www.tutorialspoint.com/python/index.htm" target="_blank">Python for Beginners</a></p></li>
+        <li><p><a href="https://maker.pro/linux/tutorial/basic-linux-commands-for-beginners" target="_blank">Basic Linux Commands</a></p></li>
+      </ul>
+      <p>After brushing up these skills, you are ready to get started on your first data collecting project. This is a very brief tutorial. Click <a href="https://docs.google.com/document/d/1R4tTBSVAoEX3Kd77x5wUabNQipL_P9JzUQbgOKLJxaQ/edit" target="_blank">here</a> if you would like a tutorial that goes into more detail.</p>
+      <ul style="list-style: none;">
+        <li><b>1.</b> Plug in your RTL-SDR device. To install gnuradio on Ubuntu, open up your terminal and type in the following command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">sudo apt install gnuradio-dev gr-osmosdr soapysdr-module-all librtlsdr-dev build-essential git cmake ipython</font></li>
+        <li><b>2.</b> Next, open up your newly installed gnuradio by typing in this command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">gnuradio-companion</font></li>
+        <li><b>3.</b> After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together.</li>
+        <li><b>4.</b> Select a location to save your file to in the QT GUI Sink block.</li>
+        <li><b>5.</b> Generate your flow chart.</li>
+        <li><b>6.</b> Return to your terminal. Press Ctrl+Z and then enter 'bg' so that you can continue using the terminal while gnuradio is running the background.</li>
+        <li><b>7.</b> Type in the command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">python top_block.py</font></li>
+        <li><b>8.</b> Hit enter to stop collecting data. The longer you wait to hit enter, the more data will be collected.</li>
+        <li>Add more steps...</li>
+      </ul>
+      <p>You have now created the most simple flow chart to collect data. To learn how to create data in which you can manipulate into graph form or for other uses, click here. (link not actually provided yet).</p>
+      <p>Images will be included for the steps above.</p>
+    </div>
+  </div>
+
+<div class="card">
+      <h2>Create Your First Waterfall Plot</h2>
       <h5>Last Updated July 2018</h5>
       <p>Before this step, it would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
       since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
