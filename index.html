@@ -137,13 +137,22 @@ body {
         <li><a href="https://www.amazon.com/gp/product/B01LWVVMUI" target="_blank">Recommended link to purchase Raspberry Pi 3 Model B</a></li>
       </ul>
 
-        <h4>Software</h4>
-        <ul style="list-style: none;">
+      <h4>Software</h4>
+      <ul style="list-style: none;">
         <!--<li><p><b>VirtualBox</b> - This will host your Ubuntu OS as to avoid affecting your actual computer. This will not needed if the raspberry will be used as the data collecting hardware.</p></li>
         <li><a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">Link to download VirtualBox</a></li>-->
         <li><p><b>Ubuntu Mate</b> - This will be the Linux OS for the Raspberry Pi 3 Model B</p></li>
         <li><a href="https://ubuntu-mate.org/download/" target="_blank">Link to download Ubuntu Mate</a></li>
         <li><p><b>GNURadio</b> - This will be installed via the command prompt on the Ubuntu Mate OS</p></li>
+      </ul>
+
+      <h4>Background Knowledge</h4>
+      <p>It would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
+      since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
+      <p>Here are some links to get you started on this:</p>
+      <ul style="list-style: none;">
+        <li><p><a href="https://www.tutorialspoint.com/python/index.htm" target="_blank">Python for Beginners</a></p></li>
+        <li><p><a href="https://maker.pro/linux/tutorial/basic-linux-commands-for-beginners" target="_blank">Basic Linux Commands</a></p></li>
       </ul>
 
     </div>
@@ -161,14 +170,7 @@ body {
 
       <h2>Download GNURadio and Collect Your First Data!</h2>
       <h5>Last Updated July 2018</h5>
-      <p>Before this step, it would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
-      since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
-      <p>Here are some links to get you started on this:</p>
-      <ul style="list-style: none;">
-        <li><p><a href="https://www.tutorialspoint.com/python/index.htm" target="_blank">Python for Beginners</a></p></li>
-        <li><p><a href="https://maker.pro/linux/tutorial/basic-linux-commands-for-beginners" target="_blank">Basic Linux Commands</a></p></li>
-      </ul>
-      <p>After brushing up these skills, you are ready to get started on your first data collecting project. <a href="https://docs.google.com/document/d/1R4tTBSVAoEX3Kd77x5wUabNQipL_P9JzUQbgOKLJxaQ/edit" target="_blank">This</a> is our document that goes into further detail about this process.</p>
+      <p><a href="https://docs.google.com/document/d/1R4tTBSVAoEX3Kd77x5wUabNQipL_P9JzUQbgOKLJxaQ/edit" target="_blank">This</a> is our document that goes into further detail about this process.</p>
       <ul style="list-style: none;">
         <li><b>1.</b> Plug in your RTL-SDR device. To install gnuradio on Ubuntu, open up your terminal and type in the following command:</li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">sudo apt install gnuradio-dev gr-osmosdr soapysdr-module-all librtlsdr-dev build-essential git cmake ipython</font></li>
