@@ -28,6 +28,7 @@ class collectrtldata(gr.top_block):
         ##################################################
         self.veclength = veclength = 1024
         self.samp_rate = samp_rate = 2e6
+		self.c_freq = c_freq
 
         ##################################################
         # Blocks
@@ -78,16 +79,29 @@ class collectrtldata(gr.top_block):
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
 
+	def parameters(self):
+		d={'time': time.time(), 
+		   'samp_rate': self.samp_rate,
+		   'frequency': self.c_freq,
+		   'data': list(np.average(
+					self.vector_sink_0.data(), 
+					axis=-1),
+		}
+		return d
+
 def main(top_block_cls=collectrtldata, options=None):
     iteration_tracker=1
+	d = dict()
     for c_freq in range(50*10**6, 60*10**6, 2*10**6):
         tb = top_block_cls(c_freq)
         print(c_freq)
-        tb.start()
+		tb.start()
+        d[time.time()] = tb.startz()
         tb.wait()
         iteration_tracker = iteration_tracker+1
         del(tb)        
         # time.sleep(2)
         print(iteration_tracker)
+	print(d)
 if __name__ == '__main__':
     main()

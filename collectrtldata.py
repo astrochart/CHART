@@ -3,13 +3,14 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Collectrtldata
-# Generated: Tue Jul 10 15:07:04 2018
+# Generated: Wed Jul 18 14:28:08 2018
 ##################################################
 
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import fft
 from gnuradio import gr
+from gnuradio import gr, blocks
 from gnuradio.eng_option import eng_option
 from gnuradio.fft import window
 from gnuradio.filter import firdes
@@ -51,12 +52,15 @@ class collectrtldata(gr.top_block):
         self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength, "/home/locorpi3b/Documents/rtldata.dat", False)
         self.blocks_file_sink_0.set_unbuffered(False)
+        self.blocks_file_meta_sink_0 = blocks.file_meta_sink(gr.sizeof_gr_complex*1, "/home/locorpi3b/Documents/metasink_orange", samp_rate, 1, blocks.GR_FILE_FLOAT, True, 1000000, "", False)
+        self.blocks_file_meta_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
 
         ##################################################
         # Connections
         ##################################################
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))    
+        self.connect((self.blocks_head_0, 0), (self.blocks_file_meta_sink_0, 0))    
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
         self.connect((self.blocks_integrate_xx_0, 0), (self.blocks_file_sink_0, 0))    
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
