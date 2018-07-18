@@ -16,19 +16,19 @@ from gnuradio.filter import firdes
 from optparse import OptionParser
 import osmosdr
 import time
+import numpy as np
 
 
 class collectrtldata(gr.top_block):
 
     def __init__(self, c_freq):
         gr.top_block.__init__(self, "Collectrtldata")
-
         ##################################################
         # Variables
         ##################################################
         self.veclength = veclength = 1024
         self.samp_rate = samp_rate = 2e6
-		self.c_freq = c_freq
+        self.c_freq = c_freq
 
         ##################################################
         # Blocks
@@ -50,7 +50,7 @@ class collectrtldata(gr.top_block):
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, veclength)
         self.blocks_integrate_xx_0 = blocks.integrate_ff(100, veclength)
         self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength, "/home/locorpi3b/chart/"+str(c_freq)+"rtldata.dat", False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength, "/home/locorpi3b/Documents/18july"+str(c_freq)+"rtldata.dat", False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
 
@@ -79,29 +79,24 @@ class collectrtldata(gr.top_block):
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
 
-	def parameters(self):
-		d={'time': time.time(), 
+    def parameters(self):
+        d={'time': time.time(), 
 		   'samp_rate': self.samp_rate,
 		   'frequency': self.c_freq,
 		   'data': list(np.average(
-					self.vector_sink_0.data(), 
-					axis=-1),
-		}
-		return d
+                   self.blocks_file_sink_0.data(), 
+                   axis=-1))}
+        return d
 
 def main(top_block_cls=collectrtldata, options=None):
-    iteration_tracker=1
-	d = dict()
-    for c_freq in range(50*10**6, 60*10**6, 2*10**6):
+    d = dict()
+    for c_freq in range(50*10**6, 54*10**6, 2*10**6):
         tb = top_block_cls(c_freq)
-        print(c_freq)
-		tb.start()
-        d[time.time()] = tb.startz()
+        print(c_freq,time.time())
+        tb.parameters()
+        tb.start()
         tb.wait()
-        iteration_tracker = iteration_tracker+1
         del(tb)        
-        # time.sleep(2)
-        print(iteration_tracker)
-	print(d)
+	    print(d)
 if __name__ == '__main__':
     main()
