@@ -31,6 +31,8 @@ def find_dat_files():
 	dataList.sort()
 	return dataList
 
+#find metadata files
+
 def concat(dataList):
 	dataList = find_dat_files(dataList)
 	combined = np.empty((100,0))

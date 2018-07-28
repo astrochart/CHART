@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<block>
+  <name>mulitply_py_ff</name>
+  <key>tutorial_mulitply_py_ff</key>
+  <category>tutorial</category>
+  <import>import tutorial</import>
+  <make>tutorial.mulitply_py_ff()</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <!--param>
+    <name>...</name>
+    <key>...</key>
+    <type>...</type>
+  </param>
+
+  < Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>float</type>
+    <vlen>1</vlen>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>float</type>
+    <vlen>1</vlen>
+  </source>
+</block>
