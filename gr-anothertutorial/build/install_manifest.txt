@@ -1,0 +1,9 @@
+/usr/local/lib/cmake/anothertutorial/anothertutorialConfig.cmake
+/usr/local/include/anothertutorial/api.h
+/usr/local/lib/python2.7/dist-packages/anothertutorial/__init__.py
+/usr/local/lib/python2.7/dist-packages/anothertutorial/multiply_py_ff.py
+/usr/local/lib/python2.7/dist-packages/anothertutorial/__init__.pyc
+/usr/local/lib/python2.7/dist-packages/anothertutorial/multiply_py_ff.pyc
+/usr/local/lib/python2.7/dist-packages/anothertutorial/__init__.pyo
+/usr/local/lib/python2.7/dist-packages/anothertutorial/multiply_py_ff.pyo
+/usr/local/share/gnuradio/grc/blocks/anothertutorial_multiply_py_ff.xml
