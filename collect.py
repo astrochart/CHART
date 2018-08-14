@@ -31,6 +31,9 @@ class collectrtldata(gr.top_block):
         self.veclength = veclength = 1024
         self.samp_rate = samp_rate = 2e6
         self.c_freq = c_freq
+		self.int_length = 100
+		self.data_file = '/home/locorpi3b/Documents/' + '_'.join(str(datetime.datetime.now()).split(' ')) + '.dat'
+		self.metadata_file = self.data_file[:-3] + 'metadata.npz'
 
         ##################################################
         # Blocks
@@ -50,9 +53,10 @@ class collectrtldata(gr.top_block):
           
         self.fft_vxx_0 = fft.fft_vcc(veclength, True, (window.blackmanharris(1024)), True, 1)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, veclength)
-        self.blocks_integrate_xx_0 = blocks.integrate_ff(100, veclength)
+        self.blocks_integrate_xx_0 = blocks.integrate_ff(self.int_length, veclength)
         self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength, "/home/locorpi3b/Documents/20july"+str(c_freq)+"rtldata.dat", False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength,
+												   self.data_file, False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
 
@@ -82,16 +86,16 @@ class collectrtldata(gr.top_block):
 
 
     def parameters(self):
-        d={'date': datetime.date.today(),
-           'start time': time.time(), 
+        d={'date': str(datetime.date.today()),
+           'start_time': time.time(), 
 		   'samp_rate': self.samp_rate,
 		   'frequency': self.c_freq,
-           'vector length': self.get_veclength(),
-            #'data': list(np.average(self.blocks_file_sink_0.data(), axis=-1))
-            'integration decimation value': "100",
+           'vector_length': self.get_veclength(),
+            'int_length': self.int_length,
             #data file (.dat file it refers to)
-            'data file': "20july"+str(self.c_freq)+"rtldata.dat"
+            'data_file': self.data_file
             #print after every integration. 100 d for each c_freq
+			'metadata_file': self.metadata_file
             }
         return d
 
@@ -105,6 +109,7 @@ def main(top_block_cls=collectrtldata, options=None):
     tb.wait()
     d['end time'] = time.time()
     del(tb)        
-    pprint.pprint(d)
+    np.savez(d['metadata_file'], d)
+
 if __name__ == '__main__':
     main()
