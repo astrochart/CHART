@@ -21,20 +21,46 @@ import numpy as np
 import pprint
 from ast import literal_eval
 
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+##################################################
+# GNU Radio Python Flow Graph
+# Title: Collectrtldata
+# Generated: Tue Aug 14 16:42:11 2018
+##################################################
+
+from gnuradio import blocks
+from gnuradio import eng_notation
+from gnuradio import fft
+from gnuradio import gr
+from gnuradio.eng_option import eng_option
+from gnuradio.fft import window
+from gnuradio.filter import firdes
+from optparse import OptionParser
+import anothertutorial
+import osmosdr
+import time
+import datetime
+import numpy as np
+import pprint
+from ast import literal_eval
+
+
 class collectrtldata(gr.top_block):
 
     def __init__(self, c_freq):
         gr.top_block.__init__(self, "Collectrtldata")
+
         ##################################################
         # Variables
         ##################################################
         self.veclength = veclength = 1024
-        self.samp_rate = samp_rate = 2e6
-        self.c_freq = c_freq
-		self.int_length = 100
-		self.data_file = '/home/locorpi3b/Documents/' + '_'.join(str(datetime.datetime.now()).split(' ')) + '.dat'
-		self.metadata_file = self.data_file[:-3] + 'metadata.npz'
-
+        self.samp_rate = samp_rate = 32000
+        #self.samp_rate = samp_rate = 2e6
+        self.c_freq = 100e6
+        self.int_length = 100
+        self.data_file = '/home/locorpi3b/Documents/' + '_'.join(str(datetime.datetime.now()).split(' ')) + '.dat'
+        self.metadata_file = self.data_file[:-3] + 'metadata.npz'
         ##################################################
         # Blocks
         ##################################################
@@ -52,21 +78,24 @@ class collectrtldata(gr.top_block):
         self.rtlsdr_source_0.set_bandwidth(0, 0)
           
         self.fft_vxx_0 = fft.fft_vcc(veclength, True, (window.blackmanharris(1024)), True, 1)
+        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, 1024)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, veclength)
         self.blocks_integrate_xx_0 = blocks.integrate_ff(self.int_length, veclength)
         self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength,
-												   self.data_file, False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, self.data_file, False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
+        self.anothertutorial_multiply_py_ff_0 = anothertutorial.multiply_py_ff(1024)
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.anothertutorial_multiply_py_ff_0, 0), (self.blocks_file_sink_0, 0))    
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))    
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
-        self.connect((self.blocks_integrate_xx_0, 0), (self.blocks_file_sink_0, 0))    
+        self.connect((self.blocks_integrate_xx_0, 0), (self.blocks_vector_to_stream_0, 0))    
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
+        self.connect((self.blocks_vector_to_stream_0, 0), (self.anothertutorial_multiply_py_ff_0, 0))    
         self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))    
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))    
 
@@ -84,19 +113,18 @@ class collectrtldata(gr.top_block):
         self.samp_rate = samp_rate
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
-
     def parameters(self):
         d={'date': str(datetime.date.today()),
            'start_time': time.time(), 
-		   'samp_rate': self.samp_rate,
-		   'frequency': self.c_freq,
+           'samp_rate': self.samp_rate,
+           'frequency': self.c_freq,
            'vector_length': self.get_veclength(),
-            'int_length': self.int_length,
-            #data file (.dat file it refers to)
-            'data_file': self.data_file
-            #print after every integration. 100 d for each c_freq
-			'metadata_file': self.metadata_file
-            }
+           'int_length': self.int_length,
+           #data file (.dat file it refers to)
+           'data_file': self.data_file,
+           #print after every integration. 100 d for each c_freq
+           'metadata_file': self.metadata_file
+          }
         return d
 
 def main(top_block_cls=collectrtldata, options=None):
@@ -107,7 +135,7 @@ def main(top_block_cls=collectrtldata, options=None):
     tb.start()
     d = tb.parameters()
     tb.wait()
-    d['end time'] = time.time()
+    d['end_time'] = time.time()
     del(tb)        
     np.savez(d['metadata_file'], d)
 

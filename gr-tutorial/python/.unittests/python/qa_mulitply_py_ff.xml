@@ -1,5 +1,0 @@
-<testsuite errors="0" failures="0" name="unittest.suite.TestSuite" tests="1" time="2.080">
-  <testcase classname="__main__.qa_mulitply_py_ff" name="test_001_t" time="2.0791"></testcase>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
