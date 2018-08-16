@@ -20,25 +20,23 @@ def avgplot(datafile):
 def wf_plot(datafile):
 	a = readarray(datafile)
 	plt.imshow(a)
-	#print a.shape
+	print a.shape
 
 def find_dat_files():
 	items = os.listdir(".")
 	dataList = []
 	for names in items:
-		if names.endswith('00rtldata.dat'):
+		if names.endswith('.dat'):
 			dataList.append(names)
 	dataList.sort()
 	return dataList
 
-#find metadata files
-
 def concat(dataList):
-	dataList = find_dat_files(dataList)
 	combined = np.empty((100,0))
 	for a in range(0, len(dataList)):
 		combined = np.concatenate((combined, readarray(dataList[a])), 1)
-	vmin=a.min()
-	vmax=a.max()	
-	plt.imshow(combined, norm=SymLogNorm(vmax=vmax, vmin=vmin,linthresh=1e2))
+	#vmin=a.min()
+	#vmax=a.max()	
+	plt.imshow(combined, aspect='auto')
+	''', norm=SymLogNorm(vmax=vmax, vmin=vmin,linthresh=1e2))'''
 	return combined

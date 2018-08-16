@@ -16,54 +16,28 @@ from gnuradio.filter import firdes
 from optparse import OptionParser
 import osmosdr
 import time
-import datetime
 import numpy as np
-import pprint
-from ast import literal_eval
-
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-##################################################
-# GNU Radio Python Flow Graph
-# Title: Collectrtldata
-# Generated: Tue Aug 14 16:42:11 2018
-##################################################
-
-from gnuradio import blocks
-from gnuradio import eng_notation
-from gnuradio import fft
-from gnuradio import gr
-from gnuradio.eng_option import eng_option
-from gnuradio.fft import window
-from gnuradio.filter import firdes
-from optparse import OptionParser
-import tutorial
-import osmosdr
-import time
 import datetime
-import numpy as np
-import pprint
-from ast import literal_eval
-
+import mulitply_py_ff as mp
 
 class collectrtldata(gr.top_block):
 
     def __init__(self, c_freq):
         gr.top_block.__init__(self, "Collectrtldata")
-
         ##################################################
         # Variables
         ##################################################
         self.veclength = veclength = 1024
         self.samp_rate = samp_rate = 2e6
-        #self.samp_rate = samp_rate = 2e6
         self.c_freq = c_freq
-        self.int_length = 100
-        self.data_file = '/home/locorpi3b/Documents/' + '_'.join(str(datetime.datetime.now()).split(' ')) + '.dat'
-        self.metadata_file = self.data_file[:-3] + 'metadata.npz'
+        self.l=[]
+        self.time=str(datetime.datetime.now())
+
+
         ##################################################
         # Blocks
         ##################################################
+        self.tutorial_mulitply_py_ff_0 = mp.mulitply_py_ff()
         self.rtlsdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "" )
         self.rtlsdr_source_0.set_sample_rate(samp_rate)
         self.rtlsdr_source_0.set_center_freq(c_freq, 0)
@@ -78,27 +52,28 @@ class collectrtldata(gr.top_block):
         self.rtlsdr_source_0.set_bandwidth(0, 0)
           
         self.fft_vxx_0 = fft.fft_vcc(veclength, True, (window.blackmanharris(1024)), True, 1)
-        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, 1024)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, veclength)
-        self.blocks_integrate_xx_0 = blocks.integrate_ff(self.int_length, veclength)
+        self.blocks_integrate_xx_0 = blocks.integrate_ff(100, veclength)
         self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*1, self.data_file, False)
+        self.blocks_file_sink_0 = blocks.file_sink(4, "/home/locorpi3b/Documents/"+self.time+".dat", False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
-        self.tutorial_mulitply_py_ff_0 = tutorial.mulitply_py_ff()
+        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(4,1024)
+
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.tutorial_mulitply_py_ff_0, 0), (self.blocks_file_sink_0, 0))    
-        self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))    
+
+        self.connect((self.tutorial_mulitply_py_ff_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))   
+        self.connect((self.blocks_vector_to_stream_0,0),(self.tutorial_mulitply_py_ff_0,0))
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
         self.connect((self.blocks_integrate_xx_0, 0), (self.blocks_vector_to_stream_0, 0))    
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
-        self.connect((self.blocks_vector_to_stream_0, 0), (self.tutorial_mulitply_py_ff_0, 0))    
         self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))    
-        self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))    
 
     def get_veclength(self):
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))
         return self.veclength
 
     def set_veclength(self, veclength):
@@ -112,33 +87,25 @@ class collectrtldata(gr.top_block):
         self.samp_rate = samp_rate
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
-    def parameters(self):
-        d={'date': str(datetime.date.today()),
-           'start_time': time.time(), 
-           'samp_rate': self.samp_rate,
-           'frequency': self.c_freq,
-           'vector_length': self.get_veclength(),
-           'int_length': self.int_length,
-           #data file (.dat file it refers to)
-           'data_file': self.data_file,
-           #print after every integration. 100 d for each c_freq
-           'metadata_file': self.metadata_file,
-           'times': self.tutorial_mulitply_py_ff_0.get_l()
-          }
-        return d
+    '''def parameters(self):
+        d={'time': time.time(), 
+		   'samp_rate': self.samp_rate,
+		   'frequency': self.c_freq}
+		   #'data': list(np.average(
+           #         self.blocks_file_sink_0.data(), 
+           #         axis=-1))}
+        return d'''
+
+    def save_dict(self):
+        np.savez("/home/locorpi3b/Documents/"+self.time+".metadat",record_time_start=self.time,samp_rate=self.sampe_rate,metadata=l,timeavg=list(np.average(self.blocks_file_sink0.dat,axis=0)))
+        
 
 def main(top_block_cls=collectrtldata, options=None):
-    d = dict()
-    for c_freq in range(50*10**6, 54*10**6, 2*10**6):
-    #if self.c_freq%100==0: 
-        tb = top_block_cls(50*10**6)
+    for c_freq in range(50*10**6, 52*10**6, 2*10**6):
+        tb = top_block_cls(c_freq)
         tb.start()
-        d = tb.parameters()
         tb.wait()
-        d['end_time'] = time.time()
-        del(tb)  
-        #print(d)      
-        np.savez(d['metadata_file'], d)
-
+        tb.save_dict()
+        del(tb)
 if __name__ == '__main__':
     main()
