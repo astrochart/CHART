@@ -18,6 +18,7 @@ import chart
 import osmosdr
 import time
 import datetime
+import timeit
 import numpy as np
 import pprint
 from ast import literal_eval
@@ -26,7 +27,7 @@ from ast import literal_eval
 class collectrtldata(gr.top_block):
 
     def __init__(self, c_freq):
-        gr.top_block.__init__(self, "Collectrtldata")
+        gr.top_block.__init__(self, "Collectrtldata")                                   
 
         ##################################################
         # Variables
@@ -71,12 +72,10 @@ class collectrtldata(gr.top_block):
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
         self.connect((self.blocks_integrate_xx_0, 0), (self.chart_meta_trig_py_ff_0, 0))    
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
-        #self.connect((self.blocks_vector_to_stream_0, 0), (self.chart_meta_trig_py_ff_0, 0))    
         self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))    
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))    
 
         self.start_time = time.time()
-
 
     def get_veclength(self):
         return self.veclength
@@ -123,18 +122,21 @@ class collectrtldata(gr.top_block):
            times = self.chart_meta_trig_py_ff_0.get_l())
 
 def main(top_block_cls=collectrtldata, options=None):
-    #d = dict()
-    for c_freq in range(50*10**6, 52*10**6, 2*10**6):
-    #if self.c_freq%100==0: 
-        tb = top_block_cls(c_freq)
-        tb.start()
-        #d = tb.parameters()
-        tb.wait()
-        #d['end_time'] = time.time()
-        tb.meta_save()
-        del(tb)  
-        #print(d)      
-        #np.savez(d['metadata_file'], d)
+    #create while loop and timer variable. while loop halts when timer variable
+    #reaches certain value. tb.wait(10) added at end to create intervals of time
+    hours = 0
+    while hours <= 24:
+        for c_freq in range(50*10**6, 150*10**6, 1*10**6): 
+            tb = top_block_cls(c_freq)
+            tb.start()
+            tb.wait()
+            #d['end_time'] = time.time()
+            tb.meta_save()
+            del(tb)      
+            #np.savez(d['metadata_file'], d)
+        hours += 1
+        #print ">>>>>>>>>>>>>>>>>>>>>>>>", hours
+        time.sleep(1800)
 
 if __name__ == '__main__':
     main()
