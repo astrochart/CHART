@@ -34,17 +34,14 @@ class collectrtldata(gr.top_block):
         ##################################################
         self.veclength = veclength = 1024
         self.samp_rate = samp_rate = 2e6
-        self.c_freq = c_freq
         self.int_length = 100
-        self.data_file = '/home/locorpi3b/data/' + str(datetime.datetime.now()).replace(' ', '_') + '.dat'
-        self.data_file = self.data_file.replace(':', '-')
-        self.metadata_file = self.data_file[:-3] + 'metadata.npz'
+        self.set_filename()
         ##################################################
         # Blocks
         ##################################################
         self.rtlsdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "" )
         self.rtlsdr_source_0.set_sample_rate(samp_rate)
-        self.rtlsdr_source_0.set_center_freq(c_freq, 0)
+        self.set_c_freq(c_freq)
         self.rtlsdr_source_0.set_freq_corr(0, 0)
         self.rtlsdr_source_0.set_dc_offset_mode(0, 0)
         self.rtlsdr_source_0.set_iq_balance_mode(0, 0)
@@ -91,6 +88,38 @@ class collectrtldata(gr.top_block):
         self.samp_rate = samp_rate
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
+    def set_c_freq(self, c_freq, sleep=0.5):
+        """ Function to reset the tuning frequency
+        Args:
+            c_freq: center frequency, in Hz
+            sleep: Time to sleep to allow the radio to settle. Default 0.5 seconds.
+        """
+        self.c_freq = c_freq
+        self.rtlsdr_source_0.set_center_freq(c_freq, 0)
+        try:
+            self.chart_meta_trig_py_ff_0.l = []
+        except AttributeError:
+            pass
+        time.sleep(sleep)
+
+    def set_filename(self, filename=None):
+        """ Function to set filename
+        Args:
+            filename: Optional filename. If not supplied, create filename from datetime
+        """
+        if filename is None:
+		    self.data_file = ('/home/locorpi3b/data/' + 
+                              str(datetime.datetime.now()).replace(' ', '_') + '.dat')
+		    self.data_file = self.data_file.replace(':', '-')
+		    self.metadata_file = self.data_file[:-3] + 'metadata.npz'
+        else:
+            self.data_file = filename
+            self.metadata_file = filename[:-3] + 'metadata.npz'
+        try:
+            self.blocks_file_sink_0.open(self.data_file)
+        except AttributeError:
+            pass
+
     def parameters(self):
         d={'date': str(datetime.date.today()),
            'start_time': time.time(), 
@@ -124,19 +153,27 @@ class collectrtldata(gr.top_block):
 def main(top_block_cls=collectrtldata, options=None):
     #create while loop and timer variable. while loop halts when timer variable
     #reaches certain value. tb.wait(10) added at end to create intervals of time
-    hours = 0
-    while hours <= 24:
-        for c_freq in range(50*10**6, 150*10**6, 1*10**6): 
-            tb = top_block_cls(c_freq)
+    dt = 30 * 60  # Time between scans, in seconds
+    total_time = 24 * 60 * 60  # Total time for observation, in seconds
+    i = 0
+    f_i = 50 * 10**6  # Starting frequency, in Hz
+    f_f = 150 * 10**6  # Ending frequency, in Hz
+    df = 1 * 10**6  # tuning step size, in Hz
+    tb = top_block_cls(f_i)
+    t0 = time.time()
+    while time.time() - t0 < total_time:
+        for c_freq in range(f_i, f_f, df):
+            print('Frequency: ' + str(c_freq/10**6) + ' MHz')
+            tb.set_c_freq(c_freq)
+            tb.blocks_head_0.reset()
+            tb.set_filename()
             tb.start()
             tb.wait()
-            #d['end_time'] = time.time()
             tb.meta_save()
-            del(tb)      
-            #np.savez(d['metadata_file'], d)
-        hours += 1
-        #print ">>>>>>>>>>>>>>>>>>>>>>>>", hours
-        time.sleep(1800)
+        i += 1
+        while time.time() < t0 + i * dt:
+            time.sleep(5)  # Sleep 5 seconds
+    del(tb)
 
 if __name__ == '__main__':
     main()
