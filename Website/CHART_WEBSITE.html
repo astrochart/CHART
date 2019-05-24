@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+    padding: 10px;
+    background: #f1f1f1;
+}
+
+/* Header/Blog Title */
+.header {
+    padding: 0px;
+    text-align: center;
+    background-color: white;
+    /* background-image: url("Website/banner.png");
+    background-size:     contain;
+    background-repeat:   no-repeat;
+    background-position: center center; */
+}
+
+.header h1 {
+    font-size: 50px;
+}
+
+/* Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+}
+
+/* Style the topnav links */
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {
+    float: left;
+    width: 75%;
+}
+
+/* Right column */
+.rightcolumn {
+    float: left;
+    width: 25%;
+    background-color: #f1f1f1;
+    padding-left: 20px;
+}
+
+/* Fake image */
+.fakeimg {
+    background-color: #aaa;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Add a card effect for articles */
+.card {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Footer */
+.footer {
+    padding: 20px;
+    text-align: center;
+    background: #ddd;
+    margin-top: 20px;
+}
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+    .leftcolumn, .rightcolumn {
+        width: 100%;
+        padding: 0;
+    }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+    .topnav a {
+        float: none;
+        width: 100%;
+    }
+}
+</style>
+
+<!-- Favicon stuff -->
+<link rel="apple-touch-icon" sizes="57x57" href="Website/favicon/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="Website/favicon/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="Website/favicon/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="Website/favicon/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="Website/favicon/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="Website/favicon/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="Website/favicon/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="Website/favicon/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="Website/favicon/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="Website/favicon/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="Website/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="Website/favicon/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="Website/favicon/favicon-16x16.png">
+<link rel="manifest" href="Website/favicon/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="Website/favicon/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body>
+
+<div class="topnav">
+  <a href="https://github.com/adampbeardsley/CHART" target="_blank">GitHub</a>
+  <a href="https://drive.google.com/drive/u/2/folders/1t-3GFopbnU1UUVZ24g0QWANVzw4G66YA" target="_blank">TeamDrive</a>
+  <a href="https://eoranalysis.slack.com/messages/GBK1F9EUA/" target="_blank">Slack</a>
+  <a href="#" style="float:right">The Completely Hackable Amateur Radio Telescope</a>
+  <!--<a href="#" style="float:right">Extra Link</a>-->
+</div>
+
+<div class="header">
+  <img src="Website/banner.png", width="100%">
+</div>
+
+<div class="row">
+  <!-- <div align="center">
+    <h1>The Completely Hackable Amateur Radio Telescope</h1>
+  </div> -->
+  <div class="leftcolumn">
+    <div class="card">
+
+      <h2>How to Set Up CHART</h2>
+      <h5>Last Updated July 2018</h5>
+
+      <h4>Hardware</h4>
+      <ul style="list-style: none;">
+        <li><img src="Website/rtl-sdr.PNG" width="200" height="185"></li>
+        <li><p></p></li>
+        <li><a href="https://www.amazon.com/RTL-SDR-Blog-RTL2832U-Software-Telescopic/dp/B011HVUEME/ref=sr_1_5?s=electronics&ie=UTF8&qid=1530136942&sr=1-5&keywords=rtl-sdr+usb" target="_blank">Recommended link to purchase RTL-SDR with Antenna</a></li>
+        <li><p></p></li>
+        <li><img src="Website/rp_3.PNG" width="200" height="120"></li>
+        <li><p></p></li>
+        <li><a href="https://www.amazon.com/gp/product/B01LWVVMUI" target="_blank">Recommended link to purchase Raspberry Pi 3 Model B</a></li>
+      </ul>
+
+      <h4>Software</h4>
+      <ul style="list-style: none;">
+        <!--<li><p><b>VirtualBox</b> - This will host your Ubuntu OS as to avoid affecting your actual computer. This will not needed if the raspberry will be used as the data collecting hardware.</p></li>
+        <li><a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">Link to download VirtualBox</a></li>-->
+        <li><p><b>Ubuntu Mate</b> - This will be the Linux OS for the Raspberry Pi 3 Model B</p></li>
+        <li><a href="https://ubuntu-mate.org/download/" target="_blank">Link to download Ubuntu Mate</a></li>
+        <li><p><b>GNURadio</b> - This will be installed via the command prompt on the Ubuntu Mate OS</p></li>
+      </ul>
+
+      <h4>Background Knowledge</h4>
+      <p>It would useful to learn <b>basic python coding</b> as this will be needed to manipulate the data. Also,
+      since we'll be on a Linux OS, it would be helpful to know <b>basic linux commands</b> for the terminal so that the data collecting can go smoothly.</p>
+      <p>Here are some links to get you started on this:</p>
+      <ul style="list-style: none;">
+        <li><p><a href="https://www.tutorialspoint.com/python/index.htm" target="_blank">Python for Beginners</a></p></li>
+        <li><p><a href="https://maker.pro/linux/tutorial/basic-linux-commands-for-beginners" target="_blank">Basic Linux Commands</a></p></li>
+      </ul>
+
+    </div>
+    <div class="card">
+      <h2>Setting Up The Raspberry Pi</h2>
+      <h5>Last Updated July 2018</h5>
+      <p>After you have obtained the Raspberry Pi 3 Model B, it is time to start installing some software. Follow the tutorial below to get the Ubuntu Mate OS set up on your Raspberry Pi.</p>
+      <ul style="list-style: none;">
+        <li><a href="http://www.hospitableit.com/howto/installing-ubuntu-mate-16-04-2-lts-on-a-raspberry-pi-3/" target="_blank">How to Install Ubuntu Mate on a Raspberry Pi 3</a></li>
+      </ul>
+
+      <p> </p>
+      <p> </p>
+      <p> </p>
+
+      <h2>Download GNURadio and Collect Your First Data!</h2>
+      <h5>Last Updated July 2018</h5>
+      <p><a href="https://docs.google.com/document/d/1R4tTBSVAoEX3Kd77x5wUabNQipL_P9JzUQbgOKLJxaQ/edit" target="_blank">This</a> is our document that goes into further detail about this process.</p>
+      <ul style="list-style: none;">
+        <li><b>1.</b> Plug in your RTL-SDR device. To install gnuradio on Ubuntu, open up your terminal and type in the following command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython</font></li>
+        <li><b>2.</b> Next, open up your newly installed gnuradio by typing in this command:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">gnuradio-companion</font></li>
+        <li><b>3.</b> After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together.</li>
+        <li><b>4.</b> Select a location to save your file to in the QT GUI Sink block.</li>
+        <li><b>5.</b> Generate your flow chart.</li>
+        <li><b>6.</b> Return to your terminal. Press Ctrl+Z and then enter 'bg' so that you can continue using the terminal while gnuradio is running the background.</li>
+        <li><b>7.</b> Type in the command to start collecting data:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">python top_block.py</font></li>
+        <li><b>8.</b> Hit enter to stop collecting data. The longer you wait to hit enter, the more data will be collected.</li>
+        <li><b>9.</b> Type in this command to view the size of the data you just collected:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">ls -lh</font></li>
+      </ul>
+      <p>Congrats! You have now created the most simple flow chart to collect data. Click on <a href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_GRC" target="_blank">this</a> for a guided tutorial on the basics of gnuradio.</p>
+      <p>Images will be included for the steps above.</p>
+
+      <p> </p>
+      <p> </p>
+      <p> </p>
+
+      <h2>Create A Waterfall Plot!</h2>
+      <h5>Last Updated July 2018</h5>
+      <p>Now that you've familiarized yourself with gnuradio, it's time to create more complex flowcharts.</p>
+      <ul style="list-style: none;">
+        <li><b>1.</b> Start off with creating a new flowchart.</li>
+        <li><b>2.</b> In the Options block, select 'No GUI' for 'Generate Options' and select 'Run to Completion' for the 'Run Options'.</li>
+        <li><b>3.</b> In the pre-made variable block, rename it 'samp_rate' and set the value to 2e6 (2 million).</li>
+        <li><b>4.</b> Add the 'RTL-Source' block and change the 'RF Gain' to '45'. Also, set the 'Sample Rate' to 'samp_rate'.</li>
+        <li><b>5.</b> Create a variable block and name it 'veclength'. Make the value '1024'.</li>
+        <li><b>6.</b> Add a 'Head' block. This block will limit the amount of data that will be processed. Set 'Num. Items' to '10.24e6' and then connect it to the 'RTL-Source' block.</li>
+        <li><b>7.</b> Add a 'Stream to Vector' block and set the 'Num. Items' to 'veclength'. Connect to 'Head' block.</li>
+        <li><b>8.</b> Add an 'FFT' block. This will convert the data into a Fast Fourier Transform. Set the 'FFT size' to 'veclength' and connect to the 'Stream to Vector' block.</li>
+        <li><b>9.</b> Add a 'Complex to Mag^2' block and set Vec. Length to veclength. This block makes all the data values real by squaring the complex numbers. Connect to 'FFT' block.</li>
+        <li><b>10.</b> Add an 'Integrate' block and set 'Vec. Length' to 'veclength' and 'Decimation' to '100'. This reduces the data size by averaging every 100 values into one value. Connect to 'FFT' block.</li>
+        <li><b>11.</b> Finally, add a 'File Sink' block and set 'Vec. Length' to 'veclength'. This will write the data into a file on your computer. Specify where you want the file to be written in.</li>
+        <li><b>Here is how the final flowchart should look like:</b></li>
+
+        <li><b>12.</b> Generate your flow chart.</li>
+        <li><b>13.</b> Return to your terminal. Press Ctrl+Z and then enter 'bg' so that you can continue using the terminal while gnuradio is running the background.</li>
+        <li><b>14.</b> Type in the command to start collecting data:</li>
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;<font face="courier new">python top_block.py</font></li>
+        <li><b>15.</b> Hit enter to stop collecting data. The longer you wait to hit enter, the more data will be collected.</li>
+      </ul>
+      <p>Image will be included for the steps above.</p>
+    </div>
+  </div>
+
+  <div class="rightcolumn">
+    <div class="card">
+      <h2>About CHART</h2>
+      <p>The CHART, AKA the Completely Hackable Amateur Radio Telescope, is a project hosted by Adam Beardsley from Arizona State University. The goal of this project is to assemble a portable, affordable amateur radio that high school classrooms can use with ease.</p>
+    </div>
+    <div class="card">
+    <ul style="list-style: none;">
+      <li><h3>Meet the Team</h3></li>
+      <li><img src="Website/bryphoto.jpg" width="100" height="100"></li>
+      <li><p><b>Bryanna Gutierrez-Coatney is an undergraduate Astrophysics student at ASU. She contributed to the creation of the website, created tutorials in the hardware and software sections of the project, and assisted in the outreach portion of the project.</p></li>
+      <li><img src="Website/edgar.PNG" width="100" height="100"></li>
+      <li><p><b>Edgar Escalante is a Physics Undergraduate at ASU. He contributed to the project in the research aspect and created content for the tutorials.</p></li>
+      <li><img src="Website/emilie.PNG" width="100" height="95"></li>
+      <li><p><b>Emilie Berthiaume</b> is a senior at McClintock High school. She helped write the tutorials on the CHART website and contributed to the research aspect of the project. Emilie is also a member of the Young Engineers Shape the World (YESW) program at ASU.</p></li>
+      <li><img src="Website/belany.PNG" width="100" height="95"></li>
+      <li><p><b>Belany Zhang</b> is a junior at McClintcok High School. She created the CHART website and has taken CSE courses at ASU as an undergraduate student.</p></li>
+      <li><img src="Website/adam.png" width="100" height="90"></li>
+      <li><p><a href="http://loco.lab.asu.edu/adam_beardsley/" target="_blank">Adam Beardsley</a></p></li>
+    </ul>
+    </div>
+    <div class="card">
+      <h3>Follow Us</h3>
+      <p>We may make a social media page in the future to keep customers updated on the product.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+    This project is supported by a <a href="https://nsf.gov" target="_blank">National Science Foundation</a> Astronomy and Astrophysics Postdoctoral Fellowship under award <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1701440" target="_blank">AST-1701440</a>.
+</div>
+
+</body>
+</html>
