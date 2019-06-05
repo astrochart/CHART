@@ -8,7 +8,6 @@ letter-spacing:8px;
 text-transform:uppercase;
 }
 
-
 body, html{
   height:100%;
   margin:0;
@@ -22,7 +21,6 @@ body, html{
 
 
 }
-
 .pimg1, .pimg2, .pimg3{
   position:relative;
   opacity:0.70;
@@ -30,7 +28,6 @@ body, html{
   background-size:cover;
   background-repeat:no-repeat;
   background-attachment:fixed;
-
 }
 
 .pimg1 {
@@ -55,7 +52,6 @@ body, html{
 .section-dark {
   background-color:282e34;
   color:#ddd;
-
 }
 
 .section-light{
