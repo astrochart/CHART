@@ -1,3 +1,9 @@
+
+/*I've tried a wrapper, id, and class, but can't get nav bar to center. */
+.wrapper{
+  margin:0 auto;
+  width: 1000px;
+}
 #centerheader {
   text-align: center;
   border:none
@@ -83,3 +89,22 @@ body, html{
   }
 }
  /*I need to figure out how to make the CHART title responsive to a phone display and collapse without smashing together*/
+
+.sidebar-section {
+   background: #fff;
+   // border-radius: 12px;
+   // border: solid 10px #f1f1f1;
+ }
+ .sidebar-item {
+   text-align: center;
+ }
+ .content-section{
+   background: #fff;
+   // border-radius: 12px;
+   // border: solid 10px #f1f1f1;
+}
+ .content-section h2 {
+   text-align: center;
+   margin: auto;
+   padding:20px,5px,20px,5px;
+ }
