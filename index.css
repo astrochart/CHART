@@ -4,6 +4,15 @@
   margin:0 auto;
   width: 1000px;
 }
+#centerheader {
+  text-align: center;
+  border:none
+  /*idk why my padding isn't applying*/
+  padding: 200px 5px 200px 5px;
+font-family: arial:"courier new", courier;
+letter-spacing:8px;
+text-transform:uppercase;
+}
 
 body, html{
   height:100%;
@@ -80,23 +89,9 @@ body, html{
   }
 }
  /*I need to figure out how to make the CHART title responsive to a phone display and collapse without smashing together*/
- 
-
-
- /* Ignore This, just coloring */
- body {
-   background: #fff;
- }
-
- article {
-   background: #f1f1f1;
-   border-radius: 12px;
-   padding: 25px 0 600px;
- }
-
 
 .sidebar-section {
-   background: magenta;
+   background: #fff;
    // border-radius: 12px;
    // border: solid 10px #f1f1f1;
  }
