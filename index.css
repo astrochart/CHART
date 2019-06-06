@@ -1,9 +1,9 @@
-
 /*I've tried a wrapper, id, and class, but can't get nav bar to center. */
 .wrapper{
   margin:0 auto;
   width: 1000px;
 }
+
 #centerheader {
   text-align: center;
   border:none
@@ -24,18 +24,19 @@ body, html{
   color:black;
   text-align:center;
   background-color:#f4f4f4;
-
-
 }
+
+/*Styling for images (parallax/background)*/
 .pimg1, .pimg2, .pimg3{
   position:relative;
-  opacity:0.70;
+  opacity:0.90;
   background-position: center;
   background-size:cover;
   background-repeat:no-repeat;
   background-attachment:fixed;
 }
 
+/*the actual images*/
 .pimg1 {
   background-image: url("nightsky.jpeg");
   min-height:100%
@@ -49,22 +50,21 @@ body, html{
   min-height:800px;
 }
 
+
 /*for some reason this text-align, .section-dark & .section-light didn't apply, but when I applied it to the body it did apply*/
+
+/*Section container stylings;this applies to all of the sections that I have*/
 .section {
   text-align:center;
   padding:50px 80px;
 }
 
-.section-dark {
-  background-color:282e34;
-  color:#ddd;
-}
-
 .section-light{
-  background-color:#f4f4f4;
-  color:#666;
+  background-color:#fff;
+  color:black;
 }
 
+/*applies to floating titles above parallax*/
 .ptext{
   position:absolute;
   top:50%;
@@ -74,37 +74,42 @@ body, html{
   font-size:27px;
   letter-spacing:8px;
   text-transform:uppercase;
-
 }
-/*fix the container so that the text doesn't smash together when the browser is collapsed*/
+
+/*border of the title in the parallax*/
 .border{
   background-color:black;
   color:white;
   padding:20px;
 }
 
+/*Makes the paralax background sto parallaxing when in mobile mode*/
 @media(max-width:568px){
   .pimg1, .pimg2, .pimg3{
     background-attachment:scroll;
   }
 }
- /*I need to figure out how to make the CHART title responsive to a phone display and collapse without smashing together*/
 
+/*Sidebar outside box*/
 .sidebar-section {
    background: #fff;
    // border-radius: 12px;
    // border: solid 10px #f1f1f1;
  }
+
+ /*Sidebar text*/
  .sidebar-item {
    text-align: center;
  }
+
+ /*software and hardware tutorial boxes */
  .content-section{
    background: #fff;
    // border-radius: 12px;
    // border: solid 10px #f1f1f1;
 }
+
  .content-section h2 {
    text-align: center;
    margin: auto;
    padding:20px,5px,20px,5px;
- }
