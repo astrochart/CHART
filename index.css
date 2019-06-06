@@ -29,7 +29,7 @@ body, html{
 /*Styling for images (parallax/background)*/
 .pimg1, .pimg2, .pimg3{
   position:relative;
-  opacity:0.70;
+  opacity:0.90;
   background-position: center;
   background-size:cover;
   background-repeat:no-repeat;
@@ -57,11 +57,6 @@ body, html{
 .section {
   text-align:center;
   padding:50px 80px;
-}
-
-.section-dark {
-  background-color:darkgrey;
-  color:black;
 }
 
 .section-light{
@@ -113,6 +108,7 @@ body, html{
    // border-radius: 12px;
    // border: solid 10px #f1f1f1;
 }
+
  .content-section h2 {
    text-align: center;
    margin: auto;
