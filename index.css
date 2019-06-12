@@ -23,7 +23,6 @@ body, html{
   line-height:1.8em;
   color:black;
   text-align:center;
-  background-color:#f4f4f4;
 }
 
 /*Styling for images (parallax/background)*/
@@ -112,4 +111,4 @@ body, html{
  .content-section h2 {
    text-align: center;
    margin: auto;
-   padding:20px,5px,20px,5px;
+   padding:20px,5px,20px,5px;}
