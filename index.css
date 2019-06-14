@@ -3,12 +3,15 @@
   margin:0 auto;
   width: 1000px;
 }
-
+h2{
+  text-align:center;
+}
 #centerheader {
   text-align: center;
   border:none
   /*idk why my padding isn't applying*/
-  padding: 200px 5px 200px 5px;
+  padding: none;
+  margin:none;
 font-family: arial:"courier new", courier;
 letter-spacing:8px;
 text-transform:uppercase;
@@ -16,8 +19,9 @@ text-transform:uppercase;
 
 body, html{
   height:100%;
-  margin:0;
-  font-size:16px;
+  margin:0px;
+  margin:0px;
+  font-size:20px;
   font-family:"Lato", sans-serif;
   font-weight:400;
   line-height:1.8em;
@@ -55,12 +59,16 @@ body, html{
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
   text-align:center;
-  padding:10px 200px;
+  padding:10px,100px,10px,100px;;
+  margin:none;
 }
 
 .section-light{
   background-color:#fff;
   color:black;
+
+
+
 }
 
 /*applies to floating titles above parallax*/
@@ -112,3 +120,6 @@ body, html{
    text-align: center;
    margin: auto;
    padding:20px,5px,20px,5px;}
+
+   .video{
+     align-content:center;   }
