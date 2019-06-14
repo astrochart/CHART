@@ -55,7 +55,7 @@ body, html{
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
   text-align:center;
-  padding:50px 80px;
+  padding:10px 200px;
 }
 
 .section-light{
