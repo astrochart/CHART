@@ -12,6 +12,8 @@ To get started, here is a list of materials you will need for software instillat
 - RTL-SDR</br>
 - Your computer</br>
 
+---
+
 First you will want to download Ubuntu MATE. Here is a link to their website.
 https://ubuntu-mate.org/download/ 
 Click on "Raspberry Pi (Reccommended)
@@ -19,6 +21,9 @@ Then click on the release that you would like; we chose 18.04.2 (Bionic) which i
 Save this somewhere that is easily accessible. 
 
 Now that we have our OS system/interface, we can set up our GNU radio to start taking data. 
+
+---
+## Setting up GNU Radio
 
 1. Plug the Raspberry Pi into your monitor. Plug in the RTL-SDR device into the Raspberry Pi. 
 To install gnuradio on Ubuntu, open up your terminal and type in the following command:
