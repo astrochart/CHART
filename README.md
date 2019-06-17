@@ -4,7 +4,7 @@ Welcome to the CHART project
 ## Chart stands for "Completly Hackable Amateur Radio Telescope".</br>
 Our online tutorials will guide you step-by-step in creating your own radio telescope at home or in the classroom. 
 
-Software will be needed for this project, and resultantly you will need at least 25GB of space available on your computer’s storage space. Other computer specifications that would be preferred are having at least 8GB of RAM, and a dual-core CPU with a base clock of about 2GHz. CPU’s can be very different even with similar specifications, so keep this in mind if you run into any softeware issues during this process. As a standard point, any 4th generation or newer Intel Core i5 CPU should suffice. If you’re unsure of your computer’s specifications, there are tons of forums and articles you can find by using your best friend, Google.
+Software will be needed for this project, and resultantly you will need at least 25GB of space available on your computer’s storage space. Other computer specifications that would be preferred are having at least 8GB of RAM, and a dual-core CPU with a base clock of about 2GHz. CPU’s can be very different even with similar specifications, so keep this in mind if you run into any softeware issues during this process. As a standard reference, any 4th generation or newer Intel Core i5 CPU should suffice. If you’re unsure of your computer’s specifications, there are tons of forums and articles you can find by using your best friend, Google.
 
 ---
 To get started, here is a list of materials you will need for software instillation:</br>
@@ -20,17 +20,17 @@ Click on "Raspberry Pi (Reccommended)
 Then click on the release that you would like; we chose 18.04.2 (Bionic) which is supported until April 2021. 
 Save this somewhere that is easily accessible. 
 
-Now that we have our OS system/interface, we can set up our GNU radio to start taking data. 
+Now that we have our OS system/interface, we can set up our GNU radio and start taking data. 
 
 ---
 ## Setting up GNU Radio
-
+(If you would like to see screen shots of this process, visit our 'software' tab on the CHART website.)</br>
 1. Plug the Raspberry Pi into your monitor. Plug in the RTL-SDR device into the Raspberry Pi. 
 To install gnuradio on Ubuntu, open up your terminal and type in the following command:
-    sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython
+   " sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython "
 
 2. Next, open up your newly installed gnuradio by typing in this command in the terminal:
-    gnuradio-companion
+   " gnuradio-companion "
 
 3. After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together. I also modified my Variable box to a Value: 1M, but this is only a personal preference. 
 
