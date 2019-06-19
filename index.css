@@ -1,8 +1,5 @@
 /*I've tried a wrapper, id, and class, but can't get nav bar to center. */
-.wrapper{
-  margin:0 auto;
-  width: 1000px;
-}
+
 h2{
   text-align:center;
 }
@@ -19,7 +16,6 @@ text-transform:uppercase;
 
 body{
   height:100%;
-  margin:0px;
   margin:0px;
   font-size:20px;
   font-family:"Lato", sans-serif;
@@ -39,8 +35,6 @@ html{
   color:white;
   text-align:center;
 }
-
-
 
 /*Styling for images (parallax/background)*/
 .pimg1, .pimg2, .pimg3{
@@ -72,8 +66,8 @@ html{
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
   text-align:center;
-  padding:10px,100px,10px,100px;;
-  margin:none;
+  margin:300px,300px,300px,300px;
+  padding:10px,100px,10px,100px;
 }
 
 .section-light{
