@@ -2,7 +2,12 @@
 
 h2{
   text-align:center;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px lightgrey;
   text-transform: uppercase;
+  font-family:sans-serif;
+  border: solid;
+
 }
 
 #centerheader {
