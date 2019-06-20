@@ -68,8 +68,10 @@ html{
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
   align-content: center;
-  text-align:fill;
+  text-align:center;
   display: block;
+  border: solid;
+  border-color: black;
 }
 
 /*applies to floating titles above parallax*/
@@ -116,17 +118,19 @@ html{
    // border-radius: 12px;
    // border: solid 10px #f1f1f1;
 }
-
+/*header for sections*/
  .content-section h2 {
    text-align: center;
    margin: auto;
    padding:20px,5px,20px,5px;}
 
+/*makes the video centered*/
    .video{
-     align-content:center;   }
-
+     align-content:center; }
+/*containes the sections*/
      .container-fixed{
        align-content: center;
        text-align: center;
-padding:300px;
+       margin:0px;
+       padding:0px;
      }
