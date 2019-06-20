@@ -2,7 +2,14 @@
 
 h2{
   text-align:center;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px lightgrey;
+  text-transform: uppercase;
+  font-family:sans-serif;
+  border: solid;
+
 }
+
 #centerheader {
   text-align:fill;
   border:none
@@ -16,7 +23,6 @@ text-transform:uppercase;
 
 body{
   height:100%;
-  margin:0px;
   font-size:20px;
   font-family:"Lato", sans-serif;
   font-weight:400;
@@ -26,8 +32,6 @@ body{
 }
 html{
   height:100%;
-  margin:0px;
-  margin:0px;
   font-size:15px;
   font-family:"Lato", sans-serif;
   font-weight:400;
@@ -61,21 +65,11 @@ html{
 }
 
 
-/*for some reason this text-align, .section-dark & .section-light didn't apply, but when I applied it to the body it did apply*/
-
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
-  text-align:center;
-  margin:300px,300px,300px,300px;
-  padding:10px,100px,10px,100px;
-}
-
-.section-light{
-  background-color:#fff;
-  color:black;
-
-
-
+  align-content: center;
+  text-align:fill;
+  display: block;
 }
 
 /*applies to floating titles above parallax*/
@@ -130,3 +124,9 @@ html{
 
    .video{
      align-content:center;   }
+
+     .container-fixed{
+       align-content: center;
+       text-align: center;
+padding:300px;
+     }
