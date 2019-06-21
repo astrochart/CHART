@@ -136,3 +136,28 @@ html{
        border-style:solid;
        border-color:black;
      }
+
+     .fa-instagram {
+       background: purple;
+       color: white;
+     }
+     .fa {
+       padding: 20px;
+       font-size: 30px;
+       text-align: center;
+       text-decoration: none;
+       margin: 10px;
+       border: 2px solid white;
+       border-radius: 25px;
+     }
+     .fa-facebook {
+       background: navy;
+       color: white;}
+
+       .fa-youtube{
+         background: red;
+         color: white;}
+
+         .fa-google {
+           background: blue;
+           color: white;}
