@@ -201,10 +201,10 @@ text-align:left;
   .sidenav a {font-size: 18px;}
 }
 
-hr {
-    border: none;
-    height: 3px;
-    /* Set the hr color */
-    color: #333; /* old IE */
-    background-color: #333; /* Modern Browsers */
+hr.boldline { border: 3px solid black;
+}
+
+hr.thinline {
+  border: 1px solid lightgrey;
+
 }
