@@ -198,3 +198,11 @@ text-align:left;
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
+hr {
+    border: none;
+    height: 3px;
+    /* Set the hr color */
+    color: #333; /* old IE */
+    background-color: #333; /* Modern Browsers */
+}
