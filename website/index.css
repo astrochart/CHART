@@ -188,8 +188,10 @@ html{
   color: #f1f1f1;
 }
 
-.main {
+.mainware {
   margin-left: 200px; /* Same as the width of the sidenav */
+padding:30px;
+text-align:left;
 }
 
 @media screen and (max-height: 450px) {
