@@ -164,7 +164,7 @@ html{
 
 
            .sidenav {
-  height: 100%;
+  height: 80%;
   width: 200px;
   position: fixed;
   z-index: 1;
@@ -172,12 +172,14 @@ html{
   left: 0;
   background-color: #111;
   overflow-x: hidden;
-  padding-top: 20px;
+  padding-top: 5px;
   margin-top: 105px;
+  text-align:left;
+
 }
 
 .sidenav a {
-  padding: 6px 6px 6px 32px;
+  padding:none;
   text-decoration: none;
   font-size: 25px;
   color: #818181;
