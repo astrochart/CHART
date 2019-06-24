@@ -4,13 +4,14 @@ Welcome to the CHART project
 ## Chart stands for "Completly Hackable Amateur Radio Telescope".</br>
 Our online tutorials will guide you step-by-step in creating your own radio telescope at home or in the classroom. 
 
-Software will be needed for this project, and resultantly you will need at least 25GB of space available on your computer’s storage space. Other computer specifications that would be preferred are having at least 8GB of RAM, and a dual-core CPU with a base clock of about 2GHz. CPU’s can be very different even with similar specifications, so keep this in mind if you run into any softeware issues during this process. As a standard reference, any 4th generation or newer Intel Core i5 CPU should suffice. If you’re unsure of your computer’s specifications, there are tons of forums and articles you can find by using your best friend, Google.
-
 ---
 To get started, here is a list of materials you will need for software instillation:</br>
 - Raspberry Pi 3B</br>
 - RTL-SDR</br>
-- Your computer</br>
+- A computer moniter </br>
+-Ethernet cable (if not using WiFi option)
+-Radio antenna
+
 
 ---
 
