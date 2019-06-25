@@ -5,10 +5,10 @@ Welcome to the CHART project
 Our online tutorials will guide you step-by-step in creating your own radio telescope at home or in the classroom. 
 
 ---
-To get started, here is a list of materials you will need for software instillation:</br>
+To get started, here is a list of materials you will need for software installation:</br>
 - Raspberry Pi 3B</br>
 - RTL-SDR</br>
-- A computer moniter </br>
+- A computer monitor </br>
 -Ethernet cable (if not using WiFi option)
 -Radio antenna
 
