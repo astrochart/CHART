@@ -5,37 +5,37 @@
 # Title: Collectrtldata
 # Generated: Tue Aug 14 16:42:11 2018
 ##################################################
-
-from gnuradio import blocks
-from gnuradio import eng_notation
-from gnuradio import fft
-from gnuradio import gr
+#These are imports from GNU Radio 
+from gnuradio import blocks 
+from gnuradio import eng_notation #Engineering notation or engineering form is a version of scientific notation in which the exponent of ten must be divisible by three (i.e., they are powers of a thousand, but written as, for example, 106 instead of 10002).
+from gnuradio import fft #Fourier transform function.
+from gnuradio import gr #Need this to run GNU Radio.
 from gnuradio.eng_option import eng_option
 from gnuradio.fft import window
-from gnuradio.filter import firdes
-from optparse import OptionParser
-import chart
-import osmosdr
-import time
-import datetime
-import timeit
-import numpy as np
-import pprint
-from ast import literal_eval
+from gnuradio.filter import firdes 
+from optparse import OptionParser #allows users to specify options in the conventional GNU/POSIX syntax, and additionally generates usage and help messages for you.
+import chart 
+import osmosdr #Lets you take advantage of a common software API in your application(s) independent of the underlying radio hardware.
+import time #Time function
+import datetime #supplies classes for manipulating dates and times in both simple and complex ways. 
+import timeit #Provides a simple way to time small bits of Python code.
+import numpy as np #Package for scientfic computing in python.
+import pprint #Module that provides a capability to "pretty print" arbitrary Python data structures in a well formatted and more readable way. 
+from ast import literal_eval # 'ast' helps Python applications to process trees of the Python abstract syntax grammar. 'literal_eval'Safely evaluate an expression node or a Unicode or Latin-1 encoded string containing a Python literal or container display. The string or node provided may only consist of the following Python literal structures: strings, numbers, tuples, lists, dicts, booleans, and None.
 
-
+#this is our collect data class with an instance of gnu radio first block
 class collectrtldata(gr.top_block):
-
+#we are creating a structure to our class and only contains center frequency
     def __init__(self, c_freq):
-        gr.top_block.__init__(self, "Collectrtldata")                                   
+        gr.top_block.__init__(self, "Collectrtldata")  #does this loop???                                
 
         ##################################################
         # Variables
         ##################################################
-        self.veclength = veclength = 1024
-        self.samp_rate = samp_rate = 2e6
-        self.int_length = 100
-        self.set_filename()
+        self.veclength = veclength = 1024 #manually sets the vector length
+        self.samp_rate = samp_rate = 2e6 #manually sets the sample rate
+        self.int_length = 100 #manually sets the integration length
+        self.set_filename() #names the file
         ##################################################
         # Blocks
         ##################################################
@@ -64,6 +64,7 @@ class collectrtldata(gr.top_block):
         ##################################################
         # Connections
         ##################################################
+	#these are the lines that connect each block in the visual display of GNU Radio
         self.connect((self.chart_meta_trig_py_ff_0, 0), (self.blocks_file_sink_0, 0))    
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))    
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
@@ -73,10 +74,10 @@ class collectrtldata(gr.top_block):
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))    
 
         self.start_time = time.time()
-
+#retrieves the vector length
     def get_veclength(self):
         return self.veclength
-
+#
     def set_veclength(self, veclength):
         self.veclength = veclength
         self.blocks_head_0.set_length(self.veclength*100*100)
@@ -134,7 +135,7 @@ class collectrtldata(gr.top_block):
            'times': self.chart_meta_trig_py_ff_0.get_l()
           }
         return d
-
+#assigning the meta data
     def meta_save(self):
         np.savez(self.metadata_file,
            date = str(datetime.date.today()),
@@ -155,7 +156,7 @@ def main(top_block_cls=collectrtldata, options=None):
     #reaches certain value. tb.wait(10) added at end to create intervals of time
     dt = 30 * 60  # Time between scans, in seconds
     total_time = 24 * 60 * 60  # Total time for observation, in seconds
-    i = 0
+    i = 0 #used as starting value
     f_i = 50 * 10**6  # Starting frequency, in Hz
     f_f = 150 * 10**6  # Ending frequency, in Hz
     df = 1 * 10**6  # tuning step size, in Hz
