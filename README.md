@@ -11,10 +11,10 @@ To get started, here is a list of materials you will need for software installat
 -Micro SD Card (32GB)
 - RTL-SDR
 - A computer monitor
--Ethernet cable (if not using WiFi option)
--Radio antenna
--Personal computer 
--Keyboard 
+- Ethernet cable (if not using WiFi option)
+- Radio antenna
+- Personal computer 
+- Keyboard 
 
 ---
 
