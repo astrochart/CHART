@@ -55,104 +55,68 @@ I also can't get the drop down menu to work-->
 
   <div>
     <ul class="sidenav" style="text-align:left;color:white;border-radius:5px;">
-  <li>  <a href="#intro">Introduction</a> </li><br></br>
-  <li>   <a href="#installsoft">Installing Software</a> </li><br></br>
-  <li> <a href="#flowchart">Creating Flowchart</a> </li><br></br>
-  <li>  <a href="#">How Much Data Should We Have?</a> </li><br></br>
-  <li>  <a href="#">Tutorial</a> </li><br></br>
-  <li>   <a href="#">Tutorial</a> </li><br></br>
+  <li>  <a href="#navinst">Navigation Instructions</a> </li><br></br>
+  <li>   <a href="#materials">Materials</a> </li><br></br>
+  <li> <a href="#intro">Introduction</a> </li><br></br>
+  <li>  <a href="#setup">Material Set Up</a> </li><br></br>
+  <li>  <a href="#download">Download Ubuntu MATE</a> </li><br></br>
+  <li>   <a href="#raspberry">Set Up Ubuntu MATE on Raspberry Pi</a> </li><br></br>
   <li> <a href="#">Tutorial</a> </li><br></br>
   <li>  <a href="#">Tutorial</a> </li><br></br>
   </ul>
   </div>
 
-<a id="software_intro">
+<a id="navinst">
   <div class="mainware">
-    <h2 id="intro"style="text-align:left;">Introduction</h2>
-    <p>The hardware section of this project is organized in a recommended order,
+    <h2 id="intro"style="text-align:left;">Navigation Instructions</h2>
+    <p>The software section of this project is organized in a recommended order,
       but can be easily navigated through with the use of the side navigation bar.
       For each lesson there are multiple resources for the user: there is a YouTube
       video presentation, as well as a downloadable pdf word file with included pictures
     of step-by-step directions. </p>
-    <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
   </div>
 
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 id="installsoft" style="text-align:left;">Installing Software</h2>
-  <p>Software will be needed for this project, and resultantly you will need at least 25GB of space available on your computer’s storage space. Other computer specifications that would be preferred are having at least 8GB of RAM, and a dual-core CPU with a base clock of about 2GHz. CPU’s can be very different even with similar specifications, so keep this in mind if you run into any softeware issues during this process. As a standard reference, any 4th generation or newer Intel Core i5 CPU should suffice. If you’re unsure of your computer’s specifications, there are tons of forums and articles you can find by using your best friend, Google.
-
-<hr class="thinline">
+  <h2 id="materials" style="text-align:left;">Materials</h2>
 To get started, here is a list of materials you will need for software instillation:</br>
-- Raspberry Pi 3B</br>
-- RTL-SDR</br>
-- Your computer</br>
+
+<br>-Raspberry Pi 3B</br>
+<br>-Micro SD Card (32GB)</br>
+<br>- RTL-SDR</br>
+<br>- A computer monitor</br>
+<br>-Ethernet cable (if not using WiFi option)</br>
+<br>-Radio antenna</br>
+<br>-Personal computer </br>
+<br>-Keyboard </br>
+
 
 <hr class="thinline">
-
-First you will want to download Ubuntu MATE. Here is a link to their website.
-https://ubuntu-mate.org/download/
-Click on "Raspberry Pi (Reccommended)
-Then click on the release that you would like; we chose 18.04.2 (Bionic) which is supported until April 2021.
-Save this somewhere that is easily accessible.
-
-Now that we have our OS system/interface, we can set up our GNU radio and start taking data.
+Before starting this tutorial, it’s highly recommended to go through the ‘Software Vocabulary’ section (link here) to get familiar with the concepts explained in the following tutorial.
 <hr class="thinline">
-## Setting up GNU Radio
-(If you would like to see screen shots of this process, visit our 'software' tab on the CHART website.)</br>
-1. Plug the Raspberry Pi into your monitor. Plug in the RTL-SDR device into the Raspberry Pi.
-To install gnuradio on Ubuntu, open up your terminal and type in the following command:
-   " sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython "
 
-2. Next, open up your newly installed gnuradio by typing in this command in the terminal:
-   " gnuradio-companion "
-
-3. After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together. I also modified my Variable box to a Value: 1M, but this is only a personal preference.
-
-4. Connect radio antenna source to the RTL-SDR input so that we can see real radio data in our program. Make sure to elongate the antennas fully so that you can receive a strong radio signal.
-
-5. Click the “Generate the flow graph” button, to transform our flow chart into python code. Next click the “Execute the flow graph button” to create a real time data plot of the incoming radio signals.
-
-6. A new window will pop up that displays incoming radio data. You can click on the tabs at the top of the screen to view the data in “Frequency”, “Waterfall”, “Time Domain”, or “Constellation” display.
-Congratulations, you have collected your first radio data set!
- </p>
-<br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
+<div class="mainware">
+  <h2 id="intro" style="text-align:left;">Introduction</h2>
+<p>Most of us familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension.</p>
 </div>
-
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 id="flowchart" style="text-align:left;">Creating Flowchart</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-<br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
+  <h2 id="setup" style="text-align:left;">Material Set Up</h2>
+insert text here
 </div>
-
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 style="text-align:left;">How Much Data Should We Have?</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
+  <h2 id="download" style="text-align:left;">Download Ubuntu MATE</h2>
+insert text here
 </div>
-
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 style="text-align:left;">Tutorial</h2>
-  <p>This is a template for another tutorial.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
-
-<hr class="boldline">
-
-<div class="mainware">
-  <h2 style="text-align:left;">Tutorial</h2>
-  <p>This is a template for another tutorial.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
+  <h2 id="raspberry" style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
+insert text here
 </div>
 <hr class="boldline">
 
