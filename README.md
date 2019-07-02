@@ -20,7 +20,7 @@ To get started, here is a list of materials you will need for software installat
 
 Before starting this tutorial, it’s highly recommended to go through the ‘Software Vocabulary’ section to get familiar with the concepts explained in the following tutorial. 
 
-Most of us familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension. 
+Most of us are familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension. 
 To get started, we need to make sure that all our wires are hooked up and ready to go.  
 Hook up your Raspberry Pi to your monitor.
 Plug in your ethernet cable (or wifi). 
@@ -46,7 +46,7 @@ I saved both of these downloads next to each other on my desktop for easy naviga
 After opening my Ubuntu file by double clicking, my file converted and saved on my desktop. 
 
 ---
-<h2>Formatting the micro SD card</h2>
+<h2>Formatting the Micro SD card</h2>
 For the micro SD card to be compatible with the  Raspberry Pi, it has to be formatted to FAT32.  
 For Mac: In order for your microSD card to be compatible with the Raspberry Pi it must be formatted to FAT32.
 Connect the microSD card to your mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return. 
@@ -58,14 +58,14 @@ If you don’t see the above notification, open Windows Explorer. Search for the
  
  ---
  
-<h2>Download and install Etcher </h2>
+<h2>Download and Install Etcher </h2>
 This allows us to write our file onto our micro SD card. You can download Etcher here https://www.balena.io/etcher/ .
 Once you open Etcher it will prompt you to select an image. Select Ubuntu MATE, and then click ‘Flash’. This process might take up to 20 mins. 
 If you would like to do this step through command line in your terminal, you can visit step 7 in the linked tutorial at the beginning of this tutorial. 
  
  ---
  
-<h2>Set up Ubuntu MATE on Raspberry Pi</h2>
+<h2>Set Up Ubuntu MATE on Raspberry Pi</h2>
 After the writing process is done, safely eject your micro SD card and place it into your Raspberry Pi. 
 
 Where to place SD card in Raspberry Pi
