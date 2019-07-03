@@ -267,3 +267,6 @@ hr.thinline {
   margin-right: auto;
   width: 50%;
 }
+.boldfont{
+  font-weight:bold;
+}

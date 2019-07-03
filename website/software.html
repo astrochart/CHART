@@ -55,109 +55,103 @@ I also can't get the drop down menu to work-->
 
   <div>
     <ul class="sidenav" style="text-align:left;color:white;border-radius:5px;">
-  <li>  <a href="#intro">Introduction</a> </li><br></br>
-  <li>   <a href="#installsoft">Installing Software</a> </li><br></br>
-  <li> <a href="#flowchart">Creating Flowchart</a> </li><br></br>
-  <li>  <a href="#">How Much Data Should We Have?</a> </li><br></br>
-  <li>  <a href="#">Tutorial</a> </li><br></br>
-  <li>   <a href="#">Tutorial</a> </li><br></br>
+  <li>  <a href="#navinst">Navigation Instructions</a> </li><br></br>
+  <li>   <a href="#materials">Materials</a> </li><br></br>
+  <li> <a href="#intro">Introduction</a> </li><br></br>
+  <li>  <a href="#setup">Material Set Up</a> </li><br></br>
+  <li>  <a href="#download">Download Ubuntu MATE</a> </li><br></br>
+  <li>   <a href="#raspberry">Set Up Ubuntu MATE on Raspberry Pi</a> </li><br></br>
   <li> <a href="#">Tutorial</a> </li><br></br>
   <li>  <a href="#">Tutorial</a> </li><br></br>
   </ul>
   </div>
 
-<a id="software_intro">
   <div class="mainware">
-    <h2 id="intro"style="text-align:left;">Introduction</h2>
-    <p>The hardware section of this project is organized in a recommended order,
+    <h2 id="navinst" style="text-align:left;">Navigation Instructions</h2>
+    <p>The software section of this project is organized in a recommended order,
       but can be easily navigated through with the use of the side navigation bar.
       For each lesson there are multiple resources for the user: there is a YouTube
       video presentation, as well as a downloadable pdf word file with included pictures
     of step-by-step directions. </p>
-    <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
   </div>
 
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 id="installsoft" style="text-align:left;">Installing Software</h2>
-  <p>Software will be needed for this project, and resultantly you will need at least 25GB of space available on your computer’s storage space. Other computer specifications that would be preferred are having at least 8GB of RAM, and a dual-core CPU with a base clock of about 2GHz. CPU’s can be very different even with similar specifications, so keep this in mind if you run into any softeware issues during this process. As a standard reference, any 4th generation or newer Intel Core i5 CPU should suffice. If you’re unsure of your computer’s specifications, there are tons of forums and articles you can find by using your best friend, Google.
+
+  <h2 id="materials" style="text-align:left;">Materials</h2>
+To get started, here is a list of materials you will need for software instillation:
+
+<br>-Raspberry Pi 3B
+<br>-Micro SD Card (32GB)
+<br>- RTL-SDR
+<br>- A computer monitor
+<br>-Ethernet cable (if not using WiFi option)
+<br>-Radio antenna
+<br>-Personal computer
+<br>-Keyboard
+
 
 <hr class="thinline">
-To get started, here is a list of materials you will need for software instillation:</br>
-- Raspberry Pi 3B</br>
-- RTL-SDR</br>
-- Your computer</br>
-
+Before starting this tutorial, it’s highly recommended to go through the ‘Software Vocabulary’ section (link here) to get familiar with the concepts explained in the following tutorial.
 <hr class="thinline">
 
-First you will want to download Ubuntu MATE. Here is a link to their website.
-https://ubuntu-mate.org/download/
-Click on "Raspberry Pi (Reccommended)
-Then click on the release that you would like; we chose 18.04.2 (Bionic) which is supported until April 2021.
-Save this somewhere that is easily accessible.
+<div>
+  <h2 id="intro" style="text-align:left;">Introduction</h2>
+Most of us familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension.
+</div>
+<hr class="boldline">
 
-Now that we have our OS system/interface, we can set up our GNU radio and start taking data.
+  <h2 id="setup" style="text-align:left;">Material Set Up</h2>
+  To get started, we need to make sure that all our wires are hooked up and ready to go.
+  <br>-Hook up your Raspberry Pi to your monitor.
+<br>-Plug in your ethernet cable (or wifi).
+  <br>-Plug in your Raspberry Pi into a power source.
+  <br>-Hook up to your keyboard (we used a wireless hook up for ours).</br>
+  <img src="rasp_set_up.jpeg" class="left" alt="raspberry pi set up" style="width:400px; height:300px;border-radius:5px;">
+<br><span class="boldfont"> Raspberry Pi Hooked Up</span></br>
+<hr class="boldline">
+
+  <h2 id="download" style="text-align:left;">Download Ubuntu MATE</h2>
+  For the following steps of installing Ubuntu MATE I followed the tutorial below presented by Tech Radar.
+<br><a href="https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi">Install Ubuntu MATE on Raspberry Pi</a></br>
+First, we will need to install Ubuntu Mate as our operating system and GUI. We will need our personal computer in order to do the first step in this process.
+To download Ubuntu MATE we will use our personal computer and visit<a href="https://ubuntu-mate.org/download/"> Ubuntu MATE Download</a> and click on “Raspberry Pi (Recommended)”. At the time of writing this, I chose “10.04.2 Bionic” as the release version that I am running.
 <hr class="thinline">
-## Setting up GNU Radio
-(If you would like to see screen shots of this process, visit our 'software' tab on the CHART website.)</br>
-1. Plug the Raspberry Pi into your monitor. Plug in the RTL-SDR device into the Raspberry Pi.
-To install gnuradio on Ubuntu, open up your terminal and type in the following command:
-   " sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython "
+<h2 style="text-align:left;"> Descompressing the File</h2>
+After downloading Ubuntu MATE, we will need to install a decompression utility in order to read the Ubuntu file.</br>
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> The Unarchiver is available free from the App Store to extract the .xz file. Once the utility is installed, double-click the file in your downloads to extract the image (.img) file.</br>
+<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Go to the 7-Zip website to install the application. Click on ‘Download’, choose ‘Save’. Go to ‘Downloads’ in File Explorer. Double click on the ‘7-Zip’ file. Choose ‘Install’.
+I’m using a Mac, and my steps/downloads looked like this:
+  <img src="unarchiver.png" class="left" alt="Download Unarchiver Image" style="width:500px; height:250px;border-radius:5px;">
+  <br><span class="boldfont">Here I have ‘The Unarchiver’ decompression utility downloading that I downloaded from the app store.</span></br>
+<img src="desktop.png" class="left" alt="Organizing files" style="width:250px; height:200px;border-radius:5px;">
+<br><span class="boldfont">I saved both of these downloads next to each other on my desktop for easy navigation.</span></br>
+<img src="ubuntu_file.png" class="left" alt="Redownloaded Ubuntu" style="width:250px; height:200px;border-radius:5px;">
+<br><span class="boldfont">After opening my Ubuntu file by double clicking, my file converted and saved on my desktop like this.</span></br>
 
-2. Next, open up your newly installed gnuradio by typing in this command in the terminal:
-   " gnuradio-companion "
+<hr class"thinline">
+<h2 style="text-align:left;">Formatting the Micro SD card</h2>
+For the micro SD card to be compatible with the  Raspberry Pi, it has to be formatted to FAT32.
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> In order for your microSD card to be compatible with the Raspberry Pi it must be formatted to FAT32.
+Connect the microSD card to your mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return.
+Once Disk Utility launches, select the microSD card from the list of available disks in the pane on the left. Click the ‘Erase’ tab, then select ‘MS-DOS (FAT)’ from the ‘Format’ drop down menu.
+You can also set a name for the microSD card here e.g. MY SD 1. Click the ‘Erase’ button when you’re ready.
+<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Insert your SD card into the slot on your computer or a USB adapter.
+Windows will now inform you that you need to format the disk in order to continue. Click ‘Format Disk’. Next, you can choose the format, file system, allocation unit size and volume label. Windows will warn you that formatting will erase all previous data on the SD card. Choose ‘Ok’ to continue. The device will then be formatted.
+If you don’t see the above notification, open Windows Explorer. Search for the SD drive. Right-click on this and from the drop-down menu, select format. Windows will automatically default to FAT32.
+<hr class="thinline">
 
-3. After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together. I also modified my Variable box to a Value: 1M, but this is only a personal preference.
 
-4. Connect radio antenna source to the RTL-SDR input so that we can see real radio data in our program. Make sure to elongate the antennas fully so that you can receive a strong radio signal.
-
-5. Click the “Generate the flow graph” button, to transform our flow chart into python code. Next click the “Execute the flow graph button” to create a real time data plot of the incoming radio signals.
-
-6. A new window will pop up that displays incoming radio data. You can click on the tabs at the top of the screen to view the data in “Frequency”, “Waterfall”, “Time Domain”, or “Constellation” display.
-Congratulations, you have collected your first radio data set!
- </p>
-<br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
 
 <hr class="boldline">
 
-<div class="mainware">
-  <h2 id="flowchart" style="text-align:left;">Creating Flowchart</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-<br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
-
-<hr class="boldline">
-
-<div class="mainware">
-  <h2 style="text-align:left;">How Much Data Should We Have?</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
-
-<hr class="boldline">
-
-<div class="mainware">
-  <h2 style="text-align:left;">Tutorial</h2>
-  <p>This is a template for another tutorial.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
-
-<hr class="boldline">
-
-<div class="mainware">
-  <h2 style="text-align:left;">Tutorial</h2>
-  <p>This is a template for another tutorial.
-  </p>
-  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
-</div>
+  <h2 id="raspberry" style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
+insert text here
 <hr class="boldline">
 
 
-
+</div>
 <div class="footer">
     This project is supported by a <a href="https://nsf.gov" target="_blank">National Science Foundation</a> Astronomy and Astrophysics Postdoctoral Fellowship under award <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1701440" target="_blank">AST-1701440</a>.
 </div>
