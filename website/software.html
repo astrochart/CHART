@@ -61,8 +61,14 @@ I also can't get the drop down menu to work-->
   <li>  <a href="#setup">Material Set Up</a> </li><br></br>
   <li>  <a href="#download">Download Ubuntu MATE</a> </li><br></br>
   <li>   <a href="#raspberry">Set Up Ubuntu MATE on Raspberry Pi</a> </li><br></br>
-  <li> <a href="#">Tutorial</a> </li><br></br>
-  <li>  <a href="#">Tutorial</a> </li><br></br>
+  <li> <a href="#command">Intro to Command Line</a> </li><br></br>
+  <li>  <a href="#gnu">Install GNU Radio</a> </li><br></br>
+  <li> <a href="#">tutorial</a> </li><br></br>
+  <li>  <a href="#">tutorial</a> </li><br></br>
+  <li> <a href="#">tutorial</a> </li><br></br>
+  <li>  <a href="#">tutorial</a> </li><br></br>
+  <li> <a href="#">tutorial</a> </li><br></br>
+  <li>  <a href="#">tutorial</a> </li><br></br>
   </ul>
   </div>
 
@@ -141,14 +147,66 @@ You can also set a name for the microSD card here e.g. MY SD 1. Click the ‘Era
 Windows will now inform you that you need to format the disk in order to continue. Click ‘Format Disk’. Next, you can choose the format, file system, allocation unit size and volume label. Windows will warn you that formatting will erase all previous data on the SD card. Choose ‘Ok’ to continue. The device will then be formatted.
 If you don’t see the above notification, open Windows Explorer. Search for the SD drive. Right-click on this and from the drop-down menu, select format. Windows will automatically default to FAT32.
 <hr class="thinline">
-
-
+<h2 style="text-align:left;">Download and install etcher</h2>
+This allows us to write our file onto our micro SD card. You can download Etcher here <a href="https://www.balena.io/etcher/">Download Etcher</a>.
+Once you open Etcher it will prompt you to select an image. Select Ubuntu MATE, and then click ‘Flash’. This process might take up to 20 mins.
+<img src="etcher.png" class="left" alt="Download Etcher" style="width:400px; height:200px;border-radius:5px;">
+<br><span class="boldfont">Etcher Download Screen</span></br>
+If you would like to do this step through command line in your terminal, you can visit step 7 in the linked tutorial at the beginning of this tutorial.
 
 <hr class="boldline">
 
   <h2 id="raspberry" style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
-insert text here
+  After the writing process is done, safely eject your micro SD card and place it into your Raspberry Pi.
+  <img src="sdcard.jpeg" class="left" alt="SD Card Placement" style="width:300px; height:350px;border-radius:5px;">
+<br><span class="boldfont">Where to place the SD card in Raspberry Pi.</span></br>
+Make sure all connections we set up in the beginning of the tutorial are still in place so that our system will start up on the monitor screen.
+The system will now prompt you to choose your location settings, and to set up your computer system names. Once this set up process is complete, the Ubuntu MATE desktop will open.
+The OS will display a welcome message and offer you a tour of Ubuntu’s features. Make sure to go through this if you haven’t used the MATE desktop environment before.
+<hr class="thinline">
+<h2 style="text-align:left;">Updates</h2>
+The version of Ubuntu MATE you have now installed may not be fully up-to-date.
+To check if this is the case, go to System > Software Updater.
+The system will now scan for updates. A box will appear stating ‘Updated software has been issued since Ubuntu x.04 was released. Do you wish to update?’. Click ‘Install Now’ to update your system.
+<hr class="thinline">
+<h2 style="text-align:left;">Troubleshooting</h2>
+Some Ubuntu MATE users have reported issues with connecting to Wi-Fi after install, the network manager says the ‘device not ready’. This issue is specific to the Raspberry Pi 3. fortunately restarting the Raspberry Pi almost always fixes this problem.
+Other users have reported issues installing and upgrading software using the built-in software updater. If this happens, open the MATE Terminal. Next, run the command:
+sudo apt-get update
+then:
+sudo apt-get upgrade
+That should fix the issue and you'll now have Ubuntu MATE running on your Raspberry Pi!
+You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
+
 <hr class="boldline">
+
+  <h2 id="command" style="text-align:left;">Introduction to Command Line</h2>
+
+  <hr class="boldline">
+
+    <h2 id="gnu" style="text-align:left;">Download GNU Radio</h2>
+    GNU Radio is the free open source software that we will be using to help us process our data.</br> To learn more about GNU Radio visit this site <a href="https://www.gnuradio.org/about/">About GNU Radio</a>.</br>
+    Make sure that you have an internet connection for these next steps. We used an ethernet hook up to ensure that we had an internet connection, but you can also hook up to wifi if available.
+    Plug in the RTL-SDR device into the Raspberry Pi.
+    To install gnuradio on Ubuntu, open up your terminal (found under the menu tab on the top left -> system tools -> MATE Terminal)  and type in the following command:
+  <br><span class="boldfont">sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython</span></br>
+    <span class="boldfont">Press enter.</span></br>
+  You will be prompted for your password, provide password and press enter.
+    It will ask you to continue after using a certain amount of disk space.
+  <br><span class="boldfont">type Y and press enter.</span></br>
+    This download might take up to 20 mins.
+     Next, open up your newly installed gnuradio by typing in this command in the terminal:
+        <br><span class="boldfont">Gnuradio-companion</span></br>
+
+
+
+
+    <hr class="boldline">
+
+      <h2 id="#" style="text-align:left;">Tutorial</h2>
+
+
+
 
 
 </div>
