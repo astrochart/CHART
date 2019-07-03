@@ -270,3 +270,7 @@ hr.thinline {
 .boldfont{
   font-weight:bold;
 }
+.commandline{
+  font-style:italic;
+  font-weight:bold;
+}
