@@ -108,12 +108,42 @@ Most of us familiar with using a Mac or PC computer and are comfortable with thi
 <br>-Plug in your ethernet cable (or wifi).
   <br>-Plug in your Raspberry Pi into a power source.
   <br>-Hook up to your keyboard (we used a wireless hook up for ours).</br>
-  <img src="rasp_set_up.jpeg" class="left" alt="raspberry pi set up" style="width:300px; height:300px;">
-
+  <img src="rasp_set_up.jpeg" class="left" alt="raspberry pi set up" style="width:400px; height:300px;border-radius:5px;">
+<br><span class="boldfont"> Raspberry Pi Hooked Up</span></br>
 <hr class="boldline">
 
   <h2 id="download" style="text-align:left;">Download Ubuntu MATE</h2>
-insert text here
+  For the following steps of installing Ubuntu MATE I followed the tutorial below presented by Tech Radar.
+<br><a href="https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi">Install Ubuntu MATE on Raspberry Pi</a></br>
+First, we will need to install Ubuntu Mate as our operating system and GUI. We will need our personal computer in order to do the first step in this process.
+To download Ubuntu MATE we will use our personal computer and visit<a href="https://ubuntu-mate.org/download/"> Ubuntu MATE Download</a> and click on “Raspberry Pi (Recommended)”. At the time of writing this, I chose “10.04.2 Bionic” as the release version that I am running.
+<hr class="thinline">
+<h2 style="text-align:left;"> Descompressing the File</h2>
+After downloading Ubuntu MATE, we will need to install a decompression utility in order to read the Ubuntu file.</br>
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> The Unarchiver is available free from the App Store to extract the .xz file. Once the utility is installed, double-click the file in your downloads to extract the image (.img) file.</br>
+<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Go to the 7-Zip website to install the application. Click on ‘Download’, choose ‘Save’. Go to ‘Downloads’ in File Explorer. Double click on the ‘7-Zip’ file. Choose ‘Install’.
+I’m using a Mac, and my steps/downloads looked like this:
+  <img src="unarchiver.png" class="left" alt="Download Unarchiver Image" style="width:500px; height:250px;border-radius:5px;">
+  <br><span class="boldfont">Here I have ‘The Unarchiver’ decompression utility downloading that I downloaded from the app store.</span></br>
+<img src="desktop.png" class="left" alt="Organizing files" style="width:250px; height:200px;border-radius:5px;">
+<br><span class="boldfont">I saved both of these downloads next to each other on my desktop for easy navigation.</span></br>
+<img src="ubuntu_file.png" class="left" alt="Redownloaded Ubuntu" style="width:250px; height:200px;border-radius:5px;">
+<br><span class="boldfont">After opening my Ubuntu file by double clicking, my file converted and saved on my desktop like this.</span></br>
+
+<hr class"thinline">
+<h2 style="text-align:left;">Formatting the Micro SD card</h2>
+For the micro SD card to be compatible with the  Raspberry Pi, it has to be formatted to FAT32.
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> In order for your microSD card to be compatible with the Raspberry Pi it must be formatted to FAT32.
+Connect the microSD card to your mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return.
+Once Disk Utility launches, select the microSD card from the list of available disks in the pane on the left. Click the ‘Erase’ tab, then select ‘MS-DOS (FAT)’ from the ‘Format’ drop down menu.
+You can also set a name for the microSD card here e.g. MY SD 1. Click the ‘Erase’ button when you’re ready.
+<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Insert your SD card into the slot on your computer or a USB adapter.
+Windows will now inform you that you need to format the disk in order to continue. Click ‘Format Disk’. Next, you can choose the format, file system, allocation unit size and volume label. Windows will warn you that formatting will erase all previous data on the SD card. Choose ‘Ok’ to continue. The device will then be formatted.
+If you don’t see the above notification, open Windows Explorer. Search for the SD drive. Right-click on this and from the drop-down menu, select format. Windows will automatically default to FAT32.
+<hr class="thinline">
+
+
+
 <hr class="boldline">
 
   <h2 id="raspberry" style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
