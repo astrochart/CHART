@@ -63,7 +63,7 @@ I also can't get the drop down menu to work-->
   <li>   <a href="#raspberry">Set Up Ubuntu MATE on Raspberry Pi</a> </li><br></br>
   <li> <a href="#command">Intro to Command Line</a> </li><br></br>
   <li>  <a href="#gnu">Install GNU Radio</a> </li><br></br>
-  <li> <a href="#">tutorial</a> </li><br></br>
+  <li> <a href="#firstdata">Take Your First Radio Data</a> </li><br></br>
   <li>  <a href="#">tutorial</a> </li><br></br>
   <li> <a href="#">tutorial</a> </li><br></br>
   <li>  <a href="#">tutorial</a> </li><br></br>
@@ -167,14 +167,14 @@ The OS will display a welcome message and offer you a tour of Ubuntu’s feature
 <h2 style="text-align:left;">Updates</h2>
 The version of Ubuntu MATE you have now installed may not be fully up-to-date.
 To check if this is the case, go to System > Software Updater.
-The system will now scan for updates. A box will appear stating ‘Updated software has been issued since Ubuntu x.04 was released. Do you wish to update?’. Click ‘Install Now’ to update your system.
+The system will now scan for updates. <br>A box will appear stating‘Updated software has been issued since Ubuntu x.04 was released. Do you wish to update?’. <span class="commandline">Click ‘Install Now’ </span>to update your system.
 <hr class="thinline">
 <h2 style="text-align:left;">Troubleshooting</h2>
 Some Ubuntu MATE users have reported issues with connecting to Wi-Fi after install, the network manager says the ‘device not ready’. This issue is specific to the Raspberry Pi 3. fortunately restarting the Raspberry Pi almost always fixes this problem.
 Other users have reported issues installing and upgrading software using the built-in software updater. If this happens, open the MATE Terminal. Next, run the command:
-sudo apt-get update
+<span class="commandline">sudo apt-get update</span>
 then:
-sudo apt-get upgrade
+<span class="commandline">sudo apt-get upgrade</span>
 That should fix the issue and you'll now have Ubuntu MATE running on your Raspberry Pi!
 You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
 
@@ -189,22 +189,52 @@ You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
     Make sure that you have an internet connection for these next steps. We used an ethernet hook up to ensure that we had an internet connection, but you can also hook up to wifi if available.
     Plug in the RTL-SDR device into the Raspberry Pi.
     To install gnuradio on Ubuntu, open up your terminal (found under the menu tab on the top left -> system tools -> MATE Terminal)  and type in the following command:
-  <br><span class="boldfont">sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython</span></br>
-    <span class="boldfont">Press enter.</span></br>
+  <br><span class="commandline">sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython</span></br>
+    <span class="commandline">Press enter.</span></br>
   You will be prompted for your password, provide password and press enter.
     It will ask you to continue after using a certain amount of disk space.
-  <br><span class="boldfont">type Y and press enter.</span></br>
+  <br><span class="commandline">type Y and press enter.</span></br>
     This download might take up to 20 mins.
-     Next, open up your newly installed gnuradio by typing in this command in the terminal:
-        <br><span class="boldfont">Gnuradio-companion</span></br>
-
-
-
 
     <hr class="boldline">
 
-      <h2 id="#" style="text-align:left;">Tutorial</h2>
+      <h2 id="firstdata" style="text-align:left;">Take your first radio data</h2>
 
+    Open up your newly installed GNU Radio by typing in this command in the terminal:
+         <br><span class="commandline">Gnuradio-companion</span></br>
+      Please visit this link to learn some background info on the blocks we are going to use in GNU Radio:
+      [link]
+      1.  After gnuradio opens, make a simple flow chart by locating the RTL-SDR Source block and QT GUI Sink block and connecting them together. You can connect them by clicking on one black and then clicking on the other block right after.
+      <br><span class="boldfont">Finding RTL-SDR Block</span></br>
+<img src="firstdata1.png" class="left" alt="RTL_SDR Block" style="width:300px; height:200px;border-radius:5px;"></br>
+<br><span class="boldfont">Finding Sink Block</span></br>
+ <img src="firstdata2.png" class="left" alt="GUI Sink Block" style="width:300px; height:200px;border-radius:5px;">
+ <br><span class="boldfont">Connecting the blocks to eachother so that they can interact with eachother.</span></br>
+  <img src="firstdata3.png" class="left" alt="Connecting the Blocks" style="width:600px; height:400px;border-radius:5px;">
+
+    <br>  I also modified my default Variable box to a Value: 1M, but this is only a personal preference. </br>
+<br>2.Connect radio antenna source to the RTL-SDR input so that we can see real radio data in our program. Make sure to elongate the antennas fully so that you can receive a strong radio signal. </br>
+<br><span class="boldfont">How the Hardware Setup Should Look. </span></br>
+<img src="firstdata4.JPG" class="left" alt="Antenna set Up" style="width:450px; height:350px;border-radius:5px;"></br>
+<br>3. Click the “Generate the flow graph” button, to transform our flow chart into python code. Next click the “Execute the flow graph button” to create a real time data plot of the incoming radio signals.</br>
+<br><span class="boldfont">Where to Find the "Execute" "Generate" Flow Graph Buttons.</span></br>
+  <img src="firstdata5.png" class="left" alt="Genterate the Flow Graph" style="width:600px; height:350px;border-radius:5px;"></br>
+  <br>4. A new window will pop up that displays incoming radio data. You can click on the tabs at the top of the screen to view the data in “Frequency”, “Waterfall”, “Time Domain”, or “Constellation” display.</br>
+  <br><span class="boldfont">This is the data that we collected.</span></br>
+<img src="firstdata6.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+Congratulations, you have collected your first radio data set!
+
+      <hr class="boldline">
+
+        <h2 id="#" style="text-align:left;">Tutorial</h2>
+
+        <hr class="boldline">
+
+          <h2 id="#" style="text-align:left;">Tutorial</h2>
+
+          <hr class="boldline">
+
+            <h2 id="#" style="text-align:left;">Tutorial</h2>
 
 
 
