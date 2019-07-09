@@ -15,6 +15,7 @@ To get started, here is a list of materials you will need for software installat
 - Radio antenna
 - Personal computer 
 - Keyboard 
+-Horn/Antenna
 
 ---
 
