@@ -72,9 +72,10 @@ html{
   border-style: solid;
   border-color: black;
 
+
 }
 
-/*applies to floating titles above parallax*/
+/*applies to floating titles above parallax image*/
 .ptext{
   position:absolute;
   top:50%;
@@ -84,6 +85,8 @@ html{
   font-size:27px;
   letter-spacing:8px;
   text-transform:uppercase;
+
+
 }
 
 /*border of the title in the parallax*/
@@ -91,6 +94,12 @@ html{
   background-color:black;
   color:white;
   padding:20px;
+
+}
+@media screen and (max-width: 600px) {
+  .ptext {
+    display:none;
+  }
 }
 
 /*Makes the paralax background sto parallaxing when in mobile mode*/
@@ -273,4 +282,10 @@ hr.thinline {
 .commandline{
   font-style:italic;
   font-weight:bold;
+}
+
+@media screen and (max-width: 600px) {
+  .stack {
+    width: 100%;
+  }
 }
