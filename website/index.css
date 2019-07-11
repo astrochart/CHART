@@ -293,3 +293,6 @@ hr.thinline {
 .boldtext{
   font-weight: bold;
 }
+.underline{
+  text-decoration: underline;
+}
