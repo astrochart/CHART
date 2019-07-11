@@ -289,3 +289,10 @@ hr.thinline {
     width: 100%;
   }
 }
+
+.boldtext{
+  font-weight: bold;
+}
+.underline{
+  text-decoration: underline;
+}
