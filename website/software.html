@@ -183,8 +183,111 @@ You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
 <hr class="boldline">
 
   <h2 id="command" style="text-align:left;">Introduction to Command Line</h2>
-Command line or “Command Line User Interface” is a way of communicating with your
-computer through typed commands; this is usually done through the computer’s terminal.
+  What is command line?
+
+  Command line or “Command Line User Interface” is a way of communicating with your computer through typed commands; this is usually done through the computer’s terminal.
+
+
+
+  This is what my computer terminal looks like when I open it.
+
+  Our computers are usually run through a GUI (graphical user interface), and so we are used to a different way of navigating through our systems.
+
+  For example: If you are on your desktop and want to go into your documents folder (which is on your desktop), you will double click on that folder and it will open up to display the contents in your documents folder.
+
+  In command line, we don’t have a GUI that makes it so that we can double click into a location, instead we will need to type in our commands into our terminal.
+
+  Exercise:
+  For this exercise we are going to be using our Raspberry Pi as our computing device, not our personal computer. This example is specific to the Linux operating system.
+
+  How to access the terminal through our new desktop
+
+  You can also access your terminal through the command Ctrl + Alt + T
+
+  *you can create new documents/folders by right clicking
+
+  Create a folder on your desktop that is called “Example”
+
+  Inside of the “Example” folder, create another folder called “example_2”
+
+  Inside of the “example_2” folder create an empty file document called “Example_3”
+
+  Now that we have our set up ready, lets navigate using our terminal.
+
+  Type ls and press enter.
+
+  “ls” stands for ‘list directory’ This will show you what contents are in the location you are currently in on your computer.
+
+
+
+  I typed ls and my terminal replied by listing all the contents in my current location on my computer
+
+  I know that I saved the files I want to locate in my desktop, so I will navigate there.
+
+  I can navigate to a  different location on my computer by typing cd [desired location]
+
+  “cd” stands for ‘change directory’ and it allows the user to navigate to a different location on the computer.
+
+  I changed my directory by typing cd desktop, then I typed ls to make sure I was in the right location.
+
+  Here are all of the folders/ files that are listed on my desktop.
+
+
+  I can see the ‘Example’ folder on my desktop so let’s change our directory again into this folder.
+  I typed in cd Example
+  Then ls
+
+  We can see that our other folder “example_2” is inside of this folder just like we placed it before.
+
+  Let’s go inside of this folder
+  Type cd Example_2
+
+
+  The terminal replied saying that it can’t find the file that we are asking for. Why did this happen?
+  Linux used case sensitive code so that means that we need to be very careful about lower-case and upper-case letter. From now on, it’s a good rule of thumb to use all lower case letters so we don’t run into mistakes like this.
+
+  Another note about Linux is that putting spaces when naming a file/document can cause you trouble later on. Instead of using a space, use “_” an underscore like I did in these files.
+
+  Let’s try this again
+  Type cd example_2
+  Type ls
+
+  <p>We can see our blank document “example_3”</p>
+  <span class="commandline"><p>Type cd example_3 </p></span>
+
+
+  <p>It will not let us open this document, because it isn’t a directory.</p>
+
+<p>So this was a lot of steps to take to get into the folder that we wanted to be in. Usually, we will use a simplier method to navigate through our system.</p>
+
+<span class="commandline"><p> Type: cd ~ </p></span>
+<p>This command takes us back to our home navigation screen.</p>
+
+  <p>Now that we are more familiar with the path that we will be taking, let’s get there with one line of code.</p>
+  <span class="commandline"><p>Type: cd Desktop/Example/example_2 *enter*</p>
+  <p>Type: ls *enter*</p></span>
+
+<p>  We are in the same location we were before.</p>
+
+<p>  We will continue to use a command line interface throughout various parts of this project.</p>
+
+    <h4 style="text-align:left;">Popular Linux Commands</h4>
+  cd change directory
+  ls list current (working directory) contents
+  mkdir [name] make directory “name”
+  pwd show current directory
+  cd ~ move to home directory
+
+  <h4 style="text-align:left;">More References</h4>
+<p><a href="https://www.youtube.com/watch?v=IVquJh3DXUA">  Introduction to Linux and Command Line </a></p>
+<p>  <a href="https://en.wikipedia.org/wiki/Command-line_interface">Wiki Page</a></p>
+<p>  <a href="https://gooribi.com/home/basic-linux-commands/">Popular Linux Commands</a></p>
+
+
+
+
+
+
 
   <hr class="boldline">
 
