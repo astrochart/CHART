@@ -51,7 +51,7 @@ html{
 
 /*the actual images*/
 .pimg1 {
-  background-image: url("nightsky.jpeg");
+  background-image: url("https://adampbeardsley.github.io/CHART/website/images_for_website/nightsky.jpeg");
   min-height:100%
 }
 .pimg2 {
