@@ -99,7 +99,7 @@ To get started, here is a list of materials you will need for software instillat
 
 
 <hr class="thinline">
-Before starting this tutorial, it’s highly recommended to go through the ‘Software Vocabulary’ section (link here) to get familiar with the concepts explained in the following tutorial.
+Before starting this tutorial, it’s highly recommended to go through the <a href="#Vocabulary">Software Vocabulary</a> section to get familiar with the concepts explained in the following tutorial.
 <hr class="thinline">
 
 <div>
@@ -126,7 +126,7 @@ To download Ubuntu MATE we will use our personal computer and visit<a href="http
 
 <hr class="thinline">
 
-<h2 style="text-align:left;"> Decompressing the File</h2>
+<h4 style="text-align:left;"> Decompressing the File</h4>
 After downloading Ubuntu MATE, we will need to install a decompression utility in order to read the Ubuntu file.</br>
 <br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> The Unarchiver is available free from the App Store to extract the .xz file. Once the utility is installed, double-click the file in your downloads to extract the image (.img) file.</br>
 <br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Go to the 7-Zip website to install the application. Click on ‘Download’, choose ‘Save’. Go to ‘Downloads’ in File Explorer. Double click on the ‘7-Zip’ file. Choose ‘Install’.
@@ -139,7 +139,7 @@ I’m using a Mac, and my steps/downloads looked like this:
 <br><span class="boldfont">After opening my Ubuntu file by double clicking, my file converted and saved on my desktop like this.</span></br>
 
 <hr class"thinline">
-<h2 style="text-align:left;">Formatting the Micro SD card</h2>
+<h4 style="text-align:left;">Formatting the Micro SD card</h4>
 For the micro SD card to be compatible with the  Raspberry Pi, it has to be formatted to FAT32.
 <br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> In order for your microSD card to be compatible with the Raspberry Pi it must be formatted to FAT32.
 Connect the microSD card to your mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return.
@@ -149,7 +149,7 @@ You can also set a name for the microSD card here e.g. MY SD 1. Click the ‘Era
 Windows will now inform you that you need to format the disk in order to continue. Click ‘Format Disk’. Next, you can choose the format, file system, allocation unit size and volume label. Windows will warn you that formatting will erase all previous data on the SD card. Choose ‘Ok’ to continue. The device will then be formatted.
 If you don’t see the above notification, open Windows Explorer. Search for the SD drive. Right-click on this and from the drop-down menu, select format. Windows will automatically default to FAT32.
 <hr class="thinline">
-<h2 style="text-align:left;">Download and install etcher</h2>
+<h4 style="text-align:left;">Download and install etcher</h4>
 This allows us to write our file onto our micro SD card. You can download Etcher here <a href="https://www.balena.io/etcher/">Download Etcher</a>.
 Once you open Etcher it will prompt you to select an image. Select Ubuntu MATE, and then click ‘Flash’. This process might take up to 20 mins.
 <img src="https://adampbeardsley.github.io/CHART/website/tutorials/etcher.png" class="left" alt="Download Etcher" style="width:400px; height:200px;border-radius:5px;">
@@ -166,12 +166,12 @@ Make sure all connections we set up in the beginning of the tutorial are still i
 The system will now prompt you to choose your location settings, and to set up your computer system names. Once this set up process is complete, the Ubuntu MATE desktop will open.
 The OS will display a welcome message and offer you a tour of Ubuntu’s features. Make sure to go through this if you haven’t used the MATE desktop environment before.
 <hr class="thinline">
-<h2 style="text-align:left;">Updates</h2>
+<h4 style="text-align:left;">Updates</h4>
 The version of Ubuntu MATE you have now installed may not be fully up-to-date.
 To check if this is the case, go to System > Software Updater.
 The system will now scan for updates. <br>A box will appear stating‘Updated software has been issued since Ubuntu x.04 was released. Do you wish to update?’. <span class="commandline">Click ‘Install Now’ </span>to update your system.
 <hr class="thinline">
-<h2 style="text-align:left;">Troubleshooting</h2>
+<h4 style="text-align:left;">Troubleshooting</h4>
 Some Ubuntu MATE users have reported issues with connecting to Wi-Fi after install, the network manager says the ‘device not ready’. This issue is specific to the Raspberry Pi 3. fortunately restarting the Raspberry Pi almost always fixes this problem.
 Other users have reported issues installing and upgrading software using the built-in software updater. If this happens, open the MATE Terminal. Next, run the command:
 <span class="commandline">sudo apt-get update</span>
