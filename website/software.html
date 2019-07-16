@@ -414,7 +414,7 @@ cd *space* [insert location]: change directory to [your desired location]; this 
 For example: I started by typing ls into my terminal and pressed enter. This will show me the contents of the place I’m located on my computer. If I don’t remember exactly where I put the saved data, but I know the way to find it, I then find a file that would help me navigate closer to my desired data using cd [the place I want to go]. For example here is the code I used to find my “Waterfall Tutorial” file that I used to download my data to:
 
 
-*At the bottom you will see that once I located my file, I typed ls -lh to see how big my file was. The fact that it is 400k (400 kilobytes) tells me that I have located my file *see the “Analyzing How Much Data Was Collected ” tutorial to see why this is.
+*At the bottom you will see that once I located my file, I typed <span class="commandline">ls -lh</span> to see how big my file was. The fact that it is 400k (400 kilobytes) tells me that I have located my file. To see why this is, proceed to the necxt tutorial "Is Our Data Size Correct?"
 
 
 <img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow14.png" class="left" alt="First Data Set" style="width:600px; height:500px;border-radius:5px;"></br>
@@ -422,11 +422,69 @@ For example: I started by typing ls into my terminal and pressed enter. This wil
 
 
 
-
         <hr class="boldline">
 
 
-          <h2 id="#datasize" style="text-align:left;">Is our Data Size Correct?</h2>
+          <h2 id="datasize" style="text-align:left;">Is our Data Size Correct?</h2>
+          Congratulations, you have created your first complete flowchart! Now, how do you know that the amount of data you collected was correct and that this experiment went according to plan? Let’s go through what each block does and how much data it takes in so that we can check that we did everything correctly.
+
+          Before we start I want to make clarifications between some vocabulary I will be using in this section.
+<hr class="thinline">
+<p><span class="boldtext">Sample:</span> This is how much data is collected per second. In this tutorial we chose 2,000,000     or   2106. In each of our ‘samples’ we collect 2 numbers.
+<p><span class="boldtext">Bit:</span> Short for “binary digit”. This is the smallest unit of data in a computer. A bit has a single binary value of 1 or 0.
+<p><span class="boldtext">Byte:</span> Equal to 8 bits.
+<p><span class="boldtext">Kilobyte (kB):</span> Equal to 1024 bytes. (Try not to get this confused with the normal 1000=kilo).
+<p><span class="boldtext">Vector:</span> In this context a vector is how we will be organizing our data so that we can process it in a following step.
+<p><span class="boldtext">Integers:</span> In binary, integers (whole numbers that aren’t a decimal or fraction) take up 32 bits worth of data.
+<p><span class="boldtext">Complex 32:</span> *Need help on this*
+<p><span class="boldtext">Float 32:</span> *Need help on this*
+<hr class="thinline">
+
+<span class="boldtext">RTL-SDR Source: </span>
+This controls how much data we initially take in from the telescope itself. We set a parameter of 2 million samples per second. For each sample that we take, we get 2 numbers. For each number we use 32 bits of data. If we do a quick calculation we see that we are taking in 1.28108 bits per second.
+
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size1.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+<span class="boldtext">Head:</span>
+This block limits the total number of samples that will be collected, in this case 10,240,000 or 1.024107. From this, we can calculate how much time our total data collection should take.
+
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size2.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+If your data collection took around this time, it’s another indicator that our data collection probably went smoothly.
+
+<span class="boldtext">Stream to Vector: </span>
+We usually call whatever is input and output of a block an “item”. This block takes 1024 samples (input as individual items), and outputs them as one item vector of 1024 samples. We do this because in order to complete the next task (fast Fourier transform) we need a certain amount of samples at a time to complete this calculation.
+Here is what our item number looks like before and after our “stream to vector”:
+
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size3.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+<span class="boldtext">FFT (Fast Fourier Transform):</span>
+	This block takes our data and finally puts it into a form (sin and cos waves) that is useful for us to use. Each vector is considered a time with a certain frequency. This allows us to have a graph with axis of time and frequency.
+  <span class="boldtext">Complex to Mag2:</span>
+  So far we have had two numbers per sample: a real and imaginary (complex) number. This block takes our real and complex numbers, squares each of them, and adds the values. This changes our input of a complex 32 to a float 32.
+
+  <p>This implements the following function:
+  (real number in)^2 + (complex number in)^2 = new single number real output
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size4.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+Integrate:
+This block reduces the data size by averaging every 100 values into one value. We can take out current bit value and divide by 100.
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size5.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+According to our previous calculations, the program is supposed to run for 5.12 seconds, so we will multiply our bits per second by 5.12 seconds.
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size6.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+We will now do a few conversions so that we can put this value into kilobits.
+<p><span class="boldtext">Converting bits to bytes: </span>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size7.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+<p><span class="boldtext">Converting bytes to kilobytes: </span>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size8.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+
+<span class="boldtext">Congratulations, you completed this tutorial and proved that the amount of data you received is correct.</span>
+
+
+
+
 
           <hr class="boldline">
 
