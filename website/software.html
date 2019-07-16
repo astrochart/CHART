@@ -357,57 +357,54 @@ Congratulations, you have collected your first radio data set!
         <hr class="thinline">
 
     1. Start off with creating a new flowchart.
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow1.png" class="left" alt="First Data Set" style="width:300px; height:250px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow1.png" class="left" alt="First Data Set" style="width:400px; height:400px;border-radius:5px;"></br>
 
       <br>2. Open the Options block by double clicking it. <p>Select 'No GUI' for 'Generate Options' and select 'Run to Completion' for the 'Run Options'.
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow2.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow2.png" class="left" alt="First Data Set" style="width:500px; height:400px;border-radius:5px;"></br>
 
     <br>  3.  In the premade variable block, double click to open it. <p>Rename the ID 'samp_rate' and set the value to 2e6 (2 million).</p>
       Press ‘apply’ and ‘OK’ to close the box.
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow3.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow3.png" class="left" alt="First Data Set" style="width:500px; height:300px;border-radius:5px;"></br>
 
 <br>4. Add the 'RTL-Source' block. You can do this by locating it through the search bar and either double clicking on it, or by dragging it to the other side of the screen. Double click on the ‘RTL-Source’ block and change the 'RF Gain' to '45' (you might have to scroll down to see this option). Also, set the 'Sample Rate' to 'samp_rate'. Click ‘apply’ and ‘OK’.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow4_0.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow4_0.png" class="left" alt="First Data Set" style="width:1000px; height:600px;border-radius:5px;"></br>
 
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow4_1.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow4_1.png" class="left" alt="First Data Set" style="width:800px; height:350px;border-radius:5px;"></br>
 
 <br>5. Create a variable block and name it 'veclength'. Make the value '1024'. click ‘apply’ and ‘OK’.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow5.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow5.png" class="left" alt="First Data Set" style="width:800px; height:350px;border-radius:5px;"></br>
 
 <br>6. Add a 'Head' block. This block will limit the amount of data that will be processed. Set 'Num Items' to '10240000'. Click ‘apply’ and ‘OK’. Connect the head block to the 'RTL-Source' block by clicking on the little blue box that reads ‘out’ on the “RTL-SDR Source” box and ‘in’ on the “Head” box. Click on the white screen and arrow should appear connecting the two.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow6_0.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow6_0.png" class="left" alt="First Data Set" style="width:500px; height:300px;border-radius:5px;"></br>
 
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow6_1.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow6_1.png" class="left" alt="First Data Set" style="width:600px; height:400px;border-radius:5px;"></br>
 
 <br>7. Add a 'Stream to Vector' block and set the 'Num Items' to 'veclength'. Click ‘apply’ and ‘OK’. Connect to 'Head' block.</p>
 <br>8. Add an 'FFT' block. This will convert the data into a Fast Fourier Transform. Set the 'FFT size' to 'veclength'; click ‘apply’ and ‘OK’. Connect to the 'Stream to Vector' block.</p>
 
 <br>9. Add a 'Complex to Mag^2' block and set ‘Vec Length’ to ‘veclength’. Click ‘apply’ and ‘OK’. This block makes all the data values real by squaring the complex numbers. Connect to 'FFT' block.</p>
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow7-9.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow7-9.png" class="left" alt="First Data Set" style="width:1000px; height:200px;border-radius:5px;"></br>
 
 <br>10. Add an 'Integrate' block and set ‘Vec. Length' to 'veclength' and 'Decimation' to '100'. Change ‘IO Type’ to ‘Float’. You know the drill, click ‘apply’ and ‘OK’. This reduces the data size by averaging every 100 items into one item. Connect to 'Mag^2' block.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow10.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow10.png" class="left" alt="First Data Set" style="width:500px; height:400px;border-radius:5px;"></br>
 
 <br>11. Finally, add a 'File Sink' block and set 'Vec Length' to 'veclength'. Then change ‘IO Type’ to ‘Float’. Specify where you want the file to be written in by clicking on the ‘three dots’ icon next to ‘file’. Click ‘apply’ and ‘OK’. This will write the data into a file on your computer.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_0.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_0.png" class="left" alt="First Data Set" style="width:600px; height:250px;border-radius:5px;"></br>
 
 Here is how the final flowchart should look:
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_1.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_1.png" class="left" alt="First Data Set" style="width:1000px; height:450px;border-radius:5px;"></br>
 <br>12. Generate your flow chart.
-*the light blue box on the blocks signifies: complex
-*the dark blue box on the box signifies:
-*the red box on the blocks signifies:
-</p>
-<br>13. Press the green play button to ‘Execute the flow graph’. </p>
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow12.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<br>13. Press the green play button to ‘Execute the flow graph’.
+
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow12.png" class="left" alt="First Data Set" style="width:1000px; height:500px;border-radius:5px;"></br>
 
 <br>14. To double check if your data was written in the desired location, open up your terminal. You can use the following Linux commands to find the recorded data:
 ls: directory listing; this will show you all of the contents/ folders in your current location          on the computer.
@@ -420,7 +417,7 @@ For example: I started by typing ls into my terminal and pressed enter. This wil
 *At the bottom you will see that once I located my file, I typed ls -lh to see how big my file was. The fact that it is 400k (400 kilobytes) tells me that I have located my file *see the “Analyzing How Much Data Was Collected ” tutorial to see why this is.
 
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow14.png" class="left" alt="First Data Set" style="width:600px; height:350px;border-radius:5px;"></br>
+<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow14.png" class="left" alt="First Data Set" style="width:600px; height:500px;border-radius:5px;"></br>
 
 
 
