@@ -395,7 +395,7 @@ Congratulations, you have collected your first radio data set!
 
 <br>11. Finally, add a 'File Sink' block and set 'Vec Length' to 'veclength'. Then change ‘IO Type’ to ‘Float’. Specify where you want the file to be written in by clicking on the ‘three dots’ icon next to ‘file’. Click ‘apply’ and ‘OK’. This will write the data into a file on your computer.
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_0.png" class="left" alt="First Data Set" style="width:600px; height:250px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow11_0.png" class="left" alt="First Data Set" style="width:600px; height:250px;border-radius:5px;"></br>
 
 Here is how the final flowchart should look:
 
@@ -417,7 +417,7 @@ For example: I started by typing ls into my terminal and pressed enter. This wil
 *At the bottom you will see that once I located my file, I typed <span class="commandline">ls -lh</span> to see how big my file was. The fact that it is 400k (400 kilobytes) tells me that I have located my file. To see why this is, proceed to the necxt tutorial "Is Our Data Size Correct?"
 
 
-<img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow14.png" class="left" alt="First Data Set" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/flow14.png" class="left" alt="First Data Set" style="width:600px; height:500px;border-radius:5px;"></br>
 
 
 
@@ -443,42 +443,42 @@ For example: I started by typing ls into my terminal and pressed enter. This wil
 <span class="boldtext">RTL-SDR Source: </span>
 This controls how much data we initially take in from the telescope itself. We set a parameter of 2 million samples per second. For each sample that we take, we get 2 numbers. For each number we use 32 bits of data. If we do a quick calculation we see that we are taking in 1.28108 bits per second.
 
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size1.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size1.png" class="left" alt="Data Size" style="width:600px; height:150px;border-radius:5px;"></br>
 
 <span class="boldtext">Head:</span>
 This block limits the total number of samples that will be collected, in this case 10,240,000 or 1.024107. From this, we can calculate how much time our total data collection should take.
 
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size2.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size2.png" class="left" alt="Data Size" style="width:400px; height:200px;border-radius:5px;"></br>
 
 If your data collection took around this time, it’s another indicator that our data collection probably went smoothly.
 
-<span class="boldtext">Stream to Vector: </span>
+<br><span class="boldtext">Stream to Vector: </span>
 We usually call whatever is input and output of a block an “item”. This block takes 1024 samples (input as individual items), and outputs them as one item vector of 1024 samples. We do this because in order to complete the next task (fast Fourier transform) we need a certain amount of samples at a time to complete this calculation.
 Here is what our item number looks like before and after our “stream to vector”:
 
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size3.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size3.png" class="left" alt="Data Size" style="width:500px; height:70px;border-radius:5px;"></br>
 
-<span class="boldtext">FFT (Fast Fourier Transform):</span>
+<br><span class="boldtext">FFT (Fast Fourier Transform):</span>
 	This block takes our data and finally puts it into a form (sin and cos waves) that is useful for us to use. Each vector is considered a time with a certain frequency. This allows us to have a graph with axis of time and frequency.
-  <span class="boldtext">Complex to Mag2:</span>
+  <span class="boldtext">Complex to Mag^2:</span>
   So far we have had two numbers per sample: a real and imaginary (complex) number. This block takes our real and complex numbers, squares each of them, and adds the values. This changes our input of a complex 32 to a float 32.
 
   <p>This implements the following function:
   (real number in)^2 + (complex number in)^2 = new single number real output
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size4.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size4.png" class="left" alt="Data Size" style="width:600px; height:100px;border-radius:5px;"></br>
 Integrate:
 This block reduces the data size by averaging every 100 values into one value. We can take out current bit value and divide by 100.
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size5.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size5.png" class="left" alt="Data Size" style="width:250px; height:200px;border-radius:5px;"></br>
 
 According to our previous calculations, the program is supposed to run for 5.12 seconds, so we will multiply our bits per second by 5.12 seconds.
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size6.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size6.png" class="left" alt="Data Size" style="width:300px; height:150px;border-radius:5px;"></br>
 
 We will now do a few conversions so that we can put this value into kilobits.
 <p><span class="boldtext">Converting bits to bytes: </span>
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size7.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size7.png" class="left" alt="Data Size" style="width:400px; height:150px;border-radius:5px;"></br>
 
 <p><span class="boldtext">Converting bytes to kilobytes: </span>
-<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size8.png" class="left" alt="Data Size" style="width:600px; height:500px;border-radius:5px;"></br>
+<br><img src="https://adampbeardsley.github.io/CHART/website/tutorials/size8.png" class="left" alt="Data Size" style="width:400px; height:150px;border-radius:5px;"></br>
 
 <span class="boldtext">Congratulations, you completed this tutorial and proved that the amount of data you received is correct.</span>
 
