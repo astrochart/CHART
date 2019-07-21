@@ -19,10 +19,10 @@
   </head>
 <!--I am also having a hard time spreading the nav bar equally spaced (maybe use an id)
 I also can't get the drop down menu to work-->
-<header>
+<header id="mainmenu">
   <nav class="navbar navbar-expand-lg nav-justified" style="background:black;">
     <div>
-  <a class="navbar-brand text-white" href="https://adampbeardsley.github.io/CHART/index.html">*Insert Chart Logo Here</a> </div>
+  <a class="navbar-brand text-white" href="../index.html">*Insert Chart Logo Here</a> </div>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -30,10 +30,10 @@ I also can't get the drop down menu to work-->
   <div class="collapse navbar-collapse justify-content-center nav-fill" id="navbarSupportedContent">
     <ul class="nav navbar-nav nav-fill" class= ".active">
       <li class="active">
-        <a class="nav-link text-white" href="https://adampbeardsley.github.io/CHART/index.html">Home<span class="sr-only">(current)</span></a>
+        <a class="nav-link text-white" href="../index.html">Home<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-white" href="https://adampbeardsley.github.io/CHART/website/about.html">About</a></li>
+        <a class="nav-link text-white" href="about.html">About</a></li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Tutorials
@@ -49,26 +49,27 @@ I also can't get the drop down menu to work-->
 </div>
 </div>
 </nav>
-</header>
+
     <h2 id="centerheader" style= "border:solid;border-color:black" font-family:"courier new", courier, arial;>Hardware</h2>
-    <body>
+  </header>
+  <body>
 
   <div>
-    <ul class="sidenav" style="text-align:left;color:white;">
-  <li>  <a href="#">Introduction</a> </li><br></br>
-  <li>   <a href="#">Collect Materials</a> </li><br></br>
-  <li> <a href="#">Building the Horn</a> </li><br></br>
-  <li>  <a href="#">Electrical Connections</a> </li><br></br>
-  <li>  <a href="#">Tutorial</a> </li><br></br>
-  <li>   <a href="#">Tutorial</a> </li><br></br>
-  <li> <a href="#">Tutorial</a> </li><br></br>
-  <li>  <a href="#">Tutorial</a> </li><br></br>
+    <ul class="sidenav" style="text-align:left;color:white;border-radius:5px;">
+  <li>  <a href="#introduction">Introduction</a> </li>
+  <li>   <a href="#collect_materials">Collect Materials</a> </li>
+  <li> <a href="#horn">Building the Horn</a> </li>
+  <li>  <a href="#econnections">Electrical Connections</a> </li>
+  <li>  <a href="#">Tutorial</a> </li>
+  <li>   <a href="#">Tutorial</a> </li>
+  <li> <a href="#">Tutorial</a> </li>
+  <li>  <a href="#">Tutorial</a> </li>
   </ul>
   </div>
 
 <a id="hardware_intro">
   <div class="mainware">
-    <h2 style="text-align:left;">Introduction</h2>
+    <h2 id="introduction" style="text-align:left;"><br><br><br>Introduction</h2>
     <p>The hardware section of this project is organized in a recommended order,
       but can be easily navigated through with the use of the side navigation bar.
       For each lesson there are multiple resources for the user: there is a YouTube
@@ -80,7 +81,7 @@ I also can't get the drop down menu to work-->
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 style="text-align:left;">Collect Materials</h2>
+  <h2 id="collect_materials" style="text-align:left;">Collect Materials</h2>
   <p>The goal for this project is to create a design for a low cost radio telescope
   and listed here are the materials we used to build our telescope. You are always
 welcome to substitute out any materials based on your budget. In the below google docs
@@ -92,7 +93,7 @@ products, and also more expensive (but better quality) substitutes. </p>
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 style="text-align:left;">Building the Horn</h2>
+  <h2 id="horn" style="text-align:left;">Building the Horn</h2>
   <p>In our Low Frequency Cosmology lab at Arizona State University, we used to of
   the line software to optimize our telescope horn to observe the 21 cm line.
 We tried many shapes and designs, but found that the parameters listed below
@@ -104,7 +105,7 @@ ease in this project you can use the template below. </p>
 <hr class="boldline">
 
 <div class="mainware">
-  <h2 style="text-align:left;">Electrical Components</h2>
+  <h2 id="econnections" style="text-align:left;">Electrical Components</h2>
   <p>This project involves using and connecting many electrical components. Below are lessons
     that describe our process for choosing and characterizing the components involved.
     We also include tutorials on how to hook up your telescope to your computer so that

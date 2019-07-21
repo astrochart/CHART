@@ -21,6 +21,18 @@ h4{
   border-color: white;
 }
 
+#mainmenu {
+  text-align:fill;
+  color:white;
+  font-family: arial:"courier new", courier;
+  /* letter-spacing:9px; */
+  text-decoration-line: none;
+  position: fixed;
+  width:100%;
+  background:black;
+  z-index: 999;
+}
+
 #centerheader {
   text-align:fill;
 color:black;
@@ -28,6 +40,9 @@ font-family: arial:"courier new", courier;
 letter-spacing:9px;
 text-transform:uppercase;
 text-decoration-line: none;
+position: fixed;
+width:100%;
+background:white;
 }
 
 body{
@@ -73,6 +88,12 @@ html{
   min-height:800px;
 }
 
+li {
+    line-height: 1.2em;
+    margin-bottom: 3px;
+    margin-top: 6px;
+    margin-right: 2px;
+}
 
 /*Section container stylings;this applies to all of the sections that I have*/
 .section {
@@ -194,13 +215,12 @@ html{
   padding-top: 5px;
   margin-top: 105px;
   text-align:left;
-
 }
 
 .sidenav a {
   padding:none;
   text-decoration: none;
-  font-size: 25px;
+  font-size: 18px;
   color: #818181;
   display: block;
 }
