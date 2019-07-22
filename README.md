@@ -4,7 +4,10 @@ Welcome to the CHART project
 ## Chart stands for "Completly Hackable Amateur Radio Telescope".</br>
 Our online tutorials will guide you step-by-step in creating your own radio telescope at home or in the classroom. 
 
----
+--- 
+We recommend that the users builds the telescope first through the tutorials in the hardware section, then navigate to the software section where we will be taking data from the sky.
+
+--- 
 
 To get started, here is a list of materials you will need for software installation:
 - Raspberry Pi 3B
@@ -15,7 +18,7 @@ To get started, here is a list of materials you will need for software installat
 - Radio antenna
 - Personal computer 
 - Keyboard 
--Horn/Antenna
+- Horn/Antenna
 
 ---
 
@@ -23,10 +26,13 @@ Before starting this tutorial, it’s highly recommended to go through the ‘So
 
 Most of us are familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension. 
 To get started, we need to make sure that all our wires are hooked up and ready to go.  
-Hook up your Raspberry Pi to your monitor.
-Plug in your ethernet cable (or wifi). 
-Plug in your Raspberry Pi into a power source. 
-Hook up to your keyboard (we used a wireless hook up for ours). 
+- Hook up your Raspberry Pi to your monitor.
+- Plug in your ethernet cable (or wifi). 
+- Plug in your Raspberry Pi into a power source. 
+- Hook up to your keyboard (we used a wireless hook up for ours). 
+
+For the following steps of installing Ubuntu MATE I followed the tutorial below presented by Tech Radar. 
+https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi
 
 <h2>Download Ubuntu MATE</h2>
 For the following steps of installing Ubuntu MATE I followed the tutorial below
