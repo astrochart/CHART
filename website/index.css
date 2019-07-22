@@ -1,0 +1,338 @@
+/*I've tried a wrapper, id, and class, but can't get nav bar to center. */
+
+h2{
+  text-align:center;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px lightgrey;
+  text-transform: uppercase;
+  text-decoration-line: underline;
+  font-family:sans-serif;
+  border: solid;
+  border-color: white;
+}
+h4{
+  text-align:center;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px lightgrey;
+
+  text-decoration-line: underline;
+  font-family:sans-serif;
+  border: solid;
+  border-color: white;
+}
+
+#mainmenu {
+  text-align:fill;
+  color:white;
+  font-family: arial:"courier new", courier;
+  /* letter-spacing:9px; */
+  text-decoration-line: none;
+  position: fixed;
+  width:100%;
+  background:black;
+  z-index: 999;
+}
+
+#centerheader {
+  text-align:fill;
+color:black;
+font-family: arial:"courier new", courier;
+letter-spacing:9px;
+text-transform:uppercase;
+text-decoration-line: none;
+position: fixed;
+width:100%;
+background:white;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -100px;
+    visibility: hidden;
+}
+
+body{
+  height:100%;
+  font-size:20px;
+  font-family:"Lato", sans-serif;
+  font-weight:400;
+  line-height:1.8em;
+  color:black;
+  text-align:center;
+}
+html{
+  height:100%;
+  font-size:15px;
+  font-family:"Lato", sans-serif;
+  font-weight:400;
+  line-height:1.8em;
+  color:white;
+  text-align:center;
+}
+
+/*Styling for images (parallax/background)*/
+.pimg1, .pimg2, .pimg3{
+  position:relative;
+  opacity:0.90;
+  background-position: center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+}
+
+/*the actual images*/
+.pimg1 {
+  background-image: url("https://adampbeardsley.github.io/CHART/website/images_for_website/nightsky.jpeg");
+  min-height:100%
+}
+.pimg2 {
+  background-image: url("radiotele.jpg");
+  min-height:800px;
+}
+.pimg3 {
+  background-image: url("waterfall.png");
+  min-height:800px;
+}
+
+li {
+    line-height: 1.2em;
+    margin-bottom: 3px;
+    margin-top: 6px;
+    margin-right: 2px;
+}
+
+/*Section container stylings;this applies to all of the sections that I have*/
+.section {
+  align-content: center;
+  text-align:center;
+  display: block;
+  border-style: solid;
+  border-color: black;
+
+
+}
+
+/*applies to floating titles above parallax image*/
+.ptext{
+  position:absolute;
+  top:50%;
+  width:100%;
+  text-align:center;
+  color:black;
+  font-size:27px;
+  letter-spacing:8px;
+  text-transform:uppercase;
+
+
+}
+
+/*border of the title in the parallax*/
+.border{
+  background-color:black;
+  color:white;
+  padding:20px;
+
+}
+@media screen and (max-width: 800px) {
+  .ptext {
+    display:none;
+  }
+}
+
+/*Makes the paralax background sto parallaxing when in mobile mode*/
+@media(max-width:568px){
+  .pimg1, .pimg2, .pimg3{
+    background-attachment:scroll;
+  }
+}
+
+/*Sidebar outside box*/
+.sidebar-section {
+   background: #fff;
+   // border-radius: 12px;
+   // border: solid 10px #f1f1f1;
+ }
+
+ /*Sidebar text*/
+ .sidebar-item {
+   text-align: center;
+ }
+
+ /*software and hardware tutorial boxes */
+ .content-section{
+   background: #fff;
+   // border-radius: 12px;
+   // border: solid 10px #f1f1f1;
+}
+/*header for sections*/
+ .content-section h2 {
+   text-align: center;
+   margin: auto;
+   padding:20px,5px,20px,5px;}
+
+/*makes the video centered*/
+   .video{
+     align-content:center; }
+/*containes the sections*/
+     .container-fixed{
+       align-content: center;
+       text-align: center;
+       margin:0px;
+       padding:0px;
+       border-style:solid;
+       border-color:black;
+     }
+
+     .fa-instagram {
+       background: purple;
+       color: white;
+     }
+     .fa {
+       padding: 20px;
+       font-size: 30px;
+       text-align: center;
+       text-decoration: none;
+       margin: 10px;
+       border: 2px solid white;
+       border-radius: 25px;
+     }
+     .fa-facebook {
+       background: navy;
+       color: white;}
+
+       .fa-youtube{
+         background: red;
+         color: white;}
+
+         .fa-google {
+           background: blue;
+           color: white;}
+
+
+           .sidenav {
+  height: 80%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 5px;
+  margin-top: 105px;
+  text-align:left;
+}
+
+.sidenav a {
+  padding:none;
+  text-decoration: none;
+  font-size: 18px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.mainware {
+  margin-left: 200px; /* Same as the width of the sidenav */
+padding:30px;
+text-align:left;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+hr.boldline { border: 3px solid black;
+}
+
+hr.thinline {
+  border: 1px solid lightgrey;
+
+}
+/* Three columns side by side */
+.column {
+  float: left;
+  width: 30%;
+  margin-left: 35px;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+/* Display the columns below each other instead of side by side on small screens */
+@media screen and (max-width: 650px) {
+  .column {
+    width: 100%;
+    display: block;
+  }
+}
+
+/* Add some shadows to create a card effect */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Some left and right padding inside the container */
+.container {
+  padding: 0px, 16px;
+}
+
+/* Clear floats */
+.container::after, .row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.title {
+  color: grey;
+}
+
+.button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #555;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+.boldfont{
+  font-weight:bold;
+}
+.commandline{
+  font-style:italic;
+  font-weight:bold;
+}
+
+@media screen and (max-width: 600px) {
+  .stack {
+    width: 100%;
+  }
+}
+
+.boldtext{
+  font-weight: bold;
+}
+.underline{
+  text-decoration: underline;
+}
+.italic{
+     font-style: italic;
+}

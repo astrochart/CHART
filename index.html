@@ -2,6 +2,9 @@
 <html lang="en">
   <head>
     <title>CHART</title>
+    <!--I tried to put in an icon that would appear in the title, but it isn't working. I cant find the
+    code from last year where it worked-->
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,128 +12,117 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <!--my css code. -->
-    <link rel="stylesheet" href="index.css" type="text/css">
+    <link rel="stylesheet" href="website/index.css" type="text/css">
+
 
   </head>
 <!-- I'm having a hard tine formatting this with a black background and white text
 I am also having a hard time spreading the nav bar equally spaced (maybe use an id)
 I also can't get the drop down menu to work-->
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
-      <div class="container-center">
-    <a class="navbar-brand" href="#">*Insert Chart Logo Here</a> </div>
+  <header id="mainmenu">
+    <nav class="navbar navbar-expand-lg nav-fill" style="background:black;">
+      <div>
+    <a class="navbar-brand text-white" href="index.html">*Insert Chart Logo Here</a> </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="nav navbar-nav" class= ".active">
+    <div class="collapse navbar-collapse justify-content-center nav-fill" id="navbarSupportedContent">
+      <ul class="nav navbar-nav nav-fill" class= ".active">
         <li class="active">
-          <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+          <a class="nav-link text-white" href="index.html">Home<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link text-white" href="website/about.html">About</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Tutorials
-          </a>
+            </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Software</a>
-            <a class="dropdown-item" href="#">Hardware</a>
+            <a class="dropdown-item text-black" href="website/software.html">Software</a>
+            <a class="dropdown-item text-black" href="website/hardware.html">Hardware</a>
           </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-
-        </ul>
-
-    </div>
-
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="website/contact.html">Contact</a>
+          </ul>
+  </div>
+</div>
   </nav>
-</header>
+
 
 <!-- idk why the fonts underneith are not applying to my header -->
-    <h2 id="centerheader" font-family:"courier new", courier, arial; >Welcome to the CHART Project</h2>
-
+    <h2 id="centerheader" style= "border:solid;border-color:black;" font-family:"courier new", courier, arial; >Welcome to the CHART Project</h2>
+</header>
 <body>
 
 <div class="pimg1">
   <div class="ptext">
-    <span class="border">
-      Completly Hackable Amature Radio Telescope
-    </span>
+ <span class="border">
+      Completly Hackable Amateur Radio Telescope </span>
     </div>
 </div>
 
-<section class"section section-light">
+
+<div class="container-fixed" style="padding:0px; margin:0px;">
+<section class="section">
 <h2> Introduction to CHART</h2>
-<p>
-  This is my 1st paragraph
-  Here I will introduce the project with a short paragraph on what our project is.
-  <br> Then I will insert a youtube video introduction of the project</br>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
+<p > Welcome to the CHART project! CHART stands for Completly Hackable Amateur Radio Telescope.
+  Our goal with this project is to create an easy to navigate system of tutorials
+  that will lead to you in building your own radio telescope from the comfort of your home or classroom.
+  It is very important to us that that radio astronomy is as accesible as possible to whoever is interested,
+  so we strove to keep the creation of this project as cheap as possible. We are excited that you have found
+  our project and wish you the best of luck in the creation of your radio telescope.
+  The following video gives you a brief overview of the creation of the project (When I make it, for now enjoy MIT's Walter Lewin).
+  <br> <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/x1-SibwIPM4?start=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin:50px;"></iframe></br>
 </p>
 </section>
-<div class="pimg2">
-  <div class="ptext">
-    <span class="border">
-      Testimonials
-    </span>
-    </div>
 </div>
 
-<section class"section section-dark">
-<h2> People who have done the project </h2>
-<p>
-  This is my 2nd paragraph
-  I was thinking of maybe putting in testimonials of the first people to try our project out with pictures of them working on the project.
-  <br>*insert pictures here with text of testimonials underneath*</br>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-</p>
-</section>
-
-<div class="pimg3">
-  <div class="ptext">
-    <span class="border">
-      Get Started
-    </span>
-    </div>
-</div>
-
-<section class"section section-dark">
-<h2> </h2>
-<p>
-  This section will introduce the user on how to get started.
-  <br> Here the user will see how they can get started on the project in the hardware section.</br>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-  <p>hello</p>
-</p>
-</section>
 
 <div class="pimg1">
   <div class="ptext">
     <span class="border">
-      Completely Hackable Amature Radio Telescope
+    Get Started
+    </span>
+    </div>
+</div>
+
+<div class="container-fixed" style="padding:0px; margin:0px;">
+<section class="section">
+<h2>Build Your Own Radio Telescope</h2>
+<p> Let's get started! We have desiged a series of tutorials that will guide you step-by-step
+  in creating your own radio telescope. When it comes to navigating this project,
+  we recommend that users start in the hardware section, so that you will have a telescope to take data with,
+  then move onto the software section of the course to record the data you will be taking.
+  <br> Click this <a href="https://adampbeardsley.github.io/CHART/website/hardware.html">link</a> to be redirected to the Hardware page. </br>
+
+</p>
+</section>
+</div>
+
+<div class="pimg1">
+  <div class="ptext">
+    <span class="border">
+        Testimonials
+    </span>
+    </div>
+</div>
+
+<div class="container-fixed" style="padding:0px; margin:0px;">
+<section class="section">
+<h2> People who have done the project</h2>
+<p>
+  <br>*insert pictures here with text of testimonials underneath*</br>
+
+</p>
+</section>
+</div>
+
+<div class="pimg1">
+  <div class="ptext">
+    <span class="border">
+      Completely Hackable Amateur Radio Telescope
     </span>
     </div>
 </div>
