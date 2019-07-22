@@ -127,9 +127,9 @@ To download Ubuntu MATE we will use our personal computer and visit<a href="http
 
 <h4 style="text-align:left;"> Decompressing the File</h4>
 After downloading Ubuntu MATE, we will need to install a decompression utility in order to read the Ubuntu file.</br>
-<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> The Unarchiver is available free from the App Store to extract the .xz file. Once the utility is installed, double-click the file in your downloads to extract the image (.img) file.</br>
-<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Go to the 7-Zip website to install the application. Click on ‘Download’, choose ‘Save’. Go to ‘Downloads’ in File Explorer. Double click on the ‘7-Zip’ file. Choose ‘Install’.
-I’m using a Mac, and my steps/downloads looked like this:
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> The Unarchiver is available for free from the App Store to extract the .xz file. Once this is installed, double-click the file in your downloads to extract the image (.img) file.</br>
+<br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Go to the 7-Zip website to install the application. Click on ‘Download’, choose ‘Save’. Go to ‘Downloads’ in File Explorer. Double click on the ‘7-Zip’ file. Click on ‘Install’.
+I’m using a Mac, and my steps/downloads looked like this: <br>
   <img src="https://adampbeardsley.github.io/CHART/website/tutorials/unarchiver.png" class="left" alt="Download Unarchiver Image" style="width:500px; height:250px;border-radius:5px;">
   <br><span class="boldfont">Here I have ‘The Unarchiver’ decompression utility downloading that I downloaded from the app store.</span></br>
 <img src="https://adampbeardsley.github.io/CHART/website/tutorials/desktop.png" class="left" alt="Organizing files" style="width:250px; height:200px;border-radius:5px;">
@@ -140,8 +140,10 @@ I’m using a Mac, and my steps/downloads looked like this:
 <hr class"thinline">
 <h4 style="text-align:left;">Formatting the Micro SD card</h4>
 For the micro SD card to be compatible with the  Raspberry Pi, it has to be formatted to FAT32.
-<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span> In order for your microSD card to be compatible with the Raspberry Pi it must be formatted to FAT32.
-Connect the microSD card to your mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return.
+<br><span style="text-decoration:underline;font-weight:bold">For Mac:</span>
+Plug in
+
+the microSD card to your Mac. The system will automatically mount it. Click ‘Spotlight’ at the top right of the screen, type ‘Disk Utility’ and press return.
 Once Disk Utility launches, select the microSD card from the list of available disks in the pane on the left. Click the ‘Erase’ tab, then select ‘MS-DOS (FAT)’ from the ‘Format’ drop down menu.
 You can also set a name for the microSD card here e.g. MY SD 1. Click the ‘Erase’ button when you’re ready.
 <br><span style="text-decoration:underline;font-weight:bold">For Windows:</span> Insert your SD card into the slot on your computer or a USB adapter.
@@ -168,16 +170,16 @@ The OS will display a welcome message and offer you a tour of Ubuntu’s feature
 <hr class="thinline">
 <h4 style="text-align:left;">Updates</h4>
 The version of Ubuntu MATE you have now installed may not be fully up-to-date.
-To check if this is the case, go to System > Software Updater.
+To check if it is up to date, go to System > Software Updater.
 The system will now scan for updates. <br>A box will appear stating‘Updated software has been issued since Ubuntu x.04 was released. Do you wish to update?’. <span class="commandline">Click ‘Install Now’ </span>to update your system.
 <hr class="thinline">
 <h4 style="text-align:left;">Troubleshooting</h4>
-Some Ubuntu MATE users have reported issues with connecting to Wi-Fi after install, the network manager says the ‘device not ready’. This issue is specific to the Raspberry Pi 3. fortunately restarting the Raspberry Pi almost always fixes this problem.
+Some Ubuntu MATE users have reported issues with connecting to Wi-Fi after install, the network manager says the ‘device not ready’. This issue is specific to the Raspberry Pi 3. Restarting the Raspberry Pi almost always fixes this problem.
 Other users have reported issues installing and upgrading software using the built-in software updater. If this happens, open the MATE Terminal. Next, run the command:
 <span class="commandline">sudo apt-get update</span>
 then:
 <span class="commandline">sudo apt-get upgrade</span>
-That should fix the issue and you'll now have Ubuntu MATE running on your Raspberry Pi!
+That should fix the issue.
 You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
 
 <hr class="boldline">
