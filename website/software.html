@@ -19,10 +19,10 @@
   </head>
 <!--I am also having a hard time spreading the nav bar equally spaced (maybe use an id)
 I also can't get the drop down menu to work-->
-<header>
+<header id="mainmenu">
   <nav class="navbar navbar-expand-lg nav-justified" style="background:black;">
     <div>
-  <a class="navbar-brand text-white" href="https://adampbeardsley.github.io/CHART/index.html">*Insert Chart Logo Here</a> </div>
+  <a class="navbar-brand text-white" href="../index.html">*Insert Chart Logo Here</a> </div>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -30,10 +30,10 @@ I also can't get the drop down menu to work-->
   <div class="collapse navbar-collapse justify-content-center nav-fill" id="navbarSupportedContent">
     <ul class="nav navbar-nav nav-fill" class= ".active">
       <li class="active">
-        <a class="nav-link text-white" href="https://adampbeardsley.github.io/CHART/index.html">Home<span class="sr-only">(current)</span></a>
+        <a class="nav-link text-white" href="../index.html">Home<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-white" href="https://adampbeardsley.github.io/CHART/website/about.html">About</a></li>
+        <a class="nav-link text-white" href="about.html">About</a></li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Tutorials
@@ -49,12 +49,14 @@ I also can't get the drop down menu to work-->
 </div>
 </div>
 </nav>
+
+    <h2 id="centerheader" style= "border:solid;border-color:black;" font-family:"courier new", courier, arial;>Software</h2>
 </header>
-    <h2 id="centerheader" style= "border:solid;border-color:black" font-family:"courier new", courier, arial;>Software</h2>
-    <body>
+
+  <body>
 
   <div>
-    <ul class="sidenav" style="text-align:left;color:white;border-radius:5px;">
+    <ul class="sidenav" style="text-align:left;color:white;border-radius:0px;">
   <li>  <a href="#navinst">Navigation Instructions</a> </li>
   <li>   <a href="#materials">Materials</a> </li>
   <li> <a href="#intro">Introduction</a> </li>
@@ -66,14 +68,12 @@ I also can't get the drop down menu to work-->
   <li> <a href="#firstdata">Take Your First Radio Data</a> </li>
   <li>  <a href="#spectrum">Create a Spectrum Flowchart and Save the Data</a> </li>
   <li> <a href="#datasize">Is our Data Size Correct?</a> </li>
-  <li>  <a href="#">tutorial</a> </li>
-  <li> <a href="#">tutorial</a> </li>
   <li>  <a href="#Vocabulary">Vocabulary</a> </li>
   </ul>
   </div>
 
   <div class="mainware">
-    <h2 id="navinst" style="text-align:left;">Navigation Instructions</h2>
+    <h2 id="navinst" style="text-align:left;"><br><br><br>Navigation Instructions</h2>
     <p>The software section of this project is organized in a recommended order,
       but can be easily navigated through with the use of the side navigation bar.
       For each lesson there are multiple resources for the user: there is a YouTube
@@ -85,7 +85,8 @@ I also can't get the drop down menu to work-->
 
 <div class="mainware">
 
-  <h2 id="materials" style="text-align:left;">Materials</h2>
+  <a class="anchor" id="materials"></a>
+  <h2 style="text-align:left;">Materials</h2>
 To get started, here is a list of materials you will need for software instillation:
 
 <br>-Raspberry Pi 3B
@@ -103,12 +104,14 @@ Before starting this tutorial, it’s highly recommended to go through the <a hr
 <hr class="thinline">
 
 <div>
-  <h2 id="intro" style="text-align:left;">Introduction</h2>
+  <a class="anchor" id="intro"></a>
+  <h2 style="text-align:left;">Introduction</h2>
 Most of us familiar with using a Mac or PC computer and are comfortable with this kind of set up. This project’s set up is going to be different than these systems, but not difficult to navigate after spending some time getting familiar with all of the components. For this project, we will be using a Raspberry Pi as our computing device. This type of computing device doesn’t store data locally, so we will need to use an SD card for storage. Since we will be starting with a computing device that doesn’t have a preinstalled OS or GUI, we will need to set these up so that we can interact with the computer with ease. We chose Ubuntu (a version of Linux) as our OS along with the MATE GUI extension.
 </div>
 <hr class="boldline">
 
-  <h2 id="setup" style="text-align:left;">Material Set Up</h2>
+  <a class="anchor" id="setup"></a>
+  <h2 style="text-align:left;">Material Set Up</h2>
   To get started, we need to make sure that all our wires are hooked up and ready to go.
   <br>-Hook up your Raspberry Pi to your monitor.
 <br>-Plug in your ethernet cable (or wifi).
@@ -118,7 +121,8 @@ Most of us familiar with using a Mac or PC computer and are comfortable with thi
 <br><span class="boldfont"> Raspberry Pi Hooked Up</span></br>
 <hr class="boldline">
 
-  <h2 id="download" style="text-align:left;">Download Ubuntu MATE</h2>
+  <a class="anchor" id="download"></a>
+  <h2 style="text-align:left;">Download Ubuntu MATE</h2>
   For the following steps of installing Ubuntu MATE I followed the tutorial below presented by Tech Radar.
 <br><a href="https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi">Install Ubuntu MATE on Raspberry Pi</a></br>
 First, we will need to install Ubuntu Mate as our operating system and GUI. We will need our personal computer in order to do the first step in this process.
@@ -159,7 +163,8 @@ If you would like to do this step through command line in your terminal, you can
 
 <hr class="boldline">
 
-  <h2 id="raspberry" style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
+  <a class="anchor" id="raspberry"></a>
+  <h2 style="text-align:left;">Set Up Ubuntu MATE on Raspberry Pi</h2>
   After the writing process is done, safely eject your micro SD card and place it into your Raspberry Pi.
   <img src="https://adampbeardsley.github.io/CHART/website/tutorials/sdcard.jpeg" class="left" alt="SD Card Placement" style="width:300px; height:350px;border-radius:5px;">
 <br><span class="boldfont">Where to place the SD card in Raspberry Pi.</span></br>
@@ -183,7 +188,8 @@ You have now successfully installed Ubuntu MATE onto your Raspberry Pi!
 
 <hr class="boldline">
 
-  <h2 id="command" style="text-align:left;">Introduction to Command Line</h2>
+  <a class="anchor" id="command"></a>
+  <h2 style="text-align:left;">Introduction to Command Line</h2>
   <h4 style="text-align:left;">What is command line?</h4>
 <p><span class="boldfont">Command line or “Command Line User Interface”</span>: is a way of communicating with
 your computer through typed commands; this is usually done through the computer’s terminal.</p>
@@ -307,7 +313,8 @@ This function is run through a GUI.</p>
 
   <hr class="boldline">
 
-    <h2 id="gnu" style="text-align:left;">Download GNU Radio</h2>
+    <a class="anchor" id="gnu"></a>
+    <h2 style="text-align:left;">Download GNU Radio</h2>
     GNU Radio is the free open source software that we will be using to help us process our data.</br> To learn more about GNU Radio visit this site <a href="https://www.gnuradio.org/about/">About GNU Radio</a>.</br>
     Make sure that you have an internet connection for these next steps. We used an ethernet hook up to ensure that we had an internet connection, but you can also hook up to wifi if available.
     <br>Plug in the RTL-SDR device into the Raspberry Pi.
@@ -321,7 +328,8 @@ This function is run through a GUI.</p>
 
     <hr class="boldline">
 
-      <h2 id="firstdata" style="text-align:left;">Take your first radio data</h2>
+    <a class="anchor" id="firstdata"></a>
+    <h2 style="text-align:left;">Take your first radio data</h2>
 
     Open up your newly installed GNU Radio by typing in this command in the terminal:
          <br><span class="commandline">Gnuradio-companion</span></br>
@@ -349,7 +357,8 @@ Congratulations, you have collected your first radio data set!
 
       <hr class="boldline">
 
-        <h2 id="spectrum" style="text-align:left;">Create a Spectrum Flowchart and Save the Data</h2>
+      <a class="anchor" id="spectrum"></a>
+      <h2 style="text-align:left;">Create a Spectrum Flowchart and Save the Data</h2>
 
         Now that you've familiarized yourself with gnuradio, it's time to create a more complex flowchart.
         The goal of this flowchart is to create a spectrum estimator, which will help us observe what frequencies
@@ -426,7 +435,8 @@ For example: I started by typing ls into my terminal and pressed enter. This wil
         <hr class="boldline">
 
 
-          <h2 id="datasize" style="text-align:left;">Is our Data Size Correct?</h2>
+        <a class="anchor" id="datasize"></a>
+        <h2 style="text-align:left;">Is our Data Size Correct?</h2>
           Congratulations, you have created your first complete flowchart! Now, how do you know that the amount of data you collected was correct and that this experiment went according to plan? Let’s go through what each block does and how much data it takes in so that we can check that we did everything correctly.
 
           Before we start I want to make clarifications between some vocabulary I will be using in this section.
@@ -489,7 +499,8 @@ We will now do a few conversions so that we can put this value into kilobits.
 
           <hr class="boldline">
 
-            <h2 id="Vocabulary" style="text-align:left;">Software Vocabulary</h2>
+          <a class="anchor" id="Vocabulary"></a>
+          <h2 style="text-align:left;">Software Vocabulary</h2>
 
         <br>  <span class="boldtext">(API) Application Program Interface:</span> A set of routines, protocols, and tools for building software applications.
   <p><span class="underline">Example 1:</span> Google Maps API: Google Maps APIs lets developers embed Google Maps on webpages using a JavaScript or Flash interface. The Google Maps API is designed to work on mobile devices and desktop browsers.</p>
