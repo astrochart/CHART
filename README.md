@@ -8,6 +8,10 @@ Our online tutorials will guide you step-by-step in creating your own radio tele
 We recommend that the users builds the telescope first through the tutorials in the hardware section, then navigate to the software section where we will be taking data from the sky.
 
 --- 
+You can visit the website at this link:
+http://adampbeardsley.github.io/CHART
+
+--- 
 
 To get started, here is a list of materials you will need for software installation:
 - Raspberry Pi 3B
