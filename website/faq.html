@@ -13,6 +13,8 @@
 <!--my css code. -->
     <link rel="stylesheet" href="index.css" type="text/css">
 
+
+
   </head>
 <!--I am also having a hard time spreading the nav bar equally spaced (maybe use an id)
 I also can't get the drop down menu to work-->
@@ -48,19 +50,52 @@ I also can't get the drop down menu to work-->
 </div>
 </div>
 </nav>
-<h2 id="centerheader" style= "border:solid;border-color:black;" font-family:"courier new", courier, arial; >FAQ</h2>
+<h2 id="centerheader" style= "border:solid;border-color:black;" font-family:"courier new", courier, arial; >Frequently Asked Questions</h2>
 </header>
 
 <body>
 
-<a id="hardware_intro">
-<div class="mainware">
-<h2 style="text-align:left;">Frequently Asked Questions</h2>
-<p></p>
-Question
-</div>
 
-<hr class="boldline">
+
+  <div id="top_pad"></div>
+
+<div id="accordion">
+
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed boldfont darkblue" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        How to I make sure Ubuntu MATE is installed with the latest updates?
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        In your terminal type:<p>
+        sudo apt-get update<p>
+          sudo apt-get upgrade<p>
+            Press enter.
+      </div>
+    </div>
+  </div>
+
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h5 class="mb-0">
+          <button class="btn btn-link boldfont darkblue" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          I'm using a Mac computer and trying to wipe my SD card so that I can start the project with a clear memory card. When I display my USB drive on my Mac it shows the wrong capacity on the card; it shows that I have a lesser memory capacity. How do I fix this?
+          </button>
+        </h5>
+      </div>
+
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div class="card-body">
+          <a href="https://mycyberuniverse.com/how-reclaim-full-capacity-flash-memory-card-usb-flash-drive.html">Reclaim full Capacity Flash Memory</a>
+          This link takes the user step-by-step in fixing this issue.
+        </div>
+      </div>
+    </div>
+
 
 
 
