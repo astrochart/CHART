@@ -45,6 +45,11 @@ width:100%;
 background:white;
 }
 
+#top_pad{
+  height:100px;
+  width:100%;
+}
+
 a.anchor {
     display: block;
     position: relative;
