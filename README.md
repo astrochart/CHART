@@ -41,7 +41,10 @@ https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi
 <h2>Download Ubuntu MATE</h2>
 For the following steps of installing Ubuntu MATE I followed the tutorial below
 https://www.techradar.com/how-to/how-to-install-ubuntu-on-the-raspberry-pi
- First, we will need to install Ubuntu Mate as our operating system and GUI. We will need our personal computer in order to do the first step in this process. 
+ First, we will need to install Ubuntu Mate as our operating system and GUI. You can skip the ‘Installing Ubuntu Mate' section of this tutorial if you choose to purchase an SD card with Ubuntu MATE pre-installed. 
+ 
+ If you choose to install yourself, we will need our personal computer in order to do the first step in this process. 
+
  To download Ubuntu MATE we will use our personal computer and visit https://ubuntu-mate.org/download/ and click on “Raspberry Pi (Recommended)”. At the time of writing this, I chose “10.04.2 Bionic” as the release version that I am running. 
  
  ---
