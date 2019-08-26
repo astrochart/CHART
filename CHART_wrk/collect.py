@@ -126,7 +126,7 @@ class collectrtldata(gr.top_block):
         self.c_freq = c_freq
         self.rtlsdr_source_0.set_center_freq(c_freq, 0)
         try:
-            self.chart_meta_trig_py_ff_0.l = []
+            self.chart_meta_trig_py_ff_0.times = []
         except AttributeError:
             pass
         time.sleep(sleep)
@@ -159,7 +159,7 @@ class collectrtldata(gr.top_block):
                  int_length=self.int_length,
                  data_file=self.data_file,
                  metadata_file=self.metadata_file,
-                 times=self.chart_meta_trig_py_ff_0.get_l())
+                 times=self.chart_meta_trig_py_ff_0.get_times())
 
 
 def get_collect_args():
