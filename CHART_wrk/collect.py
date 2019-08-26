@@ -23,17 +23,40 @@ import os
 class collectrtldata(gr.top_block):
     """Class to collect RTL data and metadata."""
 
-    def __init__(self, c_freq):
+    def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
+                 nint=100, data_dir=None):
+        """Initialize the collect top block.
+        
+        Parameters
+        ----------
+        c_freq : float, optional
+            Center frequency, in Hz. Default is 50e6.
+        veclength : int, optional
+            Length of FFT. Default is 100.
+        samp_rate : float, optional
+            Sample rate of radio in Hz. Default is 2e6.
+        int_length : int, optional
+            Number of samples per integration. Default is 100.
+        nint : int, optional
+            Number of integrations per file. Default is 100.
+        data_dir : str, optional
+            Directory for data. Defaults to cwd.
+        
+        """
         gr.top_block.__init__(self, "Collectrtldata")
 
         ##################################################
         # Variables
         ##################################################
-        self.veclength = 1024 #manually sets the vector length
-        self.samp_rate = 2e6 #manually sets the sample rate
-        self.int_length = 100 #manually sets the integration length
-        self.nint = 100 # Manually set number of integrations per file
-        self.set_filename() #names the file
+        self.veclength = veclength
+        self.samp_rate = samp_rate
+        self.int_length = int_length
+        self.nint = nint
+        if data_dir is None:
+            self.data_dir = os.get_cwd()
+        else:
+            self.data_dir = data_dir
+        self.set_filename() # names the file
         ##################################################
         # Blocks
         ##################################################
@@ -105,20 +128,17 @@ class collectrtldata(gr.top_block):
             pass
         time.sleep(sleep)
 
-    def set_filename(self, filename=None):
+    def set_filename(self, filebase=None):
         """Function to set filename.
         
         Args:
-            filename: Optional filename. If not supplied, create filename from datetime
+            filebase: Optional base for filename. If not supplied,
+                create filename from datetime
         """
-        if filename is None:
-		    self.data_file = ('/home/locorpi3b/data/' + 
-                              str(datetime.datetime.now()).replace(' ', '_') + '.dat')
-		    self.data_file = self.data_file.replace(':', '-')
-		    self.metadata_file = self.data_file[:-3] + 'metadata.npz'
-        else:
-            self.data_file = filename
-            self.metadata_file = filename[:-3] + 'metadata.npz'
+        if filebase is None:
+            filebase = str(datetime.datetime.now()).replace(' ', '_')
+        self.data_file = os.path.join(self.data_dir, filebase + '.dat')
+        self.metadata_file = os.path.join(self.data_dir, filebase + '.metadata.npz'
         try:
             self.blocks_file_sink_0.open(self.data_file)
         except AttributeError:
@@ -188,7 +208,9 @@ def main(top_block_cls=collectrtldata):
     #reaches certain value. tb.wait(10) added at end to create intervals of time
     args = get_collect_args()
     scan_number = 0 # used as scan counter
-    tb = top_block_cls(args.freq_i)
+    tb = top_block_cls(cfreq=args.freq_i, veclength=args.veclength,
+                       samp_rate=args.samp_rate, int_length=args.int_length,
+                       nint=args.nint, data_dir=args.data_dir)
     t0 = time.time()
     while time.time() - t0 < args.total_time:
         for c_freq in range(args.freq_i, args.freq_f, args.df):
