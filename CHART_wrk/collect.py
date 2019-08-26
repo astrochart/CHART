@@ -16,6 +16,7 @@ import time
 import datetime
 import numpy as np
 import argparse
+import os
 
 
 #this is our collect data class with an instance of gnu radio first block
@@ -136,19 +137,61 @@ class collectrtldata(gr.top_block):
            metadata_file = self.metadata_file,
            times = self.chart_meta_trig_py_ff_0.get_l())
 
+def get_collect_args():
+    """Get an argument parser for the collect script."""
+    
+    ap = argparse.ArgumentParser()
+    ap.prog = "Collect.py"
+    
+    ap.add_argument('--scan_period', default=0.5, type=float, help='Time '
+                    'between a scan and the next, in hours. Default is 0.5.')
+    ap.add_argument('--total_time', default=24., type=float,
+                    help='Total time for all scans, in hours. Default is 24.')
+    ap.add_argument('--freq_i', default=50., type=float, help='Starting frequency, '
+                    'in MHz. Default is 50.')
+    ap.add_argument('--freq_f', default=150., type=float, help='Ending frequency, '
+                    'in MHz. Default is 150.')
+    ap.add_argument('--df', default=1., type=float, help='Frequency tuning step '
+                    'size, in MHz. Default is 1.')
+    ap.add_argument('--sleep_time', default=5., type=float, help='Sleep time '
+                    'between checks for next scan time, in seconds. Default is 5.')
+    ap.add_argument('--veclength', default=1024, type=int, help='Vector length '
+                    'for spectrum estimation. Default is 1024.')
+    ap.add_argument('--samp_rate', default=1., type=float, help='Sample rate '
+                    'of the radio, in MHz. Default is 1.')
+    ap.add_argument('--int_length', default=100, type=int, help='Number of samples '
+                    'per integration. Default is 100.')
+    ap.add_argument('--nint', default=100, type=int, help='Number of integrations '
+                    'per file. Default is 100.')
+    ap.add_argument('--data_dir', default=None, type=str, help='Data directory. '
+                    'Defaults to current working directory.')
+                    
+    args = ap.parse_args()
+    # Convert some units for internal use
+    args.scan_period *= 3600
+    args.total_time *= 3600
+    args.freq_i *= 1e6
+    args.freq_f *= 1e6
+    args.df *= 1e6
+    args.samp_rate *= 1e6
+    # Do a quick check on the data directory
+    if args.data_dir is None:
+        args.data_dir = os.get_cwd()
+    if ~os.path.isdir(args.data_dir):
+        args.data_dir = os.get_cwd()
+        warnings.warn('Data directory not valid, using cwd = ' + args.data_dir)
+
+    return args
+
 def main(top_block_cls=collectrtldata):
     #create while loop and timer variable. while loop halts when timer variable
     #reaches certain value. tb.wait(10) added at end to create intervals of time
-    dt = 30 * 60  # Time between scans, in seconds
-    total_time = 24 * 60 * 60  # Total time for observation, in seconds
-    i = 0 #used as starting value
-    f_i = 50 * 10**6  # Starting frequency, in Hz
-    f_f = 150 * 10**6  # Ending frequency, in Hz
-    df = 1 * 10**6  # tuning step size, in Hz
-    tb = top_block_cls(f_i)
+    args = get_collect_args()
+    scan_number = 0 # used as scan counter
+    tb = top_block_cls(args.freq_i)
     t0 = time.time()
-    while time.time() - t0 < total_time:
-        for c_freq in range(f_i, f_f, df):
+    while time.time() - t0 < args.total_time:
+        for c_freq in range(args.freq_i, args.freq_f, args.df):
             print('Frequency: ' + str(c_freq/10**6) + ' MHz')
             tb.set_c_freq(c_freq)
             tb.blocks_head_0.reset()
@@ -157,8 +200,8 @@ def main(top_block_cls=collectrtldata):
             tb.wait()
             tb.meta_save()
         i += 1
-        while time.time() < t0 + i * dt:
-            time.sleep(5)  # Sleep 5 seconds
+        while time.time() < t0 + scan_number * args.scan_period:
+            time.sleep(args.sleep_time)  # Sleep 5 seconds
     del(tb)
 
 if __name__ == '__main__':
