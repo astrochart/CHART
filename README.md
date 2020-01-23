@@ -115,7 +115,7 @@ It will ask you to continue after using a certain amount of disk space.
 Type  y and press enter. 
 This download might take up to 20 mins.
  Next, open up your newly installed gnuradio by typing in this command in the terminal:
-    Gnuradio-companion
+    gnuradio-companion
 
 
 
