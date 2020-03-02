@@ -1,7 +1,7 @@
 
 Welcome to the CHART project 
 ======
-## Chart stands for "Completly Hackable Amateur Radio Telescope".</br>
+## Chart stands for "Completly Hackable Amateur Radio Telescope."</br>
 Our online tutorials will guide you step-by-step in creating your own radio telescope at home or in the classroom. 
 
 --- 
