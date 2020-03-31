@@ -5,42 +5,65 @@
 # Title: Collectrtldata
 # Generated: Tue Aug 14 16:42:11 2018
 ##################################################
-#These are imports from GNU Radio 
-from gnuradio import blocks 
-from gnuradio import eng_notation #Engineering notation or engineering form is a version of scientific notation in which the exponent of ten must be divisible by three (i.e., they are powers of a thousand, but written as, for example, 106 instead of 10002).
-from gnuradio import fft #Fourier transform function.
-from gnuradio import gr #Need this to run GNU Radio.
-from gnuradio.eng_option import eng_option
-from gnuradio.fft import window
-from gnuradio.filter import firdes 
-from optparse import OptionParser #allows users to specify options in the conventional GNU/POSIX syntax, and additionally generates usage and help messages for you.
-import chart 
-import osmosdr #Lets you take advantage of a common software API in your application(s) independent of the underlying radio hardware.
-import time #Time function
-import datetime #supplies classes for manipulating dates and times in both simple and complex ways. 
-import timeit #Provides a simple way to time small bits of Python code.
-import numpy as np #Package for scientfic computing in python.
-import pprint #Module that provides a capability to "pretty print" arbitrary Python data structures in a well formatted and more readable way. 
-from ast import literal_eval # 'ast' helps Python applications to process trees of the Python abstract syntax grammar. 'literal_eval'Safely evaluate an expression node or a Unicode or Latin-1 encoded string containing a Python literal or container display. The string or node provided may only consist of the following Python literal structures: strings, numbers, tuples, lists, dicts, booleans, and None.
 
-#this is our collect data class with an instance of gnu radio first block
+from gnuradio import blocks
+from gnuradio import fft
+from gnuradio import gr
+from gnuradio.fft import window
+import chart
+import osmosdr
+import time
+import datetime
+import numpy as np
+import argparse
+import os
+import warnings
+
+
+# this is our collect data class with an instance of gnu radio first block
 class collectrtldata(gr.top_block):
-#we are creating a structure to our class and only contains center frequency
-    def __init__(self, c_freq):
-        gr.top_block.__init__(self, "Collectrtldata")  #does this loop???                                
+    """Class to collect RTL data and metadata."""
+
+    def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
+                 nint=100, data_dir=None):
+        """Initialize the collect top block.
+
+        Parameters
+        ----------
+        c_freq : float, optional
+            Center frequency, in Hz. Default is 50e6.
+        veclength : int, optional
+            Length of FFT. Default is 100.
+        samp_rate : float, optional
+            Sample rate of radio in Hz. Default is 2e6.
+        int_length : int, optional
+            Number of samples per integration. Default is 100.
+        nint : int, optional
+            Number of integrations per file. Default is 100.
+        data_dir : str, optional
+            Directory for data. Defaults to cwd.
+
+        """
+        gr.top_block.__init__(self, "Collectrtldata")
 
         ##################################################
         # Variables
         ##################################################
-        self.veclength = veclength = 1024 #manually sets the vector length
-        self.samp_rate = samp_rate = 2e6 #manually sets the sample rate
-        self.int_length = 100 #manually sets the integration length
-        self.set_filename() #names the file
+        self.veclength = veclength
+        self.samp_rate = samp_rate
+        self.int_length = int_length
+        self.nint = nint
+        if data_dir is None:
+            self.data_dir = os.getcwd()
+        else:
+            self.data_dir = data_dir
+        # Initialize to null to avoid empty file
+        self.set_filename()
         ##################################################
         # Blocks
         ##################################################
-        self.rtlsdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "" )
-        self.rtlsdr_source_0.set_sample_rate(samp_rate)
+        self.rtlsdr_source_0 = osmosdr.source(args="numchan=" + str(1) + " ")
+        self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
         self.set_c_freq(c_freq)
         self.rtlsdr_source_0.set_freq_corr(0, 0)
         self.rtlsdr_source_0.set_dc_offset_mode(0, 0)
@@ -51,46 +74,52 @@ class collectrtldata(gr.top_block):
         self.rtlsdr_source_0.set_bb_gain(20, 0)
         self.rtlsdr_source_0.set_antenna("", 0)
         self.rtlsdr_source_0.set_bandwidth(0, 0)
-          
-        self.fft_vxx_0 = fft.fft_vcc(veclength, True, (window.blackmanharris(1024)), True, 1)
-        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*1, 1024)
-        self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, veclength)
-        self.blocks_integrate_xx_0 = blocks.integrate_ff(self.int_length, veclength)
-        self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex*1, veclength*100*100)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*veclength, self.data_file, False)
+
+        self.fft_vxx_0 = fft.fft_vcc(self.veclength, True,
+                                     (window.blackmanharris(self.veclength)),
+                                     True, 1)
+        self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float,
+                                                                 self.veclength)
+        self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex,
+                                                                 self.veclength)
+        self.blocks_integrate_xx_0 = blocks.integrate_ff(self.int_length,
+                                                         self.veclength)
+        self.blocks_head_0 = blocks.head(gr.sizeof_gr_complex,
+                                         self.veclength * self.int_length * self.nint)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float * veclength,
+                                                   self.data_file, False)
         self.blocks_file_sink_0.set_unbuffered(False)
-        self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(veclength)
-        self.chart_meta_trig_py_ff_0 =chart.meta_trig_py_ff(veclength)
+        self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(self.veclength)
+        self.chart_meta_trig_py_ff_0 = chart.meta_trig_py_ff(self.veclength)
         ##################################################
         # Connections
         ##################################################
-	#these are the lines that connect each block in the visual display of GNU Radio
-        self.connect((self.chart_meta_trig_py_ff_0, 0), (self.blocks_file_sink_0, 0))    
-        self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))    
-        self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))    
-        self.connect((self.blocks_integrate_xx_0, 0), (self.chart_meta_trig_py_ff_0, 0))    
-        self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
-        self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))    
-        self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))    
+        # These are the lines that connect each block in the visual display of GNU Radio
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_head_0, 0))
+        self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))
+        self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
+        self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
+        self.connect((self.blocks_complex_to_mag_squared_0, 0),
+                     (self.blocks_integrate_xx_0, 0))
+        self.connect((self.blocks_integrate_xx_0, 0), (self.chart_meta_trig_py_ff_0, 0))
+        self.connect((self.chart_meta_trig_py_ff_0, 0), (self.blocks_file_sink_0, 0))
 
+        # Get start time
         self.start_time = time.time()
-#retrieves the vector length
-    def get_veclength(self):
-        return self.veclength
-#
-    def set_veclength(self, veclength):
-        self.veclength = veclength
-        self.blocks_head_0.set_length(self.veclength*100*100)
 
-    def get_samp_rate(self):
-        return self.samp_rate
+    def set_veclength(self, veclength):
+        """Set vector length."""
+        self.veclength = veclength
+        self.blocks_head_0.set_length(self.veclength * self.int_length * self.nint)
 
     def set_samp_rate(self, samp_rate):
+        """Set sample rate."""
         self.samp_rate = samp_rate
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
     def set_c_freq(self, c_freq, sleep=0.5):
-        """ Function to reset the tuning frequency
+        """Set the tuning frequency.
+
         Args:
             c_freq: center frequency, in Hz
             sleep: Time to sleep to allow the radio to settle. Default 0.5 seconds.
@@ -98,83 +127,128 @@ class collectrtldata(gr.top_block):
         self.c_freq = c_freq
         self.rtlsdr_source_0.set_center_freq(c_freq, 0)
         try:
-            self.chart_meta_trig_py_ff_0.l = []
+            self.chart_meta_trig_py_ff_0.times = []
         except AttributeError:
             pass
         time.sleep(sleep)
 
-    def set_filename(self, filename=None):
-        """ Function to set filename
+    def set_filename(self, filebase=None, fullpath=None):
+        """Set filename.
+
         Args:
-            filename: Optional filename. If not supplied, create filename from datetime
+            filebase: Optional base for filename. If not supplied,
+                create filename from datetime
+            fullpath: Optional full path for filename. Will override filebase.
         """
-        if filename is None:
-		    self.data_file = ('/home/locorpi3b/data/' + 
-                              str(datetime.datetime.now()).replace(' ', '_') + '.dat')
-		    self.data_file = self.data_file.replace(':', '-')
-		    self.metadata_file = self.data_file[:-3] + 'metadata.npz'
-        else:
-            self.data_file = filename
-            self.metadata_file = filename[:-3] + 'metadata.npz'
+        if filebase is None:
+            filebase = str(datetime.datetime.now()).replace(' ', '_')
+        self.data_file = os.path.join(self.data_dir, filebase + '.dat')
+        self.metadata_file = os.path.join(self.data_dir, filebase + '.metadata.npz')
         try:
             self.blocks_file_sink_0.open(self.data_file)
         except AttributeError:
             pass
 
-    def parameters(self):
-        d={'date': str(datetime.date.today()),
-           'start_time': time.time(), 
-           'samp_rate': self.samp_rate,
-           'frequency': self.c_freq,
-           'vector_length': self.get_veclength(),
-           'int_length': self.int_length,
-           #data file (.dat file it refers to)
-           'data_file': self.data_file,
-           #print after every integration. 100 d for each c_freq
-           'metadata_file': self.metadata_file,
-           'times': self.chart_meta_trig_py_ff_0.get_l()
-          }
-        return d
-#assigning the meta data
     def meta_save(self):
+        """Save the metadata."""
         np.savez(self.metadata_file,
-           date = str(datetime.date.today()),
-           start_time = self.start_time,
-           end_time = time.time(), 
-           samp_rate = self.samp_rate,
-           frequency = self.c_freq,
-           vector_length = self.get_veclength(),
-           int_length = self.int_length,
-           #data file (.dat file it refers to)
-           data_file = self.data_file,
-           #print after every integration. 100 d for each c_freq
-           metadata_file = self.metadata_file,
-           times = self.chart_meta_trig_py_ff_0.get_l())
+                 date=str(datetime.date.today()),
+                 start_time=self.start_time,
+                 end_time=time.time(),
+                 samp_rate=self.samp_rate,
+                 frequency=self.c_freq,
+                 vector_length=self.veclength,
+                 int_length=self.int_length,
+                 data_file=self.data_file,
+                 metadata_file=self.metadata_file,
+                 times=self.chart_meta_trig_py_ff_0.get_times())
 
-def main(top_block_cls=collectrtldata, options=None):
-    #create while loop and timer variable. while loop halts when timer variable
-    #reaches certain value. tb.wait(10) added at end to create intervals of time
-    dt = 30 * 60  # Time between scans, in seconds
-    total_time = 24 * 60 * 60  # Total time for observation, in seconds
-    i = 0 #used as starting value
-    f_i = 50 * 10**6  # Starting frequency, in Hz
-    f_f = 150 * 10**6  # Ending frequency, in Hz
-    df = 1 * 10**6  # tuning step size, in Hz
-    tb = top_block_cls(f_i)
+
+def get_collect_args():
+    """Get an argument parser for the collect script."""
+    ap = argparse.ArgumentParser()
+    ap.prog = "Collect.py"
+
+    ap.add_argument('--scan_period', default=0.5, type=float, help='Time '
+                    'between a scan and the next, in hours. Default is 0.5.')
+    ap.add_argument('--total_time', default=24., type=float,
+                    help='Total time for all scans, in hours. Default is 24.')
+    ap.add_argument('--freq_i', default=50., type=float, help='Starting frequency, '
+                    'in MHz. Default is 50.')
+    ap.add_argument('--freq_f', default=150., type=float, help='Ending frequency, '
+                    'in MHz. Default is 150.')
+    ap.add_argument('--df', default=1., type=float, help='Frequency tuning step '
+                    'size, in MHz. Default is 1.')
+    ap.add_argument('--sleep_time', default=5., type=float, help='Sleep time '
+                    'between checks for next scan time, in seconds. Default is 5.')
+    ap.add_argument('--veclength', default=1024, type=int, help='Vector length '
+                    '(number of channels) for spectrum estimation. Default is 1024.')
+    ap.add_argument('--samp_rate', default=2., type=float, help='Sample rate '
+                    'of the radio, in MHz. Default is 2.')
+    ap.add_argument('--int_length', default=100, type=int, help='Number of samples '
+                    'per integration. Default is 100.')
+    ap.add_argument('--int_time', type=float, help='Integration time, in seconds.'
+                    ' Overrides the --int_length argument.')
+    ap.add_argument('--nint', default=100, type=int, help='Number of integrations '
+                    'per file. Default is 100.')
+    ap.add_argument('--data_dir', default=None, type=str, help='Data directory. '
+                    'Defaults to current working directory.')
+
+    args = ap.parse_args()
+    # Convert some units for internal use
+    args.scan_period *= 3600
+    args.total_time *= 3600
+    args.freq_i *= 1e6
+    args.freq_f *= 1e6
+    args.df *= 1e6
+    args.samp_rate *= 1e6
+    # Do a quick check on the data directory
+    if args.data_dir is None:
+        args.data_dir = os.getcwd()
+    else:
+        args.data_dir = os.path.expanduser(args.data_dir)
+    if not os.path.isdir(args.data_dir):
+        bad_dir = args.data_dir
+        args.data_dir = os.getcwd()
+        warnings.warn(bad_dir + 'Data directory not valid, using cwd = ' + args.data_dir)
+
+    return args
+
+
+def main(top_block_cls=collectrtldata):
+    """Create a topblock and loop over frequencies and scans."""
+    args = get_collect_args()
+    if args.int_time is None:
+        int_time = args.veclength / args.samp_rate * args.int_length
+        print('int_length set to ' + str(args.int_length) + ' which corresonds'
+              'to integration time of ' + str(int_time) + ' seconds.')
+    else:
+        args.int_length = int(args.int_time * args.samp_rate / args.vec_length)
+        int_time = args.veclength / args.samp_rate * args.int_length
+        print('int_time set to ' + str(args.int_time) + ' seconds. Using '
+              'int_length of ' + str(args.int_length) + '. Actual integraton '
+              'time is ' + str(int_time) + ' seconds.') 
+    tb = top_block_cls(c_freq=args.freq_i, veclength=args.veclength,
+                       samp_rate=args.samp_rate, int_length=args.int_length,
+                       nint=args.nint, data_dir=args.data_dir)
+    scan_number = 0  # used as scan counter
     t0 = time.time()
-    while time.time() - t0 < total_time:
-        for c_freq in range(f_i, f_f, df):
-            print('Frequency: ' + str(c_freq/10**6) + ' MHz')
+    # Remove the empty file that was created when instantiating top block
+    os.remove(tb.data_file)
+    while time.time() - t0 < args.total_time:
+        for c_freq in np.arange(args.freq_i, args.freq_f, args.df):
+            print('Frequency: ' + str(c_freq / 10**6) + ' MHz')
             tb.set_c_freq(c_freq)
             tb.blocks_head_0.reset()
             tb.set_filename()
             tb.start()
             tb.wait()
             tb.meta_save()
-        i += 1
-        while time.time() < t0 + i * dt:
-            time.sleep(5)  # Sleep 5 seconds
+        scan_number += 1
+        while time.time() < t0 + scan_number * args.scan_period:
+            time.sleep(args.sleep_time)  # Sleep before trying again
     del(tb)
+
 
 if __name__ == '__main__':
     main()
