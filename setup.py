@@ -18,7 +18,6 @@ setup_args = {
     'scripts': ['daq/collect.py'],
     'version': 1.0,
     'install_requires': [
-        'osmosdr',
         'numpy>=1.10',
     ],
 }
