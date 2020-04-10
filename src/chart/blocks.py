@@ -90,18 +90,18 @@ class TopBlock(gr.top_block):
         self.fft_vxx_0 = fft.fft_vcc(self.veclength, True,
                                      (window.blackmanharris(self.veclength)),
                                      True, 1)
-        self.blocks_vector_to_stream_0 = grblocksvector_to_stream(gr.sizeof_float,
+        self.blocks_vector_to_stream_0 = grblocks.vector_to_stream(gr.sizeof_float,
                                                                  self.veclength)
-        self.blocks_stream_to_vector_0 = grblocksstream_to_vector(gr.sizeof_gr_complex,
+        self.blocks_stream_to_vector_0 = grblocks.stream_to_vector(gr.sizeof_gr_complex,
                                                                  self.veclength)
-        self.blocks_integrate_xx_0 = grblocksintegrate_ff(self.int_length,
+        self.blocks_integrate_xx_0 = grblocks.integrate_ff(self.int_length,
                                                          self.veclength)
-        self.blocks_head_0 = grblockshead(gr.sizeof_gr_complex,
+        self.blocks_head_0 = grblocks.head(gr.sizeof_gr_complex,
                                          self.veclength * self.int_length * self.nint)
-        self.blocks_file_sink_0 = grblocksfile_sink(gr.sizeof_float * veclength,
+        self.blocks_file_sink_0 = grblocks.file_sink(gr.sizeof_float * veclength,
                                                    self.data_file, False)
         self.blocks_file_sink_0.set_unbuffered(False)
-        self.blocks_complex_to_mag_squared_0 = grblockscomplex_to_mag_squared(self.veclength)
+        self.blocks_complex_to_mag_squared_0 = grblocks.complex_to_mag_squared(self.veclength)
         self.chart_meta_trig_py_ff_0 = meta_trig_py_ff(self.veclength)
         ##################################################
         # Connections
