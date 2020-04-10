@@ -1,6 +1,7 @@
 .DS_Store
 */.DS_Store
 */*/.DS_Store
-CHART_wrk/blocks/gr-chart/build
-CHART_wrk/*.pyc
 website/tutorials/.DS_Store
+build
+chart.egg-info
+dist
