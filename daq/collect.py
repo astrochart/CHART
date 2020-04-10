@@ -58,7 +58,7 @@ def get_collect_args():
     return args
 
 
-def main(top_block_cls=collectrtldata):
+def main():
     """Create a topblock and loop over frequencies and scans."""
     args = get_collect_args()
     if args.int_time is None:
