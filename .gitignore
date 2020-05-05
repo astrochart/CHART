@@ -1,7 +1,6 @@
 .DS_Store
 */.DS_Store
 */*/.DS_Store
-website/tutorials/.DS_Store
 build
 chart.egg-info
 dist
