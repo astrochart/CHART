@@ -19,7 +19,6 @@ setup_args = {
     'version': 1.0,
     'install_requires': [
         'numpy>=1.10',
-        'gps'
     ],
 }
 
