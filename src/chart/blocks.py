@@ -172,4 +172,6 @@ class TopBlock(gr.top_block):
                  int_length=self.int_length,
                  data_file=self.data_file,
                  metadata_file=self.metadata_file,
-                 times=self.chart_meta_trig_py_ff_0.get_times())
+                 times=self.chart_meta_trig_py_ff_0.get_times(),
+                 dtype=np.float32,
+                )
