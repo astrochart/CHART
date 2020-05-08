@@ -19,11 +19,11 @@ def print_meta(meta):
 
 def read_data(datafile, metadata_file, verbose=False):
     meta = np.load(meta_file)
-	data = np.fromfile(datafile, dtype=meta['dtype'])
+    data = np.fromfile(datafile, dtype=meta['dtype'])
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
     if verbose:
         print_meta(meta)
-	return data, meta
+    return data, meta
 
 
 def plot_spectrum(data, meta):
@@ -39,8 +39,8 @@ def find_dat_files(directory=None):
     if directory is None:
         directory = os.curdir()
     data_list = sorted(glob.glob(os.path.join(directory, '*.dat')))
-	return data_list
+    return data_list
 
 
 def concat(data_list):
-	raise NotImplementedError()
+    raise NotImplementedError()

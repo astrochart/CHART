@@ -4,8 +4,6 @@ import sys
 import os.path as op
 import json
 
-sys.path.append('src')
-
 setup_args = {
     'name': 'chart',
     'author': 'CHART',

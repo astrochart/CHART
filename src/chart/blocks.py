@@ -1,13 +1,13 @@
 import numpy as np
-from gnuradio import gr
 import time
+import datetime
+import argparse
+import os
+from gnuradio import gr
 from gnuradio import blocks as grblocks
 from gnuradio import fft
 from gnuradio.fft import window
 import osmosdr
-import datetime
-import argparse
-import os
 
 
 class meta_trig_py_ff(gr.sync_block):
