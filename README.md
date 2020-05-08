@@ -19,6 +19,17 @@ The tutorials are a work in progress, but so far will walk you through:
 
 Here we provide the software installation instructions to get you started.
 
+#### Analysis Only
+
+If you are only using the analysis code, you can simply clone the repo and use pip to install.
+```bash
+git clone git@github.com:astrochart/CHART.git
+cd CHART
+pip install .
+```
+
+#### Full Install
+
 CHART software uses GNU Radio, a free open source package for collecting and processing radio data.
 To learn more about GNU Radio visit this site https://www.gnuradio.org/about/.
 
