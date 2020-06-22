@@ -173,5 +173,5 @@ class TopBlock(gr.top_block):
                  data_file=np.array(self.data_file),
                  metadata_file=np.array(self.metadata_file),
                  times=np.array(self.chart_meta_trig_py_ff_0.get_times()),
-                 dtype=np.array(np.float32),
+                 dtype=np.array('np.float32'),
                 )
