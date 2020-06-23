@@ -153,6 +153,7 @@ class TopBlock(gr.top_block):
         """
         if filebase is None:
             filebase = str(datetime.datetime.now()).replace(' ', '_')
+            filebase = filebase.replace(':', '-')
         self.data_file = os.path.join(self.data_dir, filebase + '.dat')
         self.metadata_file = os.path.join(self.data_dir, filebase + '.metadata.npz')
         try:
