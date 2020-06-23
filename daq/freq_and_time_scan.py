@@ -86,7 +86,7 @@ def main():
             tb.set_filename()
             tb.start()
             tb.wait()
-            tb.meta_save()
+            #tb.meta_save()
         scan_number += 1
         while time.time() < t0 + scan_number * args.scan_period:
             time.sleep(args.sleep_time)  # Sleep before trying again
