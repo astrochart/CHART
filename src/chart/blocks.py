@@ -174,16 +174,16 @@ class TopBlock(gr.top_block):
         print np.asarray(str(self.metadata_file))
         print np.asarray(self.chart_meta_trig_py_ff_0.get_times())
         print np.asarray(str(np.float32))
-        np.savez(str(self.metadata_file),
-                 data=np.asarray(str(datetime.date.today()),
-                 start_time=np.asarray(self.start_time),
-                 end_time=np.asarray(time.time()),
-                 samp_rate=np.asarray(self.samp_rate),
-                 frequency=np.asarray(self.c_freq),
-                 vector_length=np.asarray(self.veclength),
-                 int_length=np.asarray(self.int_length),
-                 data_file=np.asarray(self.data_file),
-                 metadata_file=np.asarray(str(self.metadata_file)),
-                 times=np.asarray(self.chart_meta_trig_py_ff_0.get_times()),
-                 dtype=np.asarray('np.float32'),
+        #np.savez(str(self.metadata_file),
+        #         data=np.asarray(str(datetime.date.today()),
+        #         start_time=np.asarray(self.start_time),
+        #         end_time=np.asarray(time.time()),
+        #         samp_rate=np.asarray(self.samp_rate),
+        #         frequency=np.asarray(self.c_freq),
+        #         vector_length=np.asarray(self.veclength),
+        #         int_length=np.asarray(self.int_length),
+        #         data_file=np.asarray(self.data_file),
+        #         metadata_file=np.asarray(str(self.metadata_file)),
+        #         times=np.asarray(self.chart_meta_trig_py_ff_0.get_times()),
+        #         dtype=np.asarray('np.float32'),
                 )
