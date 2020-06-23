@@ -162,6 +162,8 @@ class TopBlock(gr.top_block):
 
     def meta_save(self):
         """Save the metadata."""
+        print((str(self.metadata_file)),
+        print(np.asarray(str(datetime.date.today())))
         np.savez(str(self.metadata_file),
                  data=np.asarray(str(datetime.date.today())),
                  start_time=np.asarray(self.start_time),
