@@ -163,7 +163,7 @@ class TopBlock(gr.top_block):
     def meta_save(self):
         """Save the metadata."""
         np.savez(self.metadata_file,
-                 date=str(datetime.date.today()),
+                 date=datetime.date.today(),
                  start_time=self.start_time,
                  end_time=time.time(),
                  samp_rate=self.samp_rate,
@@ -173,5 +173,5 @@ class TopBlock(gr.top_block):
                  data_file=self.data_file,
                  metadata_file=self.metadata_file,
                  times=self.chart_meta_trig_py_ff_0.get_times(),
-                 dtype=np.float32,
+                 dtype=[np.float32],
                 )

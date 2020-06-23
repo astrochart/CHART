@@ -19,7 +19,7 @@ def print_meta(meta):
 
 def read_data(datafile, metadata_file, verbose=False):
     meta = np.load(meta_file)
-    data = np.fromfile(datafile, dtype=meta['dtype'])
+    data = np.fromfile(datafile, dtype=meta['dtype'][0])
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
     if verbose:
         print_meta(meta)
