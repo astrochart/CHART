@@ -18,7 +18,7 @@ def print_meta(meta):
             print(key, ':\t', meta[key])
 
 def read_data(datafile, metadata_file, verbose=False):
-    meta = np.load(meta_file)
+    meta = np.load(metadata_file)
     data = np.fromfile(datafile, dtype=meta['dtype'][0])
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
     if verbose:
