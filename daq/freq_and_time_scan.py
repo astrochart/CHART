@@ -12,14 +12,14 @@ def get_collect_args():
     ap = argparse.ArgumentParser()
     ap.prog = "Collect.py"
 
-    ap.add_argument('--scan_period', default=0.5, type=float, help='Time '
-                    'between a scan and the next, in hours. Default is 0.5.')
-    ap.add_argument('--total_time', default=24., type=float,
-                    help='Total time for all scans, in hours. Default is 24.')
-    ap.add_argument('--freq_i', default=50., type=float, help='Starting frequency, '
-                    'in MHz. Default is 50.')
-    ap.add_argument('--freq_f', default=150., type=float, help='Ending frequency, '
-                    'in MHz. Default is 150.')
+    ap.add_argument('--scan_period', default=0.001, type=float, help='Time '
+                    'between a scan and the next, in hours. Default is 0.001')
+    ap.add_argument('--total_time', default=0.001, type=float,
+                    help='Total time for all scans, in hours. Default is .001')
+    ap.add_argument('--freq_i', default=1410., type=float, help='Starting frequency, '
+                    'in MHz. Default is 1410.')
+    ap.add_argument('--freq_f', default=1430., type=float, help='Ending frequency, '
+                    'in MHz. Default is 1430.')
     ap.add_argument('--df', default=1., type=float, help='Frequency tuning step '
                     'size, in MHz. Default is 1.')
     ap.add_argument('--sleep_time', default=5., type=float, help='Sleep time '
@@ -32,8 +32,8 @@ def get_collect_args():
                     'per integration. Default is 100.')
     ap.add_argument('--int_time', type=float, help='Integration time, in seconds.'
                     ' Overrides the --int_length argument.')
-    ap.add_argument('--nint', default=100, type=int, help='Number of integrations '
-                    'per file. Default is 100.')
+    ap.add_argument('--nint', default=500, type=int, help='Number of integrations '
+                    'per file. Default is 500.')
     ap.add_argument('--data_dir', default=None, type=str, help='Data directory. '
                     'Defaults to current working directory.')
 
