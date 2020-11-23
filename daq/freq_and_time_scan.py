@@ -16,7 +16,8 @@ def get_collect_args():
                     'between a scan and the next, in hours. Default is 0.001, '
                     'which with the default `total_time` will result in a single scan.')
     ap.add_argument('--total_time', default=0.001, type=float,
-                    help='Total time for all scans, in hours. Default is .001')
+                    help='Total time for all scans, in hours. Default is .001, '
+                    'which is used for a single scan.')
     ap.add_argument('--freq_i', default=1410., type=float, help='Starting frequency, '
                     'in MHz. Default is 1410.')
     ap.add_argument('--freq_f', default=1430., type=float, help='Ending frequency, '
