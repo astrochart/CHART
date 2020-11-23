@@ -13,7 +13,8 @@ def get_collect_args():
     ap.prog = "Collect.py"
 
     ap.add_argument('--scan_period', default=0.001, type=float, help='Time '
-                    'between a scan and the next, in hours. Default is 0.001')
+                    'between a scan and the next, in hours. Default is 0.001, '
+                    'which with the default `total_time` will result in a single scan.')
     ap.add_argument('--total_time', default=0.001, type=float,
                     help='Total time for all scans, in hours. Default is .001')
     ap.add_argument('--freq_i', default=1410., type=float, help='Starting frequency, '
