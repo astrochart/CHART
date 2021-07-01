@@ -68,7 +68,7 @@ def main():
         print('int_length set to ' + str(args.int_length) + ' which corresonds'
               'to integration time of ' + str(int_time) + ' seconds.')
     else:
-        args.int_length = int(args.int_time * args.samp_rate / args.vec_length)
+        args.int_length = int(args.int_time * args.samp_rate / args.veclength)
         int_time = args.veclength / args.samp_rate * args.int_length
         print('int_time set to ' + str(args.int_time) + ' seconds. Using '
               'int_length of ' + str(args.int_length) + '. Actual integraton '
