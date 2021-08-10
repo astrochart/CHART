@@ -27,13 +27,13 @@ def read_data(datafile, metadata_file, verbose=False):
 
 
 def plot_spectrum(data, meta):
-    spectrum = np.average(data, axis=0)
+    spectrum = np.mean(data, axis=0)
     frequencies = ((np.arange(meta['vector_length']) - meta['vector_length'] / 2)
                    * meta['samp_rate'] / meta['vector_length'] + meta['frequency'])
     plt.plot(1e-6 * frequencies, spectrum)
     plt.xlabel('Frequency [MHz]')
     plt.ylabel('Power [Arb. Units]')
-
+    
 
 def find_dat_files(directory=None):
     if directory is None:
