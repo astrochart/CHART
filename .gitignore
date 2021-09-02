@@ -4,3 +4,4 @@
 build
 chart.egg-info
 dist
+.ipynb_checkpoints
