@@ -22,7 +22,7 @@ def read_data(datafile, metadata_file, verbose=False):
     if 'dtype' in meta:
         data = np.fromfile(datafile, dtype=meta['dtype'][0])
     else:
-        data = np.fromfile(data_files[0], dtype=np.float32)
+        data = np.fromfile(data_file, dtype=np.float32)
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
     if verbose:
         print_meta(meta)
