@@ -37,11 +37,36 @@ def button_function():
     user = customtkinter.CTkEntry.get(uName)
     date = customtkinter.CTkEntry.get(dName)
     trial = customtkinter.CTkEntry.get(tName)
-    location = customtkinter.CTkEntry.get(locName)
+    sLocation = customtkinter.CTkEntry.get(locName)
     time = customtkinter.CTkEntry.get(curTime)
     tDay = combobox.get()
+    #make sure the location does not have spaces
+    location = sLocation.replace(" ", "_")
     directory = user+"_"+location+"_"+date+"_"+trial+"_"+time+"_"+tDay
     print(directory)
+    
+    #set the time
+    #sudo date -s "2006-08-14T02:34:56"
+    #change the month to have 2
+    month, day, year = date.split(".")
+    
+    if(len(month) == 1):
+        month= "0"+month
+    
+    if(len(day) ==1):
+        day = "0"+day
+    
+    if(len(year) == 2):
+        "20"+year
+
+
+
+    
+    #we needed to add the seconds onto the time
+    time = time+":00"
+    
+    change_date = "sudo date -s \""+year+"-"+month+"-"+day+"T"+time+"\""
+    os.system(change_date)
     
     #creating a directory to store the data. This should only happen once
     home_name = os.path.expanduser('~')
