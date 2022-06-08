@@ -49,9 +49,9 @@ pip install gps
 
 Clone this repository and install.
 ```bash
-git clone git@github.com:astrochart/CHART.git
+git clone https://github.com/astrochart/CHART.git
 cd CHART
-python setup.py install
+python setup.py install --user
 ```
 
 ---
