@@ -38,7 +38,7 @@ We will assume you are running Ubuntu MATE on a Raspberry Pi (instructions  [her
 In a terminal, enter the following:
 ```bash
 sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython
-pip install numpy gps
+pip install numpy
 ```
 
 To use the GPS submodule (optional), run these lines:
@@ -49,9 +49,9 @@ pip install gps
 
 Clone this repository and install.
 ```bash
-git clone git@github.com:astrochart/CHART.git
+git clone https://github.com/astrochart/CHART.git
 cd CHART
-python setup.py install
+pip install .
 ```
 
 ---
