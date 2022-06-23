@@ -13,9 +13,13 @@ app.geometry("576x288")
 app.title("Today's Data")
 
 def stop():
-    os.system("exit")
+    proc.terminate()
+    print("Data collected halted!")
 
 def button_function():
+    
+    global proc
+    
     user = customtkinter.CTkEntry.get(uName)
     date = customtkinter.CTkEntry.get(dName)
     trial = customtkinter.CTkEntry.get(tName)
@@ -43,7 +47,8 @@ def button_function():
    
   
     sCopy = 'python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir='+dirsUse
-    os.system(sCopy)
+    sCopy = sCopy.split(' ')
+    proc = subprocess.Popen(sCopy)
     
     #cmd = "python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir --"+main_dir
     #os.system(cmd)    
