@@ -1,6 +1,7 @@
 import tkinter
 import customtkinter
 import os
+import subprocess
 
 
 
@@ -11,6 +12,8 @@ app = customtkinter.CTk()  # create CTk window like you do with the Tk window
 app.geometry("576x288")
 app.title("Today's Data")
 
+def stop():
+    os.system("exit")
 
 def button_function():
     user = customtkinter.CTkEntry.get(uName)
@@ -22,15 +25,24 @@ def button_function():
     directory = user+"_"+location+"_"+date+"_"+trial+"_"+time+"_"+tDay
     print(directory)
     
-    main_dir = directory
+    #creating a directory to store the data. This should only happen once
+    home_name = os.path.expanduser('~')
+    data_directory = home_name+'/data'
+    if((os.path.isdir(data_directory)) == False):
+        os.mkdir(data_directory, mode = 0o1777)
+        print("Directory '% s' is built!" % data_directory)
+    else:
+        print("file already exists")
+      
+    main_dir = data_directory+'/'+directory
     os.mkdir(main_dir, mode = 0o1777)
     print("Directory '% s' is built!" % main_dir)
     
-    dirsUse = '/home/winona/CHART/daq/'+str(directory)
+    dirsUse = str(data_directory)+'/'+str(directory)
     print(dirsUse)
    
+  
     sCopy = 'python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir='+dirsUse
-
     os.system(sCopy)
     
     #cmd = "python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir --"+main_dir
@@ -142,5 +154,7 @@ combobox.pack(padx=5, pady=5)
 combobox.set("pm")  # set initial value
 combobox.place(relx=0.75, rely=0.5, anchor=tkinter.W)
 
+button = customtkinter.CTkButton(master=app, text="Quit", command=stop)
+button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
 
 app.mainloop()
