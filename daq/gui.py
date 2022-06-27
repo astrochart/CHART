@@ -33,7 +33,8 @@ def start():
     time = customtkinter.CTkEntry.get(curTime)
     tDay = combobox.get()
     #make sure the location does not have spaces
-    location = sLocation.replace(" ", "_")
+    location = sLocation.replace(" ", "-")
+    date = date.replace("/", ".")
     directory = user+"_"+location+"_"+date+"_"+trial+"_"+time+"_"+tDay
     print(directory)
     
