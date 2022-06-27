@@ -119,7 +119,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "orange"),
                                corner_radius=5)
-label.place(relx=0.2, rely=0.1, anchor=tkinter.W)
+label.place(relx=0.2, rely=0.16, anchor=tkinter.W)
 
 
 
@@ -129,7 +129,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.26, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_i_in = customtkinter.CTkEntry(master=app,
@@ -138,7 +138,7 @@ freq_i_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_i_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
+freq_i_in.place(relx=0.3, rely=0.26, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Final Frequency:",
@@ -146,7 +146,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.36, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_f_in = customtkinter.CTkEntry(master=app,
@@ -155,7 +155,7 @@ freq_f_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_f_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
+freq_f_in.place(relx=0.3, rely=0.36, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Integration Time:",
@@ -163,7 +163,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.46, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 int_time_in = customtkinter.CTkEntry(master=app,
@@ -172,7 +172,7 @@ int_time_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-int_time_in.place(relx=0.3, rely=0.4, anchor=tkinter.W)
+int_time_in.place(relx=0.3, rely=0.46, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Number of Integrations:",
@@ -180,7 +180,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.07, rely=0.5, anchor=tkinter.W)
+label.place(relx=0.07, rely=0.56, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 nint_in = customtkinter.CTkEntry(master=app,
@@ -189,7 +189,7 @@ nint_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
+nint_in.place(relx=0.34, rely=0.56, anchor=tkinter.W)
     
     
     #saving = ((customtkinter.CTkEntry.get(freq_i_in)), (customtkinter.CTkEntry.get(freq_f_in)), (customtkinter.CTkEntry.get(int_time_in)), (customtkinter.CTkEntry.get(nint_in)))
