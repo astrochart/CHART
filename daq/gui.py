@@ -279,22 +279,6 @@ uName = customtkinter.CTkEntry(master=app,
 uName.place(relx=0.7, rely=0.2, anchor=tkinter.W)
 
 
-label = customtkinter.CTkLabel(master=app,
-                               text="Date:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5)
-label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
-##n, ne, e, se, s, sw, w, nw, or center
-
-dName = customtkinter.CTkEntry(master=app,
-                               placeholder_text="MM.DD.YYYY",
-                               width=120,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10)
-dName.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Location:",
@@ -302,7 +286,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 locName = customtkinter.CTkEntry(master=app,
@@ -311,7 +295,7 @@ locName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-locName.place(relx=0.7, rely=0.4, anchor=tkinter.W)
+locName.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Trial:",
@@ -319,7 +303,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 tName = customtkinter.CTkEntry(master=app,
@@ -328,7 +312,24 @@ tName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-tName.place(relx=0.7, rely=0.5, anchor=tkinter.W)
+tName.place(relx=0.7, rely=0.4, anchor=tkinter.W)
+
+label = customtkinter.CTkLabel(master=app,
+                               text="Date:",
+                               width=100,
+                               height=25,
+                               fg_color=("white", "gray"),
+                               corner_radius=5)
+label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
+##n, ne, e, se, s, sw, w, nw, or center
+
+dName = customtkinter.CTkEntry(master=app,
+                               placeholder_text="MM.DD.YYYY",
+                               width=120,
+                               height=25,
+                               border_width=2,
+                               corner_radius=10)
+dName.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 current_date_button = customtkinter.CTkButton(master=app, text="DD", command=current_date,height = 20, width = 20 )
 current_date_button.place(relx=0.95, rely=.5, anchor=tkinter.CENTER)
