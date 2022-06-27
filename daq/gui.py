@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import tkinter
 import customtkinter
 import os
@@ -18,6 +19,7 @@ app.title("Today's Data")
 def stop():
     proc.terminate()
     print("Data collected halted!")
+    start_button.configure(state=tkinter.NORMAL)
 
 
 def start():
@@ -56,10 +58,11 @@ def start():
     hour, minute = time.split(":")
     #we needed to add the seconds onto the time
     if(tDay == "pm"):
-        t = int(hour)+12
-        hour = str(t)
-        print("hour is "+hour)
-        time = hour+":"+minute
+        if(hour != "12"):
+            t = int(hour)+12
+            hour = str(t)
+            print("hour is "+hour)
+            time = hour+":"+minute
         
     if(len(hour) == 1):
         time = "0"+hour+":"+minute
@@ -79,9 +82,36 @@ def start():
         print("file already exists")
       
     main_dir = data_directory+'/'+directory
-    os.mkdir(main_dir, mode = 0o1777)
-    print("Directory '% s' is built!" % main_dir)
+    if(os.path.isdir(main_dir) == False):
+        os.mkdir(main_dir, mode = 0o1777)
+        print("Directory '% s' is built!" % main_dir)
+    else:
+        err = customtkinter.CTk()  # create CTk window like you do with the Tk window
+        err.geometry("576x288")
+        err.title("ERROR")
+        label = customtkinter.CTkLabel(master=err,
+                               text="File "+main_dir+" already exists.",
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.3, rely=0.2, anchor=tkinter.W)
+        label = customtkinter.CTkLabel(master=err,
+                               text="Change the time and trial number before clicking start.",
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
+        start_button.configure(state=tkinter.NORMAL)
+        stop_button.configure(state=tkinter.DISABLED)
+        return
     
+    
+    
+    print("did not work")
     dirsUse = str(data_directory)+'/'+str(directory)
     print(dirsUse)
 
@@ -112,15 +142,6 @@ def start():
 def combobox_callback(choice):
     print("combobox dropdown clicked:", choice)
 
-
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Parameters:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "orange"),
-                               corner_radius=5)
-label.place(relx=0.2, rely=0.16, anchor=tkinter.W)
 
 
 
