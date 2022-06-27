@@ -3,8 +3,9 @@ import tkinter
 import customtkinter
 import os
 import subprocess
+import datetime
 
-
+use_current_time = "no"
 
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -29,9 +30,9 @@ def start():
     stop_button.configure(state=tkinter.NORMAL)
     
     user = customtkinter.CTkEntry.get(uName)
-    date = customtkinter.CTkEntry.get(dName)
-    trial = customtkinter.CTkEntry.get(tName)
     sLocation = customtkinter.CTkEntry.get(locName)
+    trial = customtkinter.CTkEntry.get(tName)
+    date = customtkinter.CTkEntry.get(dName)
     time = customtkinter.CTkEntry.get(curTime)
     tDay = combobox.get()
     #make sure the location does not have spaces
@@ -154,7 +155,24 @@ def start():
 def combobox_callback(choice):
     print("combobox dropdown clicked:", choice)
 
-
+def current_time():
+# using now() to get current time
+    current_time = datetime.datetime.now()
+ 
+# Printing attributes of now().
+    print("The attributes of now() are :")
+ 
+    print("Hour : ", current_time.hour)
+ 
+    print("Minute : ", current_time.minute)
+    
+def current_date():
+    print("Year :", current_time.year)
+ 
+    print("Month : ", current_time.month)
+ 
+    print("Day : ", current_time.day)
+ 
 
 
 label = customtkinter.CTkLabel(master=app,
@@ -312,6 +330,9 @@ tName = customtkinter.CTkEntry(master=app,
                                corner_radius=10)
 tName.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
+current_date_button = customtkinter.CTkButton(master=app, text="DD", command=current_date,height = 20, width = 20 )
+current_date_button.place(relx=0.95, rely=.5, anchor=tkinter.CENTER)
+
 label = customtkinter.CTkLabel(master=app,
                                text="Time:",
                                width=100,
@@ -333,10 +354,12 @@ curTime.place(relx=0.7, rely=0.6, anchor=tkinter.W)
 
 combobox = customtkinter.CTkComboBox(master=app,
                                      values=["am", "pm"],
-                                     command=combobox_callback, height = 25, width = 70, variable = "")
+                                     command=combobox_callback, height = 25, width = 55, variable = "")
 combobox.pack(padx=5, pady=5)
 combobox.set("pm")  # set initial value
 combobox.place(relx=0.81, rely=0.6, anchor=tkinter.W)
 
+current_time_button = customtkinter.CTkButton(master=app, text="DT", command=current_time,height = 20, width = 20 )
+current_time_button.place(relx=0.95, rely=.6, anchor=tkinter.CENTER)
 
 app.mainloop()
