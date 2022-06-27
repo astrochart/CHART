@@ -119,14 +119,26 @@ def start():
     
     print("saving the new parameters")
     print(freq_i_in)
-    
+    #freq_i
+    #freq_f
+    #int_time
+    #nint
      #(customtkinter.CTkEntry.get(freq_i_in), customtkinter.CTkEntry.get(freq_f_in), customtkinter.CTkEntry.get(int_time_in), )
     freq_i = customtkinter.CTkEntry.get(freq_i_in)
     freq_f = customtkinter.CTkEntry.get(freq_f_in)
     int_time = customtkinter.CTkEntry.get(int_time_in)
     nint = customtkinter.CTkEntry.get(nint_in)
-    
-    print(freq_i)
+    if not freq_i:
+        freq_i = "1419"
+    if not freq_f:
+        freq_f = "1419.2"
+        
+    if not int_time:
+        int_time = "0.5"
+        
+    if not nint:
+        nint = "100"
+        
     
     print(freq_i)
     
@@ -155,7 +167,7 @@ label.place(relx=0.1, rely=0.26, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_i_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1390",
+                               placeholder_text="1419",
                                width=60,
                                height=25,
                                border_width=2,
@@ -172,7 +184,7 @@ label.place(relx=0.1, rely=0.36, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_f_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1450",
+                               placeholder_text="1419.2",
                                width=60,
                                height=25,
                                border_width=2,
@@ -206,7 +218,7 @@ label.place(relx=0.07, rely=0.56, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 nint_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="20",
+                               placeholder_text="100",
                                width=60,
                                height=25,
                                border_width=2,
