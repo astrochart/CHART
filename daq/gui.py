@@ -23,6 +23,8 @@ def stop():
 def start():
     
     global proc
+    start_button.configure(state=tkinter.DISABLED)
+    stop_button.configure(state=tkinter.NORMAL)
     
     user = customtkinter.CTkEntry.get(uName)
     date = customtkinter.CTkEntry.get(dName)
@@ -195,16 +197,17 @@ nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
 #button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
 
 
-
-
-
-
 # Use CTkButton instead of tkinter Button
-button = customtkinter.CTkButton(master=app, text="Start", command=start)
-button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
+start_button = customtkinter.CTkButton(master=app, text="Start", command=start)
+start_button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
+start_button.configure(state=tkinter.NORMAL)
 
-button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
-button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
+
+stop_button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
+stop_button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
+stop_button.configure(state=tkinter.DISABLED)
+#start with it dissabled so you cannot click stop before start
+
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
