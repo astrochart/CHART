@@ -14,26 +14,16 @@ app = customtkinter.CTk()  # create CTk window like you do with the Tk window
 app.geometry("576x288")
 app.title("Today's Data")
 
-def parameters():
-    print("changing parameters")
-    param_app = customtkinter.CTk()  # create CTk window like you do with the Tk window
-    param_app.geometry("576x288")
-    param_app.title("Parameters")
     
-    
+def stop():
+    proc.terminate()
+    print("Data collected halted!")
 
-#def save(freq_i_in, freq_f_in, int_time_in, nint_in):
-   # print("saving the new parameters")
-   # print(freq_i_in)
-    
-     #(customtkinter.CTkEntry.get(freq_i_in), customtkinter.CTkEntry.get(freq_f_in), customtkinter.CTkEntry.get(int_time_in), )
-    #freq_i = customtkinter.CTkEntry.get(freq_i_in)
-    #freq_f = customtkinter.CTkEntry.get(freq_f_in)
-    #int_time = customtkinter.CTkEntry.get(int_time_in)
-    #nint = customtkinter.CTkEntry.get(nint_in)
-    #print(freq_i)
 
 def button_function():
+    
+    global proc
+    
     user = customtkinter.CTkEntry.get(uName)
     date = customtkinter.CTkEntry.get(dName)
     trial = customtkinter.CTkEntry.get(tName)
@@ -83,6 +73,7 @@ def button_function():
     
     dirsUse = str(data_directory)+'/'+str(directory)
     print(dirsUse)
+
     
     
     print("saving the new parameters")
@@ -100,12 +91,10 @@ def button_function():
     
     sCopy = 'python freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+dirsUse
 
-    #sCopy = 'python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir='+dirsUse
-    os.system(sCopy)
     
-    #cmd = "python freq_and_time_scan.py --freq_i=1390 --freq_f=1450 --int_time=0.5 --nint=20 --data_dir --"+main_dir
-    #os.system(cmd)    
-    
+    sCopy = sCopy.split(' ')
+    proc = subprocess.Popen(sCopy)
+
 
 ## writing to the file - file_Object = open("file_Name","mode")
 
@@ -206,6 +195,8 @@ nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
 button = customtkinter.CTkButton(master=app, text="Start", command=button_function)
 button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
 
+button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
+button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
