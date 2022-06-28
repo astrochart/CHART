@@ -13,8 +13,6 @@ import time
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
-
-
 app = customtkinter.CTk()  # create CTk window like you do with the Tk window
 app.geometry("576x288")
 app.title("Today's Data")
@@ -24,19 +22,23 @@ def stop():
     proc.terminate()
     print("Data collected halted!")
     start_button.configure(state=tkinter.NORMAL)
-
+    stop_button.configure(state=tkinter.DISABLED)
 
 def start():
     
     global proc
+    global date
+    global time
     start_button.configure(state=tkinter.DISABLED)
     stop_button.configure(state=tkinter.NORMAL)
     
     user = customtkinter.CTkEntry.get(uName)
     sLocation = customtkinter.CTkEntry.get(locName)
     trial = customtkinter.CTkEntry.get(tName)
-    date = customtkinter.CTkEntry.get(dName)
-    time = customtkinter.CTkEntry.get(curTime)
+    dName.configure(state=tkinter.NORMAL)
+    if not date:
+        date = customtkinter.CTkEntry.get(dName)
+        time = customtkinter.CTkEntry.get(curTime)
     tDay = combobox.get()
     #make sure the location does not have spaces
     location = sLocation.replace(" ", "-")
@@ -47,6 +49,7 @@ def start():
     #set the time
     #sudo date -s "2006-08-14T02:34:56"
     #change the month to have 2
+    print("This is the date: "+date)
     month, day, year = date.split(".")
     
     if(len(month) == 1):
@@ -114,8 +117,6 @@ def start():
         return
     
     
-    
-    print("did not work")
     dirsUse = str(data_directory)+'/'+str(directory)
     print(dirsUse)
 
@@ -123,10 +124,7 @@ def start():
     
     print("saving the new parameters")
     print(freq_i_in)
-    #freq_i
-    #freq_f
-    #int_time
-    #nint
+    
      #(customtkinter.CTkEntry.get(freq_i_in), customtkinter.CTkEntry.get(freq_f_in), customtkinter.CTkEntry.get(int_time_in), )
     freq_i = customtkinter.CTkEntry.get(freq_i_in)
     freq_f = customtkinter.CTkEntry.get(freq_f_in)
@@ -177,12 +175,17 @@ def current_date_time():
                 combobox.set("pm")
             
         time_entry = str(time_day_hour)+":"+str(current_time.minute)
+        print("This is the date entry: "+date_entry)
+        dName.configure(textvariable=date_entry)
+        global date
+        date = date_entry
+        global time
+        time = time_entry
         
-        dName.configure(textvariable= date_entry)
         dName.clear_placeholder()
         dName.placeholder_text = date_entry
         dName.set_placeholder()
-        curTime.configure(textvariable= time_entry)
+        curTime.configure(textvariable=time_entry)
         curTime.clear_placeholder()
         curTime.placeholder_text = time_entry
         curTime.set_placeholder()
@@ -196,6 +199,7 @@ def current_date_time():
         app.after(10000, current_date_time)
        
     print("switch toggled, current value:", system_date_time_switch.get())
+    
     if (system_date_time_switch.get() == "off"):
         dName.configure(state=tkinter.NORMAL)
         curTime.configure(state=tkinter.NORMAL)
@@ -219,7 +223,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.26, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_i_in = customtkinter.CTkEntry(master=app,
@@ -228,7 +232,7 @@ freq_i_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_i_in.place(relx=0.3, rely=0.26, anchor=tkinter.W)
+freq_i_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Final Frequency:",
@@ -236,7 +240,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.36, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 freq_f_in = customtkinter.CTkEntry(master=app,
@@ -245,7 +249,7 @@ freq_f_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_f_in.place(relx=0.3, rely=0.36, anchor=tkinter.W)
+freq_f_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Integration Time:",
@@ -253,7 +257,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.46, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 int_time_in = customtkinter.CTkEntry(master=app,
@@ -262,7 +266,7 @@ int_time_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-int_time_in.place(relx=0.3, rely=0.46, anchor=tkinter.W)
+int_time_in.place(relx=0.3, rely=0.4, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Number of Integrations:",
@@ -270,7 +274,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.07, rely=0.56, anchor=tkinter.W)
+label.place(relx=0.07, rely=0.5, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 nint_in = customtkinter.CTkEntry(master=app,
@@ -279,7 +283,7 @@ nint_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-nint_in.place(relx=0.34, rely=0.56, anchor=tkinter.W)
+nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
     
     
     #saving = ((customtkinter.CTkEntry.get(freq_i_in)), (customtkinter.CTkEntry.get(freq_f_in)), (customtkinter.CTkEntry.get(int_time_in)), (customtkinter.CTkEntry.get(nint_in)))
