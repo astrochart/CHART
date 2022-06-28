@@ -4,8 +4,11 @@ import customtkinter
 import os
 import subprocess
 import datetime
+import time
 
-use_current_time = "no"
+
+
+#use_current_time = "no"
 
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -155,25 +158,60 @@ def start():
 def combobox_callback(choice):
     print("combobox dropdown clicked:", choice)
 
-def current_time():
-# using now() to get current time
-    current_time = datetime.datetime.now()
- 
-# Printing attributes of now().
-    print("The attributes of now() are :")
- 
-    print("Hour : ", current_time.hour)
- 
-    print("Minute : ", current_time.minute)
     
-def current_date():
+def current_date_time():
+    current_time = datetime.datetime.now()
+    
+    dName.configure(state=tkinter.NORMAL)
+    curTime.configure(state=tkinter.NORMAL)
+    combobox.configure(state=tkinter.NORMAL)
+    
+    if (system_date_time_switch.get() == "on"):
+        date_entry = str(current_time.month)+"."+str(current_time.day)+"."+str(current_time.year)
+        time_day_hour = current_time.hour
+        if(time_day_hour >= 12):
+            if(time_day_hour > 12): 
+                time_day_hour = time_day_hour - 12
+                combobox.set("pm")
+            else:
+                combobox.set("pm")
+            
+        time_entry = str(time_day_hour)+":"+str(current_time.minute)
+        
+        dName.configure(textvariable= date_entry)
+        dName.clear_placeholder()
+        dName.placeholder_text = date_entry
+        dName.set_placeholder()
+        curTime.configure(textvariable= time_entry)
+        curTime.clear_placeholder()
+        curTime.placeholder_text = time_entry
+        curTime.set_placeholder()
+        
+        
+        
+        dName.configure(state=tkinter.DISABLED)
+        curTime.configure(state=tkinter.DISABLED)
+        combobox.configure(state=tkinter.DISABLED)
+        
+        app.after(10000, current_date_time)
+       
+    print("switch toggled, current value:", system_date_time_switch.get())
+    if (system_date_time_switch.get() == "off"):
+        dName.configure(state=tkinter.NORMAL)
+        curTime.configure(state=tkinter.NORMAL)
+        combobox.configure(state=tkinter.NORMAL)
+        
+    print("The attributes of now() are :")
+    
     print("Year :", current_time.year)
  
     print("Month : ", current_time.month)
  
     print("Day : ", current_time.day)
  
-
+    print("Hour : ", current_time.hour)
+ 
+    print("Minute : ", current_time.minute)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Initial Frequency:",
@@ -267,7 +305,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 uName = customtkinter.CTkEntry(master=app,
@@ -276,7 +314,7 @@ uName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-uName.place(relx=0.7, rely=0.2, anchor=tkinter.W)
+uName.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
 
 
@@ -286,7 +324,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 locName = customtkinter.CTkEntry(master=app,
@@ -295,7 +333,7 @@ locName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-locName.place(relx=0.7, rely=0.3, anchor=tkinter.W)
+locName.place(relx=0.7, rely=0.2, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Trial:",
@@ -303,7 +341,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 tName = customtkinter.CTkEntry(master=app,
@@ -312,7 +350,7 @@ tName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-tName.place(relx=0.7, rely=0.4, anchor=tkinter.W)
+tName.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Date:",
@@ -320,7 +358,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 dName = customtkinter.CTkEntry(master=app,
@@ -329,10 +367,11 @@ dName = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-dName.place(relx=0.7, rely=0.5, anchor=tkinter.W)
+dName.place(relx=0.7, rely=0.4, anchor=tkinter.W)
 
-current_date_button = customtkinter.CTkButton(master=app, text="DD", command=current_date,height = 20, width = 20 )
-current_date_button.place(relx=0.95, rely=.5, anchor=tkinter.CENTER)
+
+
+
 
 label = customtkinter.CTkLabel(master=app,
                                text="Time:",
@@ -340,7 +379,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.5, rely=0.6, anchor=tkinter.W)
+label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
 ##n, ne, e, se, s, sw, w, nw, or center
 
 curTime = customtkinter.CTkEntry(master=app,
@@ -349,7 +388,7 @@ curTime = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-curTime.place(relx=0.7, rely=0.6, anchor=tkinter.W)
+curTime.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 
 
@@ -357,10 +396,11 @@ combobox = customtkinter.CTkComboBox(master=app,
                                      values=["am", "pm"],
                                      command=combobox_callback, height = 25, width = 55, variable = "")
 combobox.pack(padx=5, pady=5)
-combobox.set("pm")  # set initial value
-combobox.place(relx=0.81, rely=0.6, anchor=tkinter.W)
+combobox.set("am")  # set initial value
+combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
 
-current_time_button = customtkinter.CTkButton(master=app, text="DT", command=current_time,height = 20, width = 20 )
-current_time_button.place(relx=0.95, rely=.6, anchor=tkinter.CENTER)
+system_date_time_switch = customtkinter.CTkSwitch(master=app, text="use system date and time", command=current_date_time, onvalue="on", offvalue="off")
+system_date_time_switch.pack(padx=20, pady=10)
+system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
 
 app.mainloop()
