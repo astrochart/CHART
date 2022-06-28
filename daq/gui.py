@@ -29,6 +29,9 @@ def start():
     global proc
     global date
     global time
+    
+    current_date_time()
+    
     start_button.configure(state=tkinter.DISABLED)
     stop_button.configure(state=tkinter.NORMAL)
     
@@ -97,13 +100,21 @@ def start():
         err.geometry("576x288")
         err.title("ERROR")
         label = customtkinter.CTkLabel(master=err,
-                               text="File "+main_dir+" already exists.",
+                               text="File already exists.",
                                text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
                                corner_radius=5)
-        label.place(relx=0.3, rely=0.2, anchor=tkinter.W)
+        label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
+        label = customtkinter.CTkLabel(master=err,
+                               text="file: "+main_dir,
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
         label = customtkinter.CTkLabel(master=err,
                                text="Change the time and trial number before clicking start.",
                                text_font = 28,
@@ -150,7 +161,6 @@ def start():
     sCopy = sCopy.split(' ')
     proc = subprocess.Popen(sCopy)
 
-
 ## writing to the file - file_Object = open("file_Name","mode")
 
 def combobox_callback(choice):
@@ -173,10 +183,14 @@ def current_date_time():
                 combobox.set("pm")
             else:
                 combobox.set("pm")
-            
-        time_entry = str(time_day_hour)+":"+str(current_time.minute)
+        min_entry = str(current_time.minute)
+        if (len(min_entry) == 1):
+            min_entry = "0"+min_entry
+        time_entry = str(time_day_hour)+":"+min_entry
         print("This is the date entry: "+date_entry)
+        print("This is the time entry: "+time_entry)
         dName.configure(textvariable=date_entry)
+        
         global date
         date = date_entry
         global time
@@ -403,7 +417,7 @@ combobox.pack(padx=5, pady=5)
 combobox.set("am")  # set initial value
 combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
 
-system_date_time_switch = customtkinter.CTkSwitch(master=app, text="use system date and time", command=current_date_time, onvalue="on", offvalue="off")
+system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
 system_date_time_switch.pack(padx=20, pady=10)
 system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
 
