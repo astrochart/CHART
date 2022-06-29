@@ -7,22 +7,21 @@ import datetime #this allows you to get the system date and time
 import time #this allows you to use "after" to call the date_time method and update the date and time
 
 
-
-#use_current_time = "no"
-
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
-app = customtkinter.CTk()  # create CTk window like you do with the Tk window
+#create CTk window like you do with the Tk window
+app = customtkinter.CTk()  
 app.geometry("576x288")
 app.title("Today's Data")
 
 #the stop method from the stop_button allows you to stop the program running
 def stop():
     proc.terminate()
-    print("Data collected halted!")
+    print("Data collection halted!")
     start_button.configure(state=tkinter.NORMAL)
     stop_button.configure(state=tkinter.DISABLED)
+
 
 #the start method from the start_button allows you to run the program
     #it runs the method current_date_time to make sure that they are using the correct time
@@ -32,7 +31,7 @@ def stop():
     #uses the papameters entered to take data or uses the default shown on the gui
     #runs the program with the directory created
 def start():
-    
+    #global variables that also align with the method current_date_time
     global proc
     global date
     global time
@@ -40,6 +39,7 @@ def start():
     #this is the call to the method so that even after the second start it can check the time and date correctly if system time is used
     current_date_time()
     
+    #diabled start so that the user cannot click start twice and they can now click stop
     start_button.configure(state=tkinter.DISABLED)
     stop_button.configure(state=tkinter.NORMAL)
     
@@ -48,10 +48,12 @@ def start():
     sLocation = customtkinter.CTkEntry.get(location_name)
     trial = customtkinter.CTkEntry.get(time_name)
     date_name.configure(state=tkinter.NORMAL)
+    
     #checking if date was empty so that it knows to use the input from entry or the one from the system time and date 
     if not date:
         date = customtkinter.CTkEntry.get(date_name)
         time = customtkinter.CTkEntry.get(curr_time)
+        
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
     location = sLocation.replace(" ", "-")
@@ -62,7 +64,6 @@ def start():
     #set the time
     #the format to chang the date and time = sudo date -s "2006-08-14T02:34:56"
     #change the month to have 2
-    print("This is the date: "+date)
     month, day, year = date.split(".")
     
     if(len(month) == 1):
@@ -96,6 +97,7 @@ def start():
     #creating a directory called data to store the data. This only happens once
     home_name = os.path.expanduser('~')
     data_directory = home_name+'/data'
+    
     #checking to see if the directory data exists and if it does then nothing happens
     if((os.path.isdir(data_directory)) == False):
         os.mkdir(data_directory, mode = 0o1777)
@@ -105,6 +107,8 @@ def start():
         
     #this is the main direcotry   
     main_dir = data_directory+'/'+directory
+    
+    #check if the directory does not exists made from the users input
     if(os.path.isdir(main_dir) == False):
         os.mkdir(main_dir, mode = 0o1777)
         print("Directory '% s' is built!" % main_dir)
@@ -164,9 +168,6 @@ def start():
         
     if not nint:
         nint = "100"
-        
-    
-    print(freq_i)
     
     copy_command = 'python freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
 
