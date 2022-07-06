@@ -17,10 +17,12 @@ app.title("Today's Data")
 
 #the stop method from the stop_button allows you to stop the program running
 def stop():
+    global proc
     proc.terminate()
     print("Data collection halted!")
     start_button.configure(state=tkinter.NORMAL)
     stop_button.configure(state=tkinter.DISABLED)
+    del proc
 
 
 #the start method from the start_button allows you to run the program
@@ -53,18 +55,23 @@ def start():
     if not date:
         date = customtkinter.CTkEntry.get(date_name)
         time = customtkinter.CTkEntry.get(curr_time)
-        
+         
+
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
     location = sLocation.replace(" ", "-")
     date = date.replace("/", ".")
-    directory = user+"_"+location+"_"+date+"_"+trial+"_"+time+"_"+tDay
-    print(directory)
     
     #set the time
     #the format to chang the date and time = sudo date -s "2006-08-14T02:34:56"
     #change the month to have 2
     month, day, year = date.split(".")
+    
+    date_y_m_d = year+"."+month+"."+day
+    
+    #changed the date to be the correct formal
+    directory = user+"_"+location+"_"+date_y_m_d+"_"+trial+"_"+time+"_"+tDay
+    print(directory)
     
     if(len(month) == 1):
         month= "0"+month
@@ -147,6 +154,7 @@ def start():
         #returns so that the files do not write to that old diecotry
         return
     
+    
     #getting the directory to be used
     use_directory = str(data_directory)+'/'+str(directory)
     print("directory being used: "+use_directory)
@@ -175,9 +183,6 @@ def start():
     copy_command = copy_command.split(' ')
     proc = subprocess.Popen(copy_command)
 
-#the method combobox_callback prints am or pm depending on what the user clicks 
-def combobox_callback(choice):
-    print("combobox dropdown clicked:", choice)
 
 #the method default_parameters allows the user to use the default parameters set
     #they can either enter new parameters or they can use what is already displayed in the entry
@@ -201,6 +206,7 @@ def default_parameters():
     #the method after being called once runs every 10000 miliseconds to update the time and show the correct system time on the gui if the switch is on
     #saves the date and time in a global variable so that it can be used in the start metod to create a directory 
 def current_date_time():
+    
     current_time = datetime.datetime.now()
     #you have to set them to normal and then change them
     date_name.configure(state=tkinter.NORMAL)
@@ -263,7 +269,12 @@ def current_date_time():
     #print("Day : ", current_time.day)
     #print("Hour : ", current_time.hour)
     #print("Minute : ", current_time.minute)
-
+    try:
+        if proc.poll() is not None:
+            print("stopping")
+            stop()
+    except NameError:
+        pass
 #this is the start of the gui design where everything is layed out 
 
 label = customtkinter.CTkLabel(master=app,
@@ -424,7 +435,7 @@ curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 combobox = customtkinter.CTkComboBox(master=app,
                                      values=["am", "pm"],
-                                     command=combobox_callback, height = 25, width = 55, variable = "")
+                                     height = 25, width = 55, variable = "")
 combobox.pack(padx=5, pady=5)
 combobox.set("am")  # set initial value
 combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
