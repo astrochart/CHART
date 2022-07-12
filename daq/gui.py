@@ -184,7 +184,7 @@ def start():
     if not nint:
         nint = "100"
     
-    copy_command = 'python freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
+    copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
     
     copy_command = copy_command.split(' ')
     
@@ -287,7 +287,6 @@ def create_zip():
             home_name = os.path.expanduser('~')
             shutil.make_archive(data_directory+'/'+directory, "zip", data_directory, directory)
             print("done")
-            jupyter_button.configure(state=tkinter.NORMAL)
             stop()
     except NameError:
         pass
@@ -295,7 +294,7 @@ def create_zip():
     
 def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
-    jupyter_button.configure(state=tkinter.DISABLED)
+    jupyter_button.configure(state=tkinter.NORMAL)
 
     
 #this is the start of the gui design where everything is layed out 
@@ -377,7 +376,7 @@ stop_button.configure(state=tkinter.DISABLED)
 
 jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
 jupyter_button.place(relx=0.8, rely=.85, anchor=tkinter.CENTER)
-jupyter_button.configure(state=tkinter.DISABLED)
+jupyter_button.configure(state=tkinter.NORMAL)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
