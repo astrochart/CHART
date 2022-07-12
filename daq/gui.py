@@ -5,7 +5,8 @@ import os #this allows you to use the command line to change the date
 import subprocess #this allows you to run and stop the program without using os
 import datetime #this allows you to get the system date and time
 import time #this allows you to use "after" to call the date_time method and update the date and time
-
+import glob #for compressing the zip files to import into jupyter hub
+import shutil
 
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -23,6 +24,8 @@ def stop():
     start_button.configure(state=tkinter.NORMAL)
     stop_button.configure(state=tkinter.DISABLED)
     del proc
+    
+
 
 
 #the start method from the start_button allows you to run the program
@@ -37,7 +40,15 @@ def start():
     global proc
     global date
     global time
+    global user
+    global location
+    global trial
+    global year
+    global date_y_m_d
+    global data_directory
+    global directory
     
+    create_zip()
     #this is the call to the method so that even after the second start it can check the time and date correctly if system time is used
     current_date_time()
     
@@ -178,9 +189,9 @@ def start():
         nint = "100"
     
     copy_command = 'python freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
-
     
     copy_command = copy_command.split(' ')
+    
     proc = subprocess.Popen(copy_command)
 
 
@@ -206,7 +217,6 @@ def default_parameters():
     #the method after being called once runs every 10000 miliseconds to update the time and show the correct system time on the gui if the switch is on
     #saves the date and time in a global variable so that it can be used in the start metod to create a directory 
 def current_date_time():
-    
     current_time = datetime.datetime.now()
     #you have to set them to normal and then change them
     date_name.configure(state=tkinter.NORMAL)
@@ -269,13 +279,33 @@ def current_date_time():
     #print("Day : ", current_time.day)
     #print("Hour : ", current_time.hour)
     #print("Minute : ", current_time.minute)
-    try:
-        if proc.poll() is not None:
-            print("stopping")
+
+    
+def create_zip():
+    global proc
+    global user
+    global trial
+    global location
+    global year
+    global date_y_m_d
+    global data_direcotry
+    global direcotry
+    app.after(10000, create_zip)
+    try: 
+        if proc.poll() is not None and proc.poll() == 0:
+            print("working")
+            home_name = os.path.expanduser('~')
+            print("data directory "+data_directory)
+            print("zip file to create "+directory+'.zip')
+            print("directory: "+directory)
+            shutil.make_archive(data_directory+'/'+directory, "zip", data_directory, directory)
+            print("done")
             stop()
     except NameError:
         pass
+    
 #this is the start of the gui design where everything is layed out 
+
 
 label = customtkinter.CTkLabel(master=app,
                                text="Initial Frequency:",
