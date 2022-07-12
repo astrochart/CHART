@@ -376,7 +376,7 @@ stop_button.configure(state=tkinter.DISABLED)
 #start with stop disabled so you cannot click stop before start
 
 jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
-jupyter_button.place(relx=0.7, rely=.85, anchor=tkinter.CENTER)
+jupyter_button.place(relx=0.8, rely=.85, anchor=tkinter.CENTER)
 jupyter_button.configure(state=tkinter.DISABLED)
 
 label = customtkinter.CTkLabel(master=app,
