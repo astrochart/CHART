@@ -40,11 +40,6 @@ def start():
     global proc
     global date
     global time
-    global user
-    global location
-    global trial
-    global year
-    global date_y_m_d
     global data_directory
     global directory
     
@@ -283,11 +278,6 @@ def current_date_time():
     
 def create_zip():
     global proc
-    global user
-    global trial
-    global location
-    global year
-    global date_y_m_d
     global data_direcotry
     global direcotry
     app.after(10000, create_zip)
