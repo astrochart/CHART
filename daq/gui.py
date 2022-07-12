@@ -28,7 +28,6 @@ def stop():
     
 
 
-
 #the start method from the start_button allows you to run the program
     #it runs the method current_date_time to make sure that they are using the correct time
     #disables the start_button so that you cannot start twice and enables the stop_button
@@ -294,9 +293,8 @@ def create_zip():
     
 def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
-    jupyter_button.configure(state=tkinter.NORMAL)
 
-    
+
 #this is the start of the gui design where everything is layed out 
 label = customtkinter.CTkLabel(master=app,
                                text="Initial Frequency:",
