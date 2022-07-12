@@ -7,6 +7,7 @@ import datetime #this allows you to get the system date and time
 import time #this allows you to use "after" to call the date_time method and update the date and time
 import glob #for compressing the zip files to import into jupyter hub
 import shutil
+import webbrowser
 
 customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -275,7 +276,6 @@ def current_date_time():
     #print("Hour : ", current_time.hour)
     #print("Minute : ", current_time.minute)
 
-    
 def create_zip():
     global proc
     global data_direcotry
@@ -283,20 +283,22 @@ def create_zip():
     app.after(10000, create_zip)
     try: 
         if proc.poll() is not None and proc.poll() == 0:
-            print("working")
+            print("Creating zip file")
             home_name = os.path.expanduser('~')
-            print("data directory "+data_directory)
-            print("zip file to create "+directory+'.zip')
-            print("directory: "+directory)
             shutil.make_archive(data_directory+'/'+directory, "zip", data_directory, directory)
             print("done")
+            jupyter_button.configure(state=tkinter.NORMAL)
             stop()
     except NameError:
         pass
     
+    
+def open_jupyter():
+    webbrowser.open_new('https://radiolab.winona.edu/')
+    jupyter_button.configure(state=tkinter.DISABLED)
+
+    
 #this is the start of the gui design where everything is layed out 
-
-
 label = customtkinter.CTkLabel(master=app,
                                text="Initial Frequency:",
                                width=100,
@@ -372,6 +374,10 @@ stop_button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
 stop_button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
 stop_button.configure(state=tkinter.DISABLED)
 #start with stop disabled so you cannot click stop before start
+
+jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
+jupyter_button.place(relx=0.7, rely=.85, anchor=tkinter.CENTER)
+jupyter_button.configure(state=tkinter.DISABLED)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
