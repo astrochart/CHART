@@ -3,6 +3,7 @@ import os
 import sys
 import os.path as op
 import json
+import shutil
 
 setup_args = {
     'name': 'chart',
@@ -13,7 +14,7 @@ setup_args = {
     'package_dir': {'chart': 'src/chart'},
     'packages': ['chart'],
     'include_package_data': True,
-    'scripts': ['daq/freq_and_time_scan.py'],
+    'scripts': ['daq/freq_and_time_scan.py', 'daq/gui.py'],
     'version': 1.0,
     'install_requires': [
         'numpy>=1.10',
@@ -23,3 +24,7 @@ setup_args = {
 
 if __name__ == '__main__':
     setup(**setup_args)
+    src = shutil.which('gui.py')
+    dest = os.path.expanduser('~') + '/Desktop/CHART_GUI'
+    if src is not None and not os.path.exists(dest):
+            os.symlink(src, dest)
