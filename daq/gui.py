@@ -360,6 +360,13 @@ nint_in = customtkinter.CTkEntry(master=app,
                                corner_radius=10)
 nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
 
+description = customtkinter.CTkEntry(master=app,
+                               placeholder_text="Describe what you are looking at.",
+                               width=210,
+                               height=50,
+                               border_width=2,
+                               corner_radius=10)
+description.place(relx=0.01, rely=0.85, anchor=tkinter.W)
 
 #below is the right side layout in the GUI
 start_button = customtkinter.CTkButton(master=app, text="Start", command=start)
