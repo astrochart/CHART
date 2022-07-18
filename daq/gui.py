@@ -282,6 +282,10 @@ def create_zip():
     app.after(10000, create_zip)
     try: 
         if proc.poll() is not None and proc.poll() == 0:
+            print("creating text file")
+            desc = customtkinter.CTkEntry.get(description)
+            with open(data_directory+'/'+directory+'/description.txt', 'w') as f:
+                f.write(desc)
             print("Creating zip file")
             home_name = os.path.expanduser('~')
             shutil.make_archive(data_directory+'/'+directory, "zip", data_directory, directory)
