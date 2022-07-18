@@ -367,7 +367,7 @@ nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
 description = customtkinter.CTkEntry(master=app,
                                placeholder_text="Describe what you are looking at.",
                                width=210,
-                               height=50,
+                               height=30,
                                border_width=2,
                                corner_radius=10)
 description.place(relx=0.01, rely=0.85, anchor=tkinter.W)
