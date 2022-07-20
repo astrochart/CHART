@@ -7,6 +7,17 @@ import os
 import warnings
 
 
+def str2bool(v):
+    # Quick helper function to allow flexible boolean cmd args
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false','f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 def get_collect_args():
     """Get an argument parser for the collect script."""
     ap = argparse.ArgumentParser()
@@ -38,8 +49,10 @@ def get_collect_args():
                     'per file. Default is 500.')
     ap.add_argument('--data_dir', default=None, type=str, help='Data directory. '
                     'Defaults to current working directory.')
-    ap.add_argument('--biasT', default=False, type=bool, help='biasT state'
-                    'Change to True to turn on biasT power. Defaults to False.')
+    ap.add_argument('--biasT', default=False, type=str2bool,
+                    nargs='?', const=True, help='biasT state. '
+                    'Change to True to turn on biasT power. '
+                    'Defaults to False.')
 
     args = ap.parse_args()
     # Convert some units for internal use
