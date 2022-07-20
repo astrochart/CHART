@@ -14,7 +14,7 @@ customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-bl
 
 #create CTk window like you do with the Tk window
 app = customtkinter.CTk()  
-app.geometry("576x288")
+app.geometry("586x288")
 app.title("Today's Data")
 
 #the stop method from the stop_button allows you to stop the program running
@@ -42,6 +42,7 @@ def start():
     global time
     global data_directory
     global directory
+    global biasT
     
     create_zip()
     #this is the call to the method so that even after the second start it can check the time and date correctly if system time is used
@@ -182,8 +183,11 @@ def start():
         
     if not nint:
         nint = "100"
-    
-    copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
+    print(biasT)
+    if biasT:
+        copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
+    else:
+        copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
     
     copy_command = copy_command.split(' ')
     
@@ -297,6 +301,12 @@ def create_zip():
     
 def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
+    
+def biasT_switch():
+    global biasT
+    biasT = False
+    if (biasT_switch.get() == "on"):
+        biasT = True
 
 
 #this is the start of the gui design where everything is layed out 
@@ -306,7 +316,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
 freq_i_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1419",
@@ -314,7 +324,7 @@ freq_i_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_i_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
+freq_i_in.place(relx=0.3, rely=0.1, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Final Frequency:",
@@ -322,7 +332,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
 freq_f_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1419.2",
@@ -330,7 +340,7 @@ freq_f_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-freq_f_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
+freq_f_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Integration Time:",
@@ -338,7 +348,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
+label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 
 int_time_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="0.5",
@@ -346,7 +356,7 @@ int_time_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-int_time_in.place(relx=0.3, rely=0.4, anchor=tkinter.W)
+int_time_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
                                text="Number of Integrations:",
@@ -354,7 +364,7 @@ label = customtkinter.CTkLabel(master=app,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5)
-label.place(relx=0.07, rely=0.5, anchor=tkinter.W)
+label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
 nint_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="100",
@@ -362,7 +372,15 @@ nint_in = customtkinter.CTkEntry(master=app,
                                height=25,
                                border_width=2,
                                corner_radius=10)
-nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
+nint_in.place(relx=0.34, rely=0.4, anchor=tkinter.W)
+
+default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Default Parameters", command=default_parameters, onvalue="on", offvalue="off")
+default_parameters_switch.pack(padx=20, pady=10)
+default_parameters_switch.place(relx=0.25, rely=.5, anchor=tkinter.CENTER)
+
+biasT_switch = customtkinter.CTkSwitch(master=app, text="The Bias-T is plugged in", command=biasT_switch, onvalue="on", offvalue="off")
+biasT_switch.pack(padx=20, pady=10)
+biasT_switch.place(relx=0.25, rely=.57, anchor=tkinter.CENTER)
 
 description = customtkinter.CTkEntry(master=app,
                                placeholder_text="Describe what you are looking at.",
@@ -370,7 +388,8 @@ description = customtkinter.CTkEntry(master=app,
                                height=30,
                                border_width=2,
                                corner_radius=10)
-description.place(relx=0.01, rely=0.85, anchor=tkinter.W)
+description.place(relx=0.05, rely=0.67, anchor=tkinter.W)
+
 
 #below is the right side layout in the GUI
 start_button = customtkinter.CTkButton(master=app, text="Start", command=start)
@@ -478,9 +497,5 @@ combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
 system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
 system_date_time_switch.pack(padx=20, pady=10)
 system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
-
-default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Default Parameters", command=default_parameters, onvalue="on", offvalue="off")
-default_parameters_switch.pack(padx=20, pady=10)
-default_parameters_switch.place(relx=0.25, rely=.6, anchor=tkinter.CENTER)
 
 app.mainloop()
