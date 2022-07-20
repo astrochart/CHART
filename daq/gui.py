@@ -307,6 +307,35 @@ def biasT_switch():
     biasT = False
     if (biasT_switch.get() == "on"):
         biasT = True
+        warning = customtkinter.CTk()  
+        warning.geometry("576x300")
+        warning.title("WARNING")
+        label = customtkinter.CTkLabel(master=warning,
+                               text="Only have this on if you know FOR SURE the BIAS-T is being used.",
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.01, rely=0.2, anchor=tkinter.W)
+        label = customtkinter.CTkLabel(master=warning,
+                               text="If the Bias-T is NOT connected to your radio,",
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.01, rely=0.4, anchor=tkinter.W)
+        label = customtkinter.CTkLabel(master=warning,
+                               text="this option WILL BREAK your radio",
+                               text_font = 28,
+                                width=100,
+                               height=25,
+                               fg_color=("gray", "red"),
+                               corner_radius=5)
+        label.place(relx=0.01, rely=0.6, anchor=tkinter.W)
+        #allow for the start button to be clicked because then they can change the trial number and continue
+        return
 
 
 #this is the start of the gui design where everything is layed out 
@@ -378,7 +407,7 @@ default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Defaul
 default_parameters_switch.pack(padx=20, pady=10)
 default_parameters_switch.place(relx=0.25, rely=.5, anchor=tkinter.CENTER)
 
-biasT_switch = customtkinter.CTkSwitch(master=app, text="The Bias-T is plugged in", command=biasT_switch, onvalue="on", offvalue="off")
+biasT_switch = customtkinter.CTkSwitch(master=app, text="Enable Bias-T", command=biasT_switch, onvalue="on", offvalue="off")
 biasT_switch.pack(padx=20, pady=10)
 biasT_switch.place(relx=0.25, rely=.57, anchor=tkinter.CENTER)
 
