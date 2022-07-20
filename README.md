@@ -33,12 +33,13 @@ pip install .
 CHART software uses GNU Radio, a free open source package for collecting and processing radio data.
 To learn more about GNU Radio visit this site https://www.gnuradio.org/about/.
 
-We will assume you are running Ubuntu MATE on a Raspberry Pi (instructions  [here](https://astrochart.github.io/website/software.html)).
+We will assume you are running Raspberry Pi OS on a Raspberry Pi (instructions  [here](https://astrochart.github.io/website/software.html)).
 
 In a terminal, enter the following:
 ```bash
-sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake ipython
-pip install numpy gps
+sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake
+pip install ipython
+pip install numpy
 ```
 
 To use the GPS submodule (optional), run these lines:
@@ -49,9 +50,9 @@ pip install gps
 
 Clone this repository and install.
 ```bash
-git clone git@github.com:astrochart/CHART.git
+git clone https://github.com/astrochart/CHART.git
 cd CHART
-python setup.py install
+pip install .
 ```
 
 ---
