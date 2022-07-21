@@ -14,7 +14,7 @@ customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-bl
 
 #create CTk window like you do with the Tk window
 app = customtkinter.CTk()  
-app.geometry("586x288")
+app.geometry("686x388")
 app.title("Today's Data")
 
 #the stop method from the stop_button allows you to stop the program running
