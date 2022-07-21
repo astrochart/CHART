@@ -133,7 +133,6 @@ def start():
         err.title("ERROR")
         label = customtkinter.CTkLabel(master=err,
                                text="File already exists.",
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
@@ -141,7 +140,6 @@ def start():
         label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
         label = customtkinter.CTkLabel(master=err,
                                text="file: "+main_dir,
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
@@ -149,7 +147,6 @@ def start():
         label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
         label = customtkinter.CTkLabel(master=err,
                                text="Change the time and/or trial number before clicking start.",
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
