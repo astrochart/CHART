@@ -312,7 +312,6 @@ def biasT_switch():
         warning.title("WARNING")
         label = customtkinter.CTkLabel(master=warning,
                                text="Only have this on if you know FOR SURE the BIAS-T is being used.",
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
@@ -320,7 +319,6 @@ def biasT_switch():
         label.place(relx=0.01, rely=0.2, anchor=tkinter.W)
         label = customtkinter.CTkLabel(master=warning,
                                text="If the Bias-T is NOT connected to your radio,",
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
@@ -328,7 +326,6 @@ def biasT_switch():
         label.place(relx=0.01, rely=0.4, anchor=tkinter.W)
         label = customtkinter.CTkLabel(master=warning,
                                text="this option WILL BREAK your radio",
-                               text_font = 28,
                                 width=100,
                                height=25,
                                fg_color=("gray", "red"),
