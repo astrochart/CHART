@@ -16,7 +16,8 @@ customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-bl
 app = customtkinter.CTk()  
 app.geometry("686x388")
 app.title("Today's Data")
-
+global biasT
+biasT = False
 #the stop method from the stop_button allows you to stop the program running
 def stop():
     global proc
