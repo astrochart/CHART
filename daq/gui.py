@@ -180,7 +180,7 @@ def start():
         
     if not nint:
         nint = "100"
-    print(biasT)
+        
     if biasT:
         copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
     else:
