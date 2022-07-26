@@ -172,15 +172,15 @@ def start():
     
     #checking each parameter to see if anyone entered a variable or if the default numbers should be used
     if not freq_i:
-        freq_i = "1419"
+        freq_i = "1390"
     if not freq_f:
-        freq_f = "1419.2"
+        freq_f = "1450"
         
     if not int_time:
         int_time = "0.5"
         
     if not nint:
-        nint = "100"
+        nint = "20"
         
     if biasT:
         copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
@@ -343,7 +343,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
 freq_i_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1419",
+                               placeholder_text="1390",
                                width=60,
                                height=25,
                                border_width=2,
@@ -359,7 +359,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
 freq_f_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1419.2",
+                               placeholder_text="1450",
                                width=60,
                                height=25,
                                border_width=2,
@@ -391,7 +391,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
 nint_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="100",
+                               placeholder_text="20",
                                width=60,
                                height=25,
                                border_width=2,
