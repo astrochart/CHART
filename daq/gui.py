@@ -332,6 +332,18 @@ def biasT_switch():
         #allow for the start button to be clicked because then they can change the trial number and continue
         return
 
+#change the display to be able to see better
+def mode():
+    if (mode_switch.get() == "on"):
+        customtkinter.set_appearance_mode("Dark")
+    else:
+        customtkinter.set_appearance_mode("Light")
+
+
+
+mode_switch = customtkinter.CTkSwitch(master=app, text="Dark Mode", command=mode, onvalue="on", offvalue="off")
+mode_switch.pack(padx=20, pady=10)
+mode_switch.place(relx=0.1, rely=.03, anchor=tkinter.CENTER)
 
 #this is the start of the gui design where everything is layed out 
 label = customtkinter.CTkLabel(master=app,
