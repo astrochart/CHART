@@ -62,6 +62,19 @@ class TopBlock(gr.top_block):
         """
         gr.top_block.__init__(self, "Collectrtldata")
 
+        gr.hier_block2.__init__(
+            self, "Not titled yet",
+                gr.io_signature(0, 0, 0),
+                gr.io_signature(0, 0, 0),
+        )
+
+        Qt.QWidget.__init__(self)
+        self.top_layout = Qt.QVBoxLayout()
+        self.top_grid_layout = Qt.QGridLayout()
+        self.top_layout.addLayout(self.top_grid_layout)
+        self.setLayout(self.top_layout)
+
+
         ##################################################
         # Variables
         ##################################################
