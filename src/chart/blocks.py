@@ -1,5 +1,7 @@
 from PyQt5 import Qt
 from gnuradio import qtgui
+from gnuradio.filter import firdes
+import sip
 import numpy as np
 import time
 import datetime
