@@ -98,7 +98,7 @@ class TopBlock(gr.top_block):
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             firdes.WIN_BLACKMAN_hARRIS, #wintype
-            plot_freq, #fc
+            c_freq, #fc
             samp_rate, #bw
             "", #name
             1 #number of inputs
