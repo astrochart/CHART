@@ -37,7 +37,7 @@ class meta_trig_py_ff(gr.sync_block):
         return self.times
 
 
-class TopBlock(gr.top_block):
+class TopBlock(gr.hier_block2,Qt.Qwidget):
     """Class to collect RTL data and metadata."""
 
     def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
