@@ -351,15 +351,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
 freq_i_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1390",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 freq_i_in.place(relx=0.3, rely=0.1, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -367,15 +369,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
 freq_f_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1450",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 freq_f_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -383,15 +387,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 
 int_time_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="0.5",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 int_time_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -399,15 +405,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
 nint_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="20",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 nint_in.place(relx=0.34, rely=0.4, anchor=tkinter.W)
 
 default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Default Parameters", command=default_parameters, onvalue="on", offvalue="off")
@@ -420,10 +428,11 @@ biasT_switch.place(relx=0.25, rely=.57, anchor=tkinter.CENTER)
 
 description = customtkinter.CTkEntry(master=app,
                                placeholder_text="Describe what you are looking at.",
-                               width=210,
+                               width=310,
                                height=30,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 description.place(relx=0.05, rely=0.67, anchor=tkinter.W)
 
 
@@ -447,15 +456,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
 
 user_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="Enter Here",
-                               width=120,
+                               width=220,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -463,15 +474,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
 
 location_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="Enter Here",
-                               width=120,
+                               width=220,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 location_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -479,7 +492,8 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius= 5,
+                               text_font = 10)
 label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
 
 time_name = customtkinter.CTkEntry(master=app,
@@ -487,7 +501,8 @@ time_name = customtkinter.CTkEntry(master=app,
                                width=120,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 time_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -495,15 +510,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
 
 date_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="MM.DD.YYYY",
-                               width=120,
+                               width=150,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 date_name.place(relx=0.7, rely=0.4, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -511,15 +528,17 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5,
+                               text_font = 10)
 label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
 
 curr_time = customtkinter.CTkEntry(master=app,
                                placeholder_text="00:00",
-                               width=60,
+                               width=70,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10,
+                               text_font = 10)
 curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 combobox = customtkinter.CTkComboBox(master=app,
