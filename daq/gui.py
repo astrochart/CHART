@@ -60,8 +60,12 @@ def start():
     date_name.configure(state=tkinter.NORMAL)
     
     #checking if date was empty so that it knows to use the input from entry or the one from the system time and date 
-    if not date:
+    if (system_date_time_switch.get() == "off"):
         date = customtkinter.CTkEntry.get(date_name)
+        time = customtkinter.CTkEntry.get(curr_time)
+    #checking if date was empty so that it knows to use the input from entry or the one from the system time and date 
+    #if not date:
+        #date = customtkinter.CTkEntry.get(date_name)
         time = customtkinter.CTkEntry.get(curr_time)
          
 
