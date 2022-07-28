@@ -37,7 +37,7 @@ class TopBlock(gr.top_block):
     """Class to collect RTL data and metadata."""
 
     def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
-                 nint=100, data_dir=None):
+                 nint=100, bias=False, data_dir=None):
         """Initialize the collect top block.
 
         Parameters
@@ -65,6 +65,7 @@ class TopBlock(gr.top_block):
         self.samp_rate = samp_rate
         self.int_length = int_length
         self.nint = nint
+        self.bias = bias
         if data_dir is None:
             self.data_dir = os.getcwd()
         else:
@@ -74,7 +75,10 @@ class TopBlock(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.rtlsdr_source_0 = osmosdr.source(args="numchan=" + str(1) + " ")
+        if self.bias == True:
+            self.rtlsdr_source_0 = osmosdr.source(args="numchan=" + str(1) + " " + "rtl,bias=1")
+        else:
+            self.rtlsdr_source_0 = osmosdr.source(args="numchan=" + str(1) + " ")
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
         self.set_c_freq(c_freq)
         self.rtlsdr_source_0.set_freq_corr(0, 0)
