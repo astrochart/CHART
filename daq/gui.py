@@ -9,7 +9,7 @@ import glob #for compressing the zip files to import into jupyter hub
 import shutil
 import webbrowser
 
-customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
+customtkinter.set_appearance_mode("Light")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
 #create CTk window like you do with the Tk window
