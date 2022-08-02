@@ -300,6 +300,9 @@ def create_zip():
 def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
     
+def open_local_jupyter():
+    os.system('jupyter notebook --notebook-dir=~')
+    
 def biasT_switch():
     global biasT
     biasT = False
@@ -457,8 +460,12 @@ stop_button.configure(state=tkinter.DISABLED)
 #start with stop disabled so you cannot click stop before start
 
 jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
-jupyter_button.place(relx=0.8, rely=.85, anchor=tkinter.CENTER)
+jupyter_button.place(relx=0.8, rely=.8, anchor=tkinter.CENTER)
 jupyter_button.configure(state=tkinter.NORMAL)
+
+local_jupyter_button = customtkinter.CTkButton(master=app, text="Open LOCAL Jupyter Hub to Analyze Remotely", command=open_local_jupyter)
+local_jupyter_button.place(relx=0.8, rely=.85, anchor=tkinter.CENTER)
+local_jupyter_button.configure(state=tkinter.NORMAL)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
