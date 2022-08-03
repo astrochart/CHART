@@ -57,7 +57,7 @@ def start():
     stop_button.configure(state=tkinter.NORMAL)
     
     #the variables taken from the entry inputs
-    user = customtkinter.CTkEntry.get(user_name)
+    sUser = customtkinter.CTkEntry.get(user_name)
     sLocation = customtkinter.CTkEntry.get(location_name)
     trial = customtkinter.CTkEntry.get(time_name)
     date_name.configure(state=tkinter.NORMAL)
@@ -70,11 +70,13 @@ def start():
     #checking for empty trials     
     if not trial:
         trial = '1'
+    
         
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
     location = sLocation.replace(" ", "-")
     date = date.replace("/", ".")
+    user = sUser.replace("_", ".")
     
     #set the time
     #the format to chang the date and time = sudo date -s "2006-08-14T02:34:56"
