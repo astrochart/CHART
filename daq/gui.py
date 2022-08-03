@@ -8,6 +8,7 @@ import time #this allows you to use "after" to call the date_time method and upd
 import glob #for compressing the zip files to import into jupyter hub
 import shutil
 import webbrowser
+from tkinter import messagebox
 
 customtkinter.set_appearance_mode("Light")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
@@ -136,31 +137,32 @@ def start():
         os.mkdir(main_dir, mode = 0o1777)
         print("Directory '% s' is built!" % main_dir)
     else:
+        messagebox.showerror('ERROR', 'File already exists.\nChange the time and/or trial number before clicking start.')
         # create CTk window to show that there was an error when they did not change the inputs so they know what to change
-        err = customtkinter.CTk()  
-        err.geometry("576x288")
-        err.title("ERROR")
-        label = customtkinter.CTkLabel(master=err,
-                               text="File already exists.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=err,
-                               text="file: "+main_dir,
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=err,
-                               text="Change the time and/or trial number before clicking start.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
+#         err = customtkinter.CTk()  
+#         err.geometry("576x288")
+#         err.title("ERROR")
+#         label = customtkinter.CTkLabel(master=err,
+#                                text="File already exists.",
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
+#         label = customtkinter.CTkLabel(master=err,
+#                                text="file: "+main_dir,
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
+#         label = customtkinter.CTkLabel(master=err,
+#                                text="Change the time and/or trial number before clicking start.",
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
         #allow for the start button to be clicked because then they can change the trial number and continue
         start_button.configure(state=tkinter.NORMAL)
         stop_button.configure(state=tkinter.DISABLED)
@@ -181,6 +183,7 @@ def start():
     #checking each parameter to see if anyone entered a variable or if the default numbers should be used
     if not freq_i:
         freq_i = "1390"
+        
     if not freq_f:
         freq_f = "1450"
         
@@ -316,30 +319,31 @@ def biasT_switch():
     biasT = False
     if (biasT_switch.get() == "on"):
         biasT = True
-        warning = customtkinter.CTk()  
-        warning.geometry("576x300")
-        warning.title("WARNING")
-        label = customtkinter.CTkLabel(master=warning,
-                               text="Only have this on if you know FOR SURE the BIAS-T is being used.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.2, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=warning,
-                               text="If the Bias-T is NOT connected to your radio,",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.4, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=warning,
-                               text="this option WILL BREAK your radio",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.6, anchor=tkinter.W)
+        messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf the Bias-T is NOT connected to your radio, this option WILL BREAK your radio')
+#         warning = customtkinter.CTk()  
+#         warning.geometry("576x300")
+#         warning.title("WARNING")
+#         label = customtkinter.CTkLabel(master=warning,
+#                                text="Only have this on if you know FOR SURE the BIAS-T is being used.",
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.01, rely=0.2, anchor=tkinter.W)
+#         label = customtkinter.CTkLabel(master=warning,
+#                                text="If the Bias-T is NOT connected to your radio,",
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.01, rely=0.4, anchor=tkinter.W)
+#         label = customtkinter.CTkLabel(master=warning,
+#                                text="this option WILL BREAK your radio",
+#                                 width=100,
+#                                height=25,
+#                                fg_color=("gray", "red"),
+#                                corner_radius=5)
+#         label.place(relx=0.01, rely=0.6, anchor=tkinter.W)
         #allow for the start button to be clicked because then they can change the trial number and continue
         return
 
