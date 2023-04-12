@@ -20,7 +20,7 @@ def stop():
     print("Data collected halted!")
 
 
-def button_function():
+def start():
     
     global proc
     
@@ -50,11 +50,19 @@ def button_function():
         "20"+year
 
 
-
-    
+    hour, minute = time.split(":")
     #we needed to add the seconds onto the time
+    if(tDay == "pm"):
+        t = int(hour)+12
+        hour = str(t)
+        print("hour is "+hour)
+        time = hour+":"+minute
+        
+    if(len(hour) == 1):
+        time = "0"+hour+":"+minute
+        print("time is "+time)
+        
     time = time+":00"
-    
     change_date = "sudo date -s \""+year+"-"+month+"-"+day+"T"+time+"\""
     os.system(change_date)
     
@@ -192,7 +200,7 @@ nint_in.place(relx=0.34, rely=0.5, anchor=tkinter.W)
 
 
 # Use CTkButton instead of tkinter Button
-button = customtkinter.CTkButton(master=app, text="Start", command=button_function)
+button = customtkinter.CTkButton(master=app, text="Start", command=start)
 button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
 
 button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
