@@ -21,9 +21,15 @@ Here we provide the software installation instructions to get you started.
 
 #### Analysis Only
 
-If you are only using the analysis code, you can simply clone the repo and use pip to install.
+If you are only using the analysis code, you can simply clone the repo and use pip to install. This is the install using ssh. 
 ```bash
 git clone git@github.com:astrochart/CHART.git
+cd CHART
+pip install .
+```
+If you want to use https, use this:
+```bash
+git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
@@ -48,11 +54,12 @@ sudo apt install gpsd gpsd-clients
 pip install gps
 ```
 
-Clone this repository and install.
+Clone this repository and install. 
 ```bash
 git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
+
 
 ---
