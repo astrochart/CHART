@@ -70,7 +70,8 @@ def concat(data_list):
 
 def LSR_shift(lon, lat, ele, time, RA, Dec):
     """
-    Identifies the exact postion at which the observations were taken and corrects for the Local Standard of Rest.
+    Identifies the exact postion at which the observations were taken and corrects for the Local Standard of Rest. 
+    Along with this it also converts the celestial coordinates to galactic coordinates.
     
     :param lon: longitude 
     :param lat: latitude
@@ -89,8 +90,14 @@ def LSR_shift(lon, lat, ele, time, RA, Dec):
     v = doppler(f0_shifted,f0)
     v_adjustment = v.to(u.km/u.second)
     print(v_adjustment)
+    
+        
+    coor=SkyCoord(RA, Dec, frame='icrs')
+    l=coor.galactic.l.degree
+    b=coor.galactic.b.degree
+    print(l,b)
+    
     return v_adjustment
-
 
 def average_overlapping(x1, y1, x2, y2):
     """
@@ -140,60 +147,39 @@ def interactive_plot(unique_x):
     e = 2.71828  
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    a1 = a2 = a3 = a4 = b1 = b2 = b3 = b4 = c1 = c2 = c3 = c4 = 1
+    a = b = c = [1]*4
 
-    line1, = ax.plot(x, (a1*(e ** -(((x-b1)**2) / (2*(c1**2))))))
-    line2, = ax.plot(x, (a2*(e ** -(((x-b2)**2) / (2*(c2**2))))))
-    line3, = ax.plot(x, (a3*(e ** -(((x-b3)**2) / (2*(c3**2))))))
-    line4, = ax.plot(x, (a4*(e ** -(((x-b4)**2) / (2*(c4**2))))))
-    line5, = ax.plot(x, ((a1*(e ** -(((x-b1)**2) / (2*(c1**2))))) + 
-                         (a2*(e ** -(((x-b2)**2) / (2*(c2**2))))) + 
-                         (a3*(e ** -(((x-b3)**2) / (2*(c3**2))))) + 
-                         (a4*(e ** -(((x-b4)**2) / (2*(c4**2)))))))
+    lines = [ax.plot(x, (a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2))))))[0] for i in range(4)]
+    lines.append(ax.plot(x, sum([a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2)))) for i in range(4)]))[0])
 
-    a1_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    a2_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    a3_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    a4_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    b1_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    b2_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    b3_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    b4_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    c1_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    c2_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    c3_slider = FloatSlider(min=-100, max=100, step=1, value=1)
-    c4_slider = FloatSlider(min=-100, max=100, step=1, value=1)
+    sliders = [FloatSlider(min=-100, max=100, step=1, value=1) for _ in range(12)]
+    colors = ['black']*4 + ['red']
+    color_dropdowns = [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[i]) for i in range(5)]
 
-    color1_dropdown = Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value='black')
-    color2_dropdown = Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value='black')
-    color3_dropdown = Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value='black')
-    color4_dropdown = Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value='black')
-    color5_dropdown = Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value='red')
-
-    def update(a1=1, b1=1, c1=1, a2=1, b2=1, c2=1, a3=1, b3=1, c3=1, a4=1, b4=1, c4=1, 
+    def update(a1=1, b1=1, c1=1, a2=1, b2=1, c2=1, a3=1, b3=1, c3=1, a4=1, b4=1, c4=1,
                color1='black', color2='black', color3='black', color4='black', color5='red'):
-        line1.set_ydata((a1*(e ** -(((x-b1)**2) / (2*(c1**2))))))
-        line2.set_ydata((a2*(e ** -(((x-b2)**2) / (2*(c2**2))))))
-        line3.set_ydata((a3*(e ** -(((x-b3)**2) / (2*(c3**2))))))
-        line4.set_ydata((a4*(e ** -(((x-b4)**2) / (2*(c4**2))))))
-        line5.set_ydata(((a1*(e ** -(((x-b1)**2) / (2*(c1**2))))) + 
-                         (a2*(e ** -(((x-b2)**2) / (2*(c2**2))))) + 
-                         (a3*(e ** -(((x-b3)**2) / (2*(c3**2))))) + 
-                         (a4*(e ** -(((x-b4)**2) / (2*(c4**2)))))))
-        line1.set_color(color1)
-        line2.set_color(color2)
-        line3.set_color(color3)
-        line4.set_color(color4)
-        line5.set_color(color5)
+        a = [a1,a2,a3,a4]
+        b = [b1,b2,b3,b4]
+        c = [c1,c2,c3,c4]
+        for i in range(4):
+            lines[i].set_ydata((a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2))))))
+        lines[4].set_ydata(sum([a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2)))) for i in range(4)]))
+        for i in range(5):
+            lines[i].set_color([color1,color2,color3,color4,color5][i])
         fig.canvas.draw_idle()
 
-    interact(update, a1=a1_slider, b1=b1_slider, c1=c1_slider, a2=a2_slider, b2=b2_slider, c2=c2_slider, 
-             a3=a3_slider, b3=b3_slider, c3=c3_slider, a4=a4_slider, b4=b4_slider, c4=c4_slider, color1=color1_dropdown, 
-             color2=color2_dropdown, color3=color3_dropdown, color4=color4_dropdown, color5=color5_dropdown);
+    interact(update,
+             a1=sliders[0], b1=sliders[1], c1=sliders[2],
+             a2=sliders[3], b2=sliders[4], c2=sliders[5],
+             a3=sliders[6], b3=sliders[7], c3=sliders[8],
+             a4=sliders[9], b4=sliders[10], c4=sliders[11],
+             color1=color_dropdowns[0], color2=color_dropdowns[1],
+             color3=color_dropdowns[2], color4=color_dropdowns[3],
+             color5=color_dropdowns[4])
      
     return ax
 
-
+    
 def goodness_of_fit(unique_x, combined_gauss, avg_y):
     """Performs a chi-squared goodness of fit test between the CHART data and the user created combined Gaussian curve.
     
@@ -220,4 +206,7 @@ def goodness_of_fit(unique_x, combined_gauss, avg_y):
     p_value_x = chi2.sf(chi_squared_statistic_x, len(gauss_masked[:,0]) - 1)
     p_value_y = chi2.sf(chi_squared_statistic_y, len(y_gauss) - 1)
 
+    #print("Chi-squared Statistic for x: ", chi_squared_statistic_x)
+    #print("P-value for x: ", p_value_x)
+    #print("Chi-squared Statistic for y: ", chi_squared_statistic_y)
     print("P-value for y: ", p_value_y)
