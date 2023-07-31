@@ -180,6 +180,7 @@ def interactive_plot(unique_x):
      
     return ax
 
+    
 def goodness_of_fit(unique_x, combined_gauss, avg_y):
     """Performs a chi-squared goodness of fit test between the CHART data and the user created combined Gaussian curve.
     
@@ -210,4 +211,3 @@ def goodness_of_fit(unique_x, combined_gauss, avg_y):
     reduced_chi_squared_statistic_xy = chi_squared_statistic_xy / degrees_of_freedom_xy
     p_value_xy = chi2.sf(reduced_chi_squared_statistic_xy, degrees_of_freedom_xy)
     return reduced_chi_squared_statistic_xy, p_value_xy
-
