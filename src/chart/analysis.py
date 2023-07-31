@@ -68,36 +68,37 @@ def concat(data_list):
     raise NotImplementedError()
 
 
-def LSR_shift(lon, lat, ele, time, RA, Dec):
+def LSR_shift(longitude, latitude, elevation, time, altitude, azimuth):
     """
     Identifies the exact postion at which the observations were taken and corrects for the Local Standard of Rest. 
-    Along with this it also converts the celestial coordinates to galactic coordinates.
+    Along with this it also converts location, altitude, and azimuth to galactic coordinates.
     
-    :param lon: longitude 
-    :param lat: latitude
-    :param ele: elevation
-    :param time: date and time
-    :param RA: Right Ascension
-    :param Dec: Declination
+    :param latitude: latitude in degrees
+    :param longitude: longitude in degrees
+    :param elevation: elevation in meters
+    :param time: observation time in UTC format string
+    :param altitude: altitude in degrees
+    :param azimuth: azimuth in degrees
     """
     
-    location = EarthLocation.from_geodetic(lon, lat, ele*u.m) #Lon, Lat, elevation
+    loc = EarthLocation(lat=latitude*u.deg, lon=longitude*u.deg, height=elevation*u.m)
+    altaz = AltAz(obstime=Time(time), location=loc, alt=altitude*u.deg, az=azimuth*u.deg)
+    skycoord = SkyCoord(altaz.transform_to(ICRS))
+    location = EarthLocation.from_geodetic(longitude, latitude, elevation*u.m) #Lon, Lat, elevation
     location = location.get_itrs(obstime=Time(time)) #To ITRS frame, makes Earth stationary with Sun 
-    pointing_45deg = SkyCoord(RA,Dec, frame='icrs') #Center of CHART pointing
+    pointing_45deg = SkyCoord(altaz.transform_to(ICRS)) #Center of CHART pointing
     frequency = SpectralCoord(1.420405751768e9 * u.Hz, observer=location, target=pointing_45deg) #Shift expected from just local motion
     f0_shifted = frequency.with_observer_stationary_relative_to('lsrk') #correct for kinematic local standard of rest
     f0_shifted = f0_shifted.to(u.GHz)
     v = doppler(f0_shifted,f0)
     v_adjustment = v.to(u.km/u.second)
-    print(v_adjustment)
-    
-        
-    coor=SkyCoord(RA, Dec, frame='icrs')
-    l=coor.galactic.l.degree
-    b=coor.galactic.b.degree
-    print(l,b)
-    
-    return v_adjustment
+    return v_adjustment, skycoord.galactic
+
+def find_array_with_number(freqs, j, number):
+    for k_index, k in enumerate(freqs[j]):
+        if numpy.any((k[:-1] <= number) & (number <= k[1:])):
+            return k_index, k
+    return None, None
 
 def average_overlapping(x1, y1, x2, y2):
     """
@@ -179,7 +180,6 @@ def interactive_plot(unique_x):
      
     return ax
 
-    
 def goodness_of_fit(unique_x, combined_gauss, avg_y):
     """Performs a chi-squared goodness of fit test between the CHART data and the user created combined Gaussian curve.
     
@@ -187,26 +187,27 @@ def goodness_of_fit(unique_x, combined_gauss, avg_y):
     param combined_gauss: y values of combined Gaissian curve
     param avg: y values of overlapping CHART data
     """
-    x_gauss = np.array(unique_x)
-    y_gauss = np.array(combined_gauss)
-    x_data = np.array(unique_x) 
-    y_data = np.array(avg_y) 
+    x_observed = np.array(unique_x)
+    y_observed = np.array(combined_gauss)
+    x_expected = np.array(unique_x) * 2
+    y_expected = np.array(avg_y) * 2
 
-    gauss = np.concatenate((x_gauss.reshape(-1,1), y_gauss.reshape(-1,1)), axis=1)
-    data = np.concatenate((x_data.reshape(-1,1), y_data.reshape(-1,1)), axis=1)
+    observed = np.concatenate((x_observed.reshape(-1,1), y_observed.reshape(-1,1)), axis=1)
+    expected = np.concatenate((x_expected.reshape(-1,1), y_expected.reshape(-1,1)), axis=1)
 
+    mask = (observed[:,0] >= -100) & (observed[:,0] <= 100)
+    observed_masked = observed[mask]
+    expected_masked = expected[mask]
 
-    mask = (gauss[:,0] >= -100) & (gauss[:,0] <= 100)
-    gauss_masked = gauss[mask]
-    data_masked = data[mask]
+    chi_squared_statistic_x = np.sum((observed_masked[:,0] - expected_masked[:,0])**2 / expected_masked[:,0])
+    chi_squared_statistic_y = np.sum((y_observed - y_expected)**2 / y_expected)
 
-    chi_squared_statistic_x = np.sum((gauss_masked[:,0] - data_masked[:,0])**2 / data_masked[:,0])
-    chi_squared_statistic_y = np.sum((y_gauss - y_data)**2 / y_data)
+    p_value_x = chi2.sf(chi_squared_statistic_x, len(observed_masked[:,0]) - 1)
+    p_value_y = chi2.sf(chi_squared_statistic_y, len(y_observed) - 1)
 
-    p_value_x = chi2.sf(chi_squared_statistic_x, len(gauss_masked[:,0]) - 1)
-    p_value_y = chi2.sf(chi_squared_statistic_y, len(y_gauss) - 1)
+    chi_squared_statistic_xy = chi_squared_statistic_x + chi_squared_statistic_y
+    degrees_of_freedom_xy = len(observed) - 2
+    reduced_chi_squared_statistic_xy = chi_squared_statistic_xy / degrees_of_freedom_xy
+    p_value_xy = chi2.sf(reduced_chi_squared_statistic_xy, degrees_of_freedom_xy)
+    return reduced_chi_squared_statistic_xy, p_value_xy
 
-    #print("Chi-squared Statistic for x: ", chi_squared_statistic_x)
-    #print("P-value for x: ", p_value_x)
-    #print("Chi-squared Statistic for y: ", chi_squared_statistic_y)
-    print("P-value for y: ", p_value_y)
