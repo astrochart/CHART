@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import tkinter #you do need tkinter and customtkinter
 import customtkinter
 import os #this allows you to use the command line to change the date
@@ -8,16 +8,20 @@ import time #this allows you to use "after" to call the date_time method and upd
 import glob #for compressing the zip files to import into jupyter hub
 import shutil
 import webbrowser
+from tkinter import messagebox
 
-customtkinter.set_appearance_mode("Dark")  # Modes: system (default), light, dark
+customtkinter.set_appearance_mode("Light")  # Modes: system (default), light, dark
 customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
 #create CTk window like you do with the Tk window
 app = customtkinter.CTk()  
-app.geometry("686x388")
+app.geometry("786x480")
 app.title("Today's Data")
+customtkinter.set_widget_scaling(1.1)
+
 global biasT
 biasT = False
+global proc
 #the stop method from the stop_button allows you to stop the program running
 def stop():
     global proc
@@ -54,7 +58,7 @@ def start():
     stop_button.configure(state=tkinter.NORMAL)
     
     #the variables taken from the entry inputs
-    user = customtkinter.CTkEntry.get(user_name)
+    sUser = customtkinter.CTkEntry.get(user_name)
     sLocation = customtkinter.CTkEntry.get(location_name)
     trial = customtkinter.CTkEntry.get(time_name)
     date_name.configure(state=tkinter.NORMAL)
@@ -63,16 +67,17 @@ def start():
     if (system_date_time_switch.get() == "off"):
         date = customtkinter.CTkEntry.get(date_name)
         time = customtkinter.CTkEntry.get(curr_time)
-    #checking if date was empty so that it knows to use the input from entry or the one from the system time and date 
-    #if not date:
-        #date = customtkinter.CTkEntry.get(date_name)
-        time = customtkinter.CTkEntry.get(curr_time)
-         
-
+        
+    #checking for empty trials     
+    if not trial:
+        trial = '1'
+    
+        
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
     location = sLocation.replace(" ", "-")
     date = date.replace("/", ".")
+    user = sUser.replace("_", ".")
     
     #set the time
     #the format to chang the date and time = sudo date -s "2006-08-14T02:34:56"
@@ -132,31 +137,9 @@ def start():
         os.mkdir(main_dir, mode = 0o1777)
         print("Directory '% s' is built!" % main_dir)
     else:
-        # create CTk window to show that there was an error when they did not change the inputs so they know what to change
-        err = customtkinter.CTk()  
-        err.geometry("576x288")
-        err.title("ERROR")
-        label = customtkinter.CTkLabel(master=err,
-                               text="File already exists.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=err,
-                               text="file: "+main_dir,
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=err,
-                               text="Change the time and/or trial number before clicking start.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.1, rely=0.4, anchor=tkinter.W)
+        # create error window to show that there was an error when they did not change the inputs so they know what to change
+        messagebox.showerror('ERROR', 'File already exists.\nChange the time and/or trial number before clicking start.')
+        
         #allow for the start button to be clicked because then they can change the trial number and continue
         start_button.configure(state=tkinter.NORMAL)
         stop_button.configure(state=tkinter.DISABLED)
@@ -177,6 +160,7 @@ def start():
     #checking each parameter to see if anyone entered a variable or if the default numbers should be used
     if not freq_i:
         freq_i = "1390"
+        
     if not freq_f:
         freq_f = "1450"
         
@@ -304,38 +288,30 @@ def create_zip():
 def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
     
+def open_local_jupyter():
+    os.system('jupyter notebook --notebook-dir=~')
+    
 def biasT_switch():
     global biasT
     biasT = False
     if (biasT_switch.get() == "on"):
         biasT = True
-        warning = customtkinter.CTk()  
-        warning.geometry("576x300")
-        warning.title("WARNING")
-        label = customtkinter.CTkLabel(master=warning,
-                               text="Only have this on if you know FOR SURE the BIAS-T is being used.",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.2, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=warning,
-                               text="If the Bias-T is NOT connected to your radio,",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.4, anchor=tkinter.W)
-        label = customtkinter.CTkLabel(master=warning,
-                               text="this option WILL BREAK your radio",
-                                width=100,
-                               height=25,
-                               fg_color=("gray", "red"),
-                               corner_radius=5)
-        label.place(relx=0.01, rely=0.6, anchor=tkinter.W)
-        #allow for the start button to be clicked because then they can change the trial number and continue
+        messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf the Bias-T is NOT connected to your radio, this option WILL BREAK your radio')
+        
         return
 
+#change the display to be able to see better
+def mode():
+    if (mode_switch.get() == "on"):
+        customtkinter.set_appearance_mode("Dark")
+    else:
+        customtkinter.set_appearance_mode("Light")
+
+
+
+mode_switch = customtkinter.CTkSwitch(master=app, text="Dark Mode", command=mode, onvalue="on", offvalue="off")
+mode_switch.pack(padx=20, pady=10)
+mode_switch.place(relx=0.1, rely=.03, anchor=tkinter.CENTER)
 
 #this is the start of the gui design where everything is layed out 
 label = customtkinter.CTkLabel(master=app,
@@ -343,15 +319,18 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=8)
+
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
 freq_i_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1390",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+
 freq_i_in.place(relx=0.3, rely=0.1, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -359,15 +338,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+
 label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
 freq_f_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="1450",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                             
 freq_f_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -375,15 +358,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+
 label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 
 int_time_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="0.5",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                              
 int_time_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
     
 label = customtkinter.CTkLabel(master=app,
@@ -391,15 +378,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+                               
 label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
 nint_in = customtkinter.CTkEntry(master=app,
                                placeholder_text="20",
-                               width=60,
+                               width=80,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                              
 nint_in.place(relx=0.34, rely=0.4, anchor=tkinter.W)
 
 default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Default Parameters", command=default_parameters, onvalue="on", offvalue="off")
@@ -412,10 +403,12 @@ biasT_switch.place(relx=0.25, rely=.57, anchor=tkinter.CENTER)
 
 description = customtkinter.CTkEntry(master=app,
                                placeholder_text="Describe what you are looking at.",
-                               width=210,
+                               width=310,
                                height=30,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                               
 description.place(relx=0.05, rely=0.67, anchor=tkinter.W)
 
 
@@ -431,23 +424,31 @@ stop_button.configure(state=tkinter.DISABLED)
 #start with stop disabled so you cannot click stop before start
 
 jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
-jupyter_button.place(relx=0.8, rely=.85, anchor=tkinter.CENTER)
+jupyter_button.place(relx=0.8, rely=.8, anchor=tkinter.CENTER)
 jupyter_button.configure(state=tkinter.NORMAL)
+
+local_jupyter_button = customtkinter.CTkButton(master=app, text="Open LOCAL Jupyter Notebook", command=open_local_jupyter)
+local_jupyter_button.place(relx=0.8, rely=.9, anchor=tkinter.CENTER)
+local_jupyter_button.configure(state=tkinter.NORMAL)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Username:",
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+                              
 label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
 
 user_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="Enter Here",
-                               width=120,
+                               width=210,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                              
 user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -455,15 +456,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+                               
 label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
 
 location_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="Enter Here",
-                               width=120,
+                               width=210,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                              
 location_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -471,7 +476,9 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius= 5
+                               )
+                              
 label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
 
 time_name = customtkinter.CTkEntry(master=app,
@@ -479,7 +486,9 @@ time_name = customtkinter.CTkEntry(master=app,
                                width=120,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                              
 time_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -487,15 +496,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+                               
 label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
 
 date_name = customtkinter.CTkEntry(master=app,
                                placeholder_text="MM.DD.YYYY",
-                               width=120,
+                               width=150,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                               )
+                               
 date_name.place(relx=0.7, rely=0.4, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
@@ -503,15 +516,19 @@ label = customtkinter.CTkLabel(master=app,
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=5)
+                               corner_radius=5
+                               )
+                              
 label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
 
 curr_time = customtkinter.CTkEntry(master=app,
                                placeholder_text="00:00",
-                               width=60,
+                               width=70,
                                height=25,
                                border_width=2,
-                               corner_radius=10)
+                               corner_radius=10
+                              )
+                               
 curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 combobox = customtkinter.CTkComboBox(master=app,
