@@ -21,7 +21,7 @@ Here we provide the software installation instructions to get you started.
 
 *Note the 2023 release of Raspberry Pi OS (Bookworm) does not allow global pip installs. You will need to set up a virtual environment:*
 ```bash
-python -m venv ~/chartenv
+python -m venv --system-site-packages ~/chartenv
 source activate chartenv/bin/activate
 ```
 
