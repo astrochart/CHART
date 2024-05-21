@@ -50,7 +50,7 @@ First make sure you have activated your virtual environment (see above).
 
 In a terminal, enter the following:
 ```bash
-sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake
+sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
 pip install ipython
 pip install numpy
 ```
