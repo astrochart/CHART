@@ -19,13 +19,13 @@ The tutorials are a work in progress, but so far will walk you through:
 
 Here we provide the software installation instructions to get you started.
 
-#### Analysis Only
-
 *Note the 2023 release of Raspberry Pi OS (Bookworm) does not allow global pip installs. You will need to set up a virtual environment:*
 ```bash
 python -m venv ~/chartenv
 source activate chartenv/bin/activate
 ```
+
+#### Analysis Only
 
 If you are only using the analysis code, you can simply clone the repo and use pip to install. This is the install using ssh. 
 ```bash
@@ -46,21 +46,11 @@ CHART software uses GNU Radio, a free open source package for collecting and pro
 To learn more about GNU Radio visit this site https://www.gnuradio.org/about/.
 
 We will assume you are running Raspberry Pi OS on a Raspberry Pi (instructions  [here](https://astrochart.github.io/website/software.html)).
+First make sure you have activated your virtual environment (see above).
 
 In a terminal, enter the following:
 ```bash
 sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake
-```
-
-*Note the 2023 release of Raspberry Pi OS (Bookworm) does not allow global pip installs.*
-You will need to set up a virtual environment that can see the global install of gnuradio.
-```bash
-python -m venv --system-site-packages ~/chartenv
-source chartenv/bin/activate
-```
-
-Next install a couple useful python libraries
-```
 pip install ipython
 pip install numpy
 ```
