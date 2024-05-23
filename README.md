@@ -70,7 +70,7 @@ cd ..
 sudo dpkg -i librtlsdr0_*.deb
 sudo dpkg -i librtlsdr-dev_*.deb
 sudo dpkg -i rtl-sdr_*.deb
-```
+echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
 
 A few useful python libraries:
 ```bash
