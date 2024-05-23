@@ -26,6 +26,8 @@ source chartenv/bin/activate
 ```
 
 #### Analysis Only
+<details>
+<summary>Click for analysis only instructions</summary>
 
 If you are only using the analysis code, you can simply clone the repo and use pip to install. This is the install using ssh. 
 ```bash
@@ -39,8 +41,11 @@ git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
+</details>
 
 #### Full Install
+<details>
+<summary>Click for full installation instructions</summary>
 
 CHART software uses GNU Radio, a free open source package for collecting and processing radio data.
 To learn more about GNU Radio visit this site https://www.gnuradio.org/about/.
@@ -51,8 +56,25 @@ First make sure you have activated your virtual environment (see above).
 In a terminal, enter the following:
 ```bash
 sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
-pip install ipython
-pip install numpy
+```
+
+If you are using the RTL-SDR Blog v4 dongle, we need to update the driver. Full details are [here](https://www.rtl-sdr.com/v4/),
+and we have included the relevant commands below for convenience.
+```bash
+sudo apt install libusb-1.0-0-dev
+sudo apt install debhelper
+git clone https://github.com/rtlsdrblog/rtl-sdr-blog
+cd rtl-sdr-blog
+sudo dpkg-buildpackage -b --no-sign
+cd ..
+sudo dpkg -i librtlsdr0_*.deb
+sudo dpkg -i librtlsdr-dev_*.deb
+sudo dpkg -i rtl-sdr_*.deb
+```
+
+A few useful python libraries:
+```bash
+pip install ipython numpy juypter
 ```
 
 To use the GPS submodule (optional), run these lines:
@@ -67,6 +89,6 @@ git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
-
+</details>
 
 ---
