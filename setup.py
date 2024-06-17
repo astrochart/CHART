@@ -17,8 +17,13 @@ setup_args = {
     'scripts': ['daq/freq_and_time_scan.py', 'daq/gui.py'],
     'version': 1.0,
     'install_requires': [
-        'numpy>=1.10',
-        'customtkinter'
+        'numpy>=1.20',
+        'customtkinter',
+        'astropy',
+        'matplotlib',
+        'pandas',
+        'ipywidgets',
+        'scipy'
     ],
 }
 
