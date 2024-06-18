@@ -29,7 +29,7 @@ source chartenv/bin/activate
 <details>
 <summary>Click for analysis only instructions</summary>
 
-If you are only using the analysis code, you can simply clone the repo and use pip to install. This is the install using ssh. 
+If you are only using the analysis code, you can simply clone the repo and use pip to install. This is the install using ssh.
 ```bash
 git clone git@github.com:astrochart/CHART.git
 cd CHART
@@ -72,12 +72,7 @@ sudo dpkg -i librtlsdr-dev_*.deb
 sudo dpkg -i rtl-sdr_*.deb
 echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
 ```
-Reboot the system. 
-
-A few useful python libraries:
-```bash
-pip install ipython numpy juypter
-```
+Reboot the system.
 
 To use the GPS submodule (optional), run these lines:
 ```bash
@@ -85,7 +80,7 @@ sudo apt install gpsd gpsd-clients
 pip install gps
 ```
 
-Clone this repository and install. 
+Clone this repository and install.
 ```bash
 git clone https://github.com/astrochart/CHART.git
 cd CHART
