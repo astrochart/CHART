@@ -159,16 +159,16 @@ def start():
 
     #checking each parameter to see if anyone entered a variable or if the default numbers should be used
     if not freq_i:
-        freq_i = "1390"
+        freq_i = "1415"
 
     if not freq_f:
-        freq_f = "1450"
+        freq_f = "1425"
 
     if not int_time:
-        int_time = "0.5"
+        int_time = "5"
 
     if not nint:
-        nint = "20"
+        nint = "10"
 
     if biasT:
         copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
