@@ -19,7 +19,7 @@ setup_args = {
     'install_requires': [
         'ipython',
         'jupyter',
-        'ipympl'
+        'ipympl',
         'numpy>=1.20',
         'customtkinter',
         'astropy',
