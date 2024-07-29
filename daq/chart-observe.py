@@ -159,16 +159,16 @@ def start():
 
     #checking each parameter to see if anyone entered a variable or if the default numbers should be used
     if not freq_i:
-        freq_i = "1390"
+        freq_i = default_freq_i
 
     if not freq_f:
-        freq_f = "1450"
+        freq_f = default_freq_f
 
     if not int_time:
-        int_time = "0.5"
+        int_time = default_int_time
 
     if not nint:
-        nint = "20"
+        nint = default_nint
 
     if biasT:
         copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
@@ -195,7 +195,10 @@ def default_parameters():
         int_time_in.configure(state=tkinter.DISABLED)
         nint_in.configure(state=tkinter.DISABLED)
 
-
+default_freq_i = '1415'
+default_freq_f = '1425'
+default_int_time = '5'
+default_nint = '10'
 
 #the method current_date_time from the switch system_date_time_switch
     #gets the system time if the switch is on and disables the entry boxes for date, time, and time of day(am/pm)
@@ -324,7 +327,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
 freq_i_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1390",
+                               placeholder_text= default_freq_i,
                                width=80,
                                height=25,
                                border_width=2,
@@ -344,7 +347,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
 freq_f_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="1450",
+                               placeholder_text= default_freq_f,
                                width=80,
                                height=25,
                                border_width=2,
@@ -364,7 +367,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 
 int_time_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="0.5",
+                               placeholder_text=default_int_time,
                                width=80,
                                height=25,
                                border_width=2,
@@ -384,7 +387,7 @@ label = customtkinter.CTkLabel(master=app,
 label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
 nint_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text="20",
+                               placeholder_text=default_nint,
                                width=80,
                                height=25,
                                border_width=2,
