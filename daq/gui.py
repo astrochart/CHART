@@ -195,10 +195,10 @@ def default_parameters():
         int_time_in.configure(state=tkinter.DISABLED)
         nint_in.configure(state=tkinter.DISABLED)
 
-default_freq_i = 1415
-default_freq_f = 1425
-default_int_time = 5
-default_nint = 10
+default_freq_i = '1415'
+default_freq_f = '1425'
+default_int_time = '5'
+default_nint = '10'
 
 #the method current_date_time from the switch system_date_time_switch
     #gets the system time if the switch is on and disables the entry boxes for date, time, and time of day(am/pm)
@@ -326,7 +326,6 @@ label = customtkinter.CTkLabel(master=app,
 
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
-default_freq_i = 1415
 freq_i_in = customtkinter.CTkEntry(master=app,
                                placeholder_text= default_freq_i,
                                width=80,
@@ -347,9 +346,8 @@ label = customtkinter.CTkLabel(master=app,
 
 label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
 
-defualt_freq_f = 1425
 freq_f_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text= defualt_freq_f,
+                               placeholder_text= default_freq_f,
                                width=80,
                                height=25,
                                border_width=2,
@@ -368,7 +366,6 @@ label = customtkinter.CTkLabel(master=app,
 
 label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
 
-default_int_time = 5
 int_time_in = customtkinter.CTkEntry(master=app,
                                placeholder_text=default_int_time,
                                width=80,
@@ -389,7 +386,6 @@ label = customtkinter.CTkLabel(master=app,
 
 label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
 
-default_nint = 10
 nint_in = customtkinter.CTkEntry(master=app,
                                placeholder_text=default_nint,
                                width=80,
