@@ -299,7 +299,7 @@ def biasT_switch():
     biasT = False
     if (biasT_switch.get() == "on"):
         biasT = True
-        messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf the Bias-T is NOT connected to your radio, this option WILL BREAK your radio')
+        messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
 
         return
 
