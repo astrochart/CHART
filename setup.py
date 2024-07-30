@@ -14,7 +14,7 @@ setup_args = {
     'package_dir': {'chart': 'src/chart'},
     'packages': ['chart'],
     'include_package_data': True,
-    'scripts': ['daq/freq_and_time_scan.py', 'daq/gui.py'],
+    'scripts': ['daq/freq_and_time_scan.py', 'daq/chart-observe.py'],
     'version': 1.0,
     'install_requires': [
         'ipython',
@@ -33,7 +33,7 @@ setup_args = {
 
 if __name__ == '__main__':
     setup(**setup_args)
-    src = shutil.which('gui.py')
-    dest = os.path.expanduser('~') + '/Desktop/CHART_GUI'
+    src = shutil.which('chart-observe.py')
+    dest = os.path.expanduser('~') + '/Desktop/chart-observe'
     if src is not None and not os.path.exists(dest):
             os.symlink(src, dest)

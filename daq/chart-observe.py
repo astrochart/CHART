@@ -16,7 +16,7 @@ customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-bl
 #create CTk window like you do with the Tk window
 app = customtkinter.CTk()
 app.geometry("786x480")
-app.title("Today's Data")
+app.title("CHART Data Collection")
 customtkinter.set_widget_scaling(1.1)
 
 global biasT
