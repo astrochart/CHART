@@ -1,11 +1,17 @@
-## Creating the CHART disk image
+## Building the 21cm CHART disk image
 
 **This page is meant for developers planning to make changes to code.**
-If you are looking for an easy installation, [follow the instructions
-on the website](https://astrochart.github.io/telescope_design#burn-your-micro-sd-card).
-This is the procedure we follow to create the CHART disk image.
+If you are looking for the default Raspberry PI setup, use the [latest pre-built sd card image](https://astrochart.github.io/telescope_design#burn-your-micro-sd-card).
+
+What follows is the procedure for building the CHART disk image.
 The latest version is `v1.1` (see changelog below).
 
+The basic procedure is to install all the necessary software on Raspberry PI and then clone the disk. We have found that
+sometimes details matter in the setup, so the below is a log of everything we've done for the most recent build. These
+instructions work as of the most recent entry in the changelog below. 
+
+
+## Setup the PI
 - We used the official [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to put Raspberry Pi OS (64-bit) on a
 micro SD card.
 The target device was Raspberry Pi 4.
@@ -52,7 +58,11 @@ chart-observe.py
 chmod 777 ~/Desktop/chart-observe
 ```
 
-At this point everything was installed and the Pi was ready to be used. The following steps are used to create the actual `.iso` file for backup and sharing.
+At this point everything was installed and the Pi was ready to be used. 
+
+
+## Clone the disk to an ISO
+The following steps are used to create the actual `.iso` file for backup and sharing.
 
 - We used Mac's Disk Utility app to create an image, using format "DVD/CD Master" with no encryption.
 - When the image was complete, we changed the extension from "cdr" to "iso."
