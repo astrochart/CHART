@@ -195,6 +195,7 @@ def default_parameters():
         int_time_in.configure(state=tkinter.DISABLED)
         nint_in.configure(state=tkinter.DISABLED)
 
+# Why these defaults? 
 default_freq_i = '1415'
 default_freq_f = '1425'
 default_int_time = '5'
@@ -534,6 +535,8 @@ curr_time = customtkinter.CTkEntry(master=app,
 
 curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
+
+
 combobox = customtkinter.CTkComboBox(master=app,
                                      values=["am", "pm"],
                                      height = 25, width = 55, variable = "")
@@ -541,9 +544,48 @@ combobox.pack(padx=5, pady=5)
 combobox.set("am")  # set initial value
 combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
 
+# This function is to add hint labels to entry widgets when the user starts typing
+# the goal is to have the hints under the entry or to the side so that the user knows what format to use
+
+def add_hint_label(entry_widget, hint_text, position="below"):
+    """Adds a small gray hint label that appears when the user starts typing."""
+    hint_label = customtkinter.CTkLabel(master=app,
+                                        text=hint_text,
+                                        text_color="gray50",
+                                        font=("Arial", 10))
+    hint_label.place_forget()  # Hidden until user types
+
+    def on_type(event):
+        content = entry_widget.get()
+        if content.strip():
+            x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
+            if position == "below":
+                hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
+            else:  # show beside
+                hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
+        else:
+            hint_label.place_forget()
+
+    # Bind typing events
+    entry_widget.bind("<KeyRelease>", on_type)
+
+
 #here are the two switches at the bottom of each side. You can view the location with relx and rely
 system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
 system_date_time_switch.pack(padx=20, pady=10)
 system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
+
+# Add hint labels for all entries with appropriate positions
+add_hint_label(freq_i_in, "Start frequency in MHz", position="below")
+add_hint_label(freq_f_in, "End frequency in MHz", position="below")
+add_hint_label(int_time_in, "Integration time in seconds", position="below")
+add_hint_label(nint_in, "Number of integrations", position="below")
+add_hint_label(user_name, "Your WSU username or observer name", position="below")
+add_hint_label(location_name, "e.g., Winona, MN or Observatory", position="below")
+add_hint_label(time_name, "Trial number (1, 2, 3…)", position="below")
+add_hint_label(date_name, "Format: MM.DD.YYYY", position="below")
+add_hint_label(curr_time, "Format: HH:MM with am/pm toggle", position="below")
+add_hint_label(description, "Short description of observation", position="below")
+
 
 app.mainloop()
