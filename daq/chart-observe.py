@@ -59,8 +59,10 @@ def start():
 
     #the variables taken from the entry inputs
     sUser = customtkinter.CTkEntry.get(user_name)
-    sLocation = customtkinter.CTkEntry.get(location_name)
-    trial = customtkinter.CTkEntry.get(time_name)
+    # sLocation = customtkinter.CTkEntry.get(location_name) 
+    sLongitude = customtkinter.CTkEntry.get(longitude_name) #getting the longitude from the entry
+    sLatitude = customtkinter.CTkEntry.get(latitude_name)  #getting the latitude from the entry
+    # trial = customtkinter.CTkEntry.get(time_name)
     date_name.configure(state=tkinter.NORMAL)
 
     #checking if date was empty so that it knows to use the input from entry or the one from the system time and date
@@ -75,7 +77,7 @@ def start():
 
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
-    location = sLocation.replace(" ", "-")
+    # location = sLocation.replace(" ", "-")
     date = date.replace("/", ".")
     user = sUser.replace("_", ".")
 
@@ -87,7 +89,10 @@ def start():
     date_y_m_d = year+"."+month+"."+day
 
     #changed the date to be the correct formal
-    directory = user+"_"+location+"_"+date_y_m_d+"_"+trial+"_"+time.replace(":", ".")+"_"+tDay
+    # directory = user+"_"+location+"_"+date_y_m_d+"_"+trial+"_"+time.replace(":", ".")+"_"+tDay
+    # New format without location and with latitude and longitude
+    # I used f strings here for clarity
+    directory = f"{user}_lon{sLongitude}_lat{sLatitude}_{date_y_m_d}_{time.replace(':', '.')}_{tDay}"
     print(directory)
 
     if(len(month) == 1):
@@ -455,45 +460,86 @@ user_name = customtkinter.CTkEntry(master=app,
 
 user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
-label = customtkinter.CTkLabel(master=app,
-                               text="Location:",
+# Getting rid of location to add latitude and longitude
+# I still have the code here if we want to go back to location
+
+# label = customtkinter.CTkLabel(master=app,
+#                                text="Location:",
+#                                width=100,
+#                                height=25,
+#                                fg_color=("white", "gray"),
+#                                corner_radius=5
+#                                )
+
+# label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
+
+# location_name = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="Enter Here",
+#                                width=210,
+#                                height=25,
+#                                border_width=2,
+#                                corner_radius=10
+#                                )
+
+# location_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
+
+# Adding Latitude and Longitude instead of general location
+label_long = customtkinter.CTkLabel(master=app,
+                               text="Longitude:",
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
                                corner_radius=5
                                )
+label_long.place(relx=0.5, rely=0.2, anchor=tkinter.W)
 
-label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
-
-location_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="Enter Here",
+longitude_name = customtkinter.CTkEntry(master=app,
+                               placeholder_text="e.g., -91.64",
                                width=210,
                                height=25,
                                border_width=2,
                                corner_radius=10
                                )
+longitude_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
 
-location_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Trial:",
+label_lat = customtkinter.CTkLabel(master=app,
+                               text="Latitude:",
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius= 5
+                               corner_radius=5
                                )
+label_lat.place(relx=0.5, rely=0.3, anchor=tkinter.W)
 
-label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
-
-time_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="00",
-                               width=120,
+latitude_name = customtkinter.CTkEntry(master=app,
+                               placeholder_text="e.g., 44.05",
+                               width=210,
                                height=25,
                                border_width=2,
                                corner_radius=10
                                )
+latitude_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
-time_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
+# Getting rid of trial number to simplify user input
+# label = customtkinter.CTkLabel(master=app,
+#                                text="Trial:",
+#                                width=100,
+#                                height=25,
+#                                fg_color=("white", "gray"),
+#                                corner_radius= 5
+#                                )
+
+# label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
+
+# time_name = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="00",
+#                                width=120,
+#                                height=25,
+#                                border_width=2,
+#                                corner_radius=10
+#                                )
+
+# time_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
                                text="Date:",
@@ -547,27 +593,68 @@ combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
 # This function is to add hint labels to entry widgets when the user starts typing
 # the goal is to have the hints under the entry or to the side so that the user knows what format to use
 
+# def add_hint_label(entry_widget, hint_text, position="below"):
+# #Adds a small gray hint label that appears when the user starts typing.
+#     hint_label = customtkinter.CTkLabel(master=app,
+#                                         text=hint_text,
+#                                         text_color="gray50",
+#                                         font=("Arial", 10))
+#     hint_label.place_forget()  # Hidden until user types
+
+#     def on_type(event):
+#         content = entry_widget.get()
+#         if content.strip():
+#             x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
+#             if position == "below":
+#                 hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
+#             else:  # show beside
+#                 hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
+#         else:
+#             hint_label.place_forget()
+
+#     # Bind typing events
+#     entry_widget.bind("<KeyRelease>", on_type)
+
+# Enhanced hint label
+# It will only shows for active entry
+active_hint_label = None  # global tracker
+
 def add_hint_label(entry_widget, hint_text, position="below"):
-    """Adds a small gray hint label that appears when the user starts typing."""
+# Adds a small gray hint label that appears only while typing in this entry."""
+    global active_hint_label
+
     hint_label = customtkinter.CTkLabel(master=app,
                                         text=hint_text,
                                         text_color="gray50",
                                         font=("Arial", 10))
-    hint_label.place_forget()  # Hidden until user types
+    hint_label.place_forget()  # start hidden
 
-    def on_type(event):
+    def show_hint(event):
+        """Show this hint and hide others."""
+        global active_hint_label
+
+        # Hide any previously active hint
+        if active_hint_label is not None and active_hint_label != hint_label:
+            active_hint_label.place_forget()
+
+        # Show this hint
         content = entry_widget.get()
-        if content.strip():
-            x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
-            if position == "below":
-                hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
-            else:  # show beside
-                hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
+        x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
+        if position == "below":
+            hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
         else:
-            hint_label.place_forget()
+            hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
 
-    # Bind typing events
-    entry_widget.bind("<KeyRelease>", on_type)
+        active_hint_label = hint_label
+
+    def hide_hint(event):
+        """Hide hint when leaving this box."""
+        hint_label.place_forget()
+
+    # Bind focus events
+    entry_widget.bind("<FocusIn>", show_hint)
+    entry_widget.bind("<FocusOut>", hide_hint)
+
 
 
 #here are the two switches at the bottom of each side. You can view the location with relx and rely
@@ -576,13 +663,16 @@ system_date_time_switch.pack(padx=20, pady=10)
 system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
 
 # Add hint labels for all entries with appropriate positions
+# Position can be "below" or "beside" as needed
 add_hint_label(freq_i_in, "Start frequency in MHz", position="below")
 add_hint_label(freq_f_in, "End frequency in MHz", position="below")
 add_hint_label(int_time_in, "Integration time in seconds", position="below")
 add_hint_label(nint_in, "Number of integrations", position="below")
 add_hint_label(user_name, "Your WSU username or observer name", position="below")
-add_hint_label(location_name, "e.g., Winona, MN or Observatory", position="below")
-add_hint_label(time_name, "Trial number (1, 2, 3…)", position="below")
+# add_hint_label(location_name, "e.g., Winona, MN or Observatory", position="below")
+add_hint_label(longitude_name, "Longitude in decimal degrees (East/West)", position="below")
+add_hint_label(latitude_name, "Latitude in decimal degrees (North/South)", position="below")
+# add_hint_label(time_name, "Trial number (1, 2, 3…)", position="below")
 add_hint_label(date_name, "Format: MM.DD.YYYY", position="below")
 add_hint_label(curr_time, "Format: HH:MM with am/pm toggle", position="below")
 add_hint_label(description, "Short description of observation", position="below")
