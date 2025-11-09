@@ -88,8 +88,6 @@ def start():
 
     date_y_m_d = year+"."+month+"."+day
 
-    #changed the date to be the correct formal
-    # directory = user+"_"+location+"_"+date_y_m_d+"_"+trial+"_"+time.replace(":", ".")+"_"+tDay
     # New format without location and with latitude and longitude
     # I used f strings here for clarity
     directory = f"{user}_lon{sLongitude}_lat{sLatitude}_{date_y_m_d}_{time.replace(':', '.')}_{tDay}"
@@ -324,11 +322,11 @@ mode_switch.place(relx=0.1, rely=.03, anchor=tkinter.CENTER)
 
 #this is the start of the gui design where everything is layed out
 label = customtkinter.CTkLabel(master=app,
-                               text="Initial Frequency:",
+                               text="Initial Frequency(in MHz): ",
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
-                               corner_radius=8)
+                               corner_radius=9)
 
 label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
 
@@ -340,10 +338,10 @@ freq_i_in = customtkinter.CTkEntry(master=app,
                                corner_radius=10
                                )
 
-freq_i_in.place(relx=0.3, rely=0.1, anchor=tkinter.W)
+freq_i_in.place(relx=0.35, rely=0.1, anchor=tkinter.W)
 
 label = customtkinter.CTkLabel(master=app,
-                               text="Final Frequency:",
+                               text="Final Frequency: (in MHz)",
                                width=100,
                                height=25,
                                fg_color=("white", "gray"),
@@ -440,40 +438,80 @@ local_jupyter_button = customtkinter.CTkButton(master=app, text="Open LOCAL Jupy
 local_jupyter_button.place(relx=0.8, rely=.9, anchor=tkinter.CENTER)
 local_jupyter_button.configure(state=tkinter.NORMAL)
 
-label = customtkinter.CTkLabel(master=app,
-                               text="Username:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
 
-label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
+# Create a main frame to hold all widgets
+main_frame = customtkinter.CTkFrame(master=app)
+main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-user_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="Enter Here",
-                               width=210,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
+# Configure the grid weights for flexibility
+for i in range(6):  # 6 rows for now, you can adjust
+    main_frame.rowconfigure(i, weight=1)
+for j in range(2):  # two columns: label + entry
+    main_frame.columnconfigure(j, weight=1)
 
-user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
-# Getting rid of location to add latitude and longitude
-# I still have the code here if we want to go back to location
+# Row 0 — Username
+label_user = customtkinter.CTkLabel(main_frame, text="Username:")
+label_user.grid(row=0, column=0, sticky="e", padx=10, pady=10)
+user_name = customtkinter.CTkEntry(main_frame, placeholder_text="Enter Here")
+user_name.grid(row=0, column=1, sticky="we", padx=10, pady=10)
+
+# Row 1 — Longitude
+label_long = customtkinter.CTkLabel(main_frame, text="Longitude:")
+label_long.grid(row=1, column=0, sticky="e", padx=10, pady=10)
+longitude_name = customtkinter.CTkEntry(main_frame, placeholder_text="e.g., -91.64")
+longitude_name.grid(row=1, column=1, sticky="we", padx=10, pady=10)
+
+# Row 2 — Latitude
+label_lat = customtkinter.CTkLabel(main_frame, text="Latitude:")
+label_lat.grid(row=2, column=0, sticky="e", padx=10, pady=10)
+latitude_name = customtkinter.CTkEntry(main_frame, placeholder_text="e.g., 44.05")
+latitude_name.grid(row=2, column=1, sticky="we", padx=10, pady=10)
+
+# Row 3 — Date
+label_date = customtkinter.CTkLabel(main_frame, text="Date:")
+label_date.grid(row=3, column=0, sticky="e", padx=10, pady=10)
+date_name = customtkinter.CTkEntry(main_frame, placeholder_text="MM.DD.YYYY")
+date_name.grid(row=3, column=1, sticky="we", padx=10, pady=10)
+
+# Row 4 — Time and AM/PM combo
+label_time = customtkinter.CTkLabel(main_frame, text="Time:")
+label_time.grid(row=4, column=0, sticky="e", padx=10, pady=10)
+
+time_frame = customtkinter.CTkFrame(main_frame)
+time_frame.grid(row=4, column=1, sticky="we", padx=10, pady=10)
+time_frame.columnconfigure(0, weight=1)
+time_frame.columnconfigure(1, weight=0)
+
+curr_time = customtkinter.CTkEntry(time_frame, placeholder_text="00:00")
+curr_time.grid(row=0, column=0, sticky="we", padx=(0, 5))
+combobox = customtkinter.CTkComboBox(time_frame, values=["am", "pm"], width=55)
+combobox.grid(row=0, column=1)
+combobox.set("am")
+
+# Row 5 — Frequency Inputs
+label_freq_i = customtkinter.CTkLabel(main_frame, text="Initial Frequency (MHz):")
+label_freq_i.grid(row=5, column=0, sticky="e", padx=10, pady=10)
+freq_i_in = customtkinter.CTkEntry(main_frame, placeholder_text="1415")
+freq_i_in.grid(row=5, column=1, sticky="we", padx=10, pady=10)
+
+label_freq_f = customtkinter.CTkLabel(main_frame, text="Final Frequency (MHz):")
+label_freq_f.grid(row=6, column=0, sticky="e", padx=10, pady=10)
+freq_f_in = customtkinter.CTkEntry(main_frame, placeholder_text="1425")
+freq_f_in.grid(row=6, column=1, sticky="we", padx=10, pady=10)
+
 
 # label = customtkinter.CTkLabel(master=app,
-#                                text="Location:",
+#                                text="Username:",
 #                                width=100,
 #                                height=25,
 #                                fg_color=("white", "gray"),
 #                                corner_radius=5
 #                                )
 
-# label.place(relx=0.5, rely=0.2, anchor=tkinter.W)
+# label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
 
-# location_name = customtkinter.CTkEntry(master=app,
+# user_name = customtkinter.CTkEntry(master=app,
 #                                placeholder_text="Enter Here",
 #                                width=210,
 #                                height=25,
@@ -481,105 +519,84 @@ user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 #                                corner_radius=10
 #                                )
 
-# location_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
+# user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
 
-# Adding Latitude and Longitude instead of general location
-label_long = customtkinter.CTkLabel(master=app,
-                               text="Longitude:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-label_long.place(relx=0.5, rely=0.2, anchor=tkinter.W)
-
-longitude_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="e.g., -91.64",
-                               width=210,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-longitude_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
-
-label_lat = customtkinter.CTkLabel(master=app,
-                               text="Latitude:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-label_lat.place(relx=0.5, rely=0.3, anchor=tkinter.W)
-
-latitude_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="e.g., 44.05",
-                               width=210,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-latitude_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
-
-# Getting rid of trial number to simplify user input
-# label = customtkinter.CTkLabel(master=app,
-#                                text="Trial:",
+# # Adding Latitude and Longitude instead of general location
+# label_long = customtkinter.CTkLabel(master=app,
+#                                text="Longitude:",
 #                                width=100,
 #                                height=25,
 #                                fg_color=("white", "gray"),
-#                                corner_radius= 5
+#                                corner_radius=5
+#                                )
+# label_long.place(relx=0.5, rely=0.2, anchor=tkinter.W)
+
+# longitude_name = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="e.g., -91.64",
+#                                width=210,
+#                                height=25,
+#                                border_width=2,
+#                                corner_radius=10
+#                                )
+# longitude_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
+
+# label_lat = customtkinter.CTkLabel(master=app,
+#                                text="Latitude:",
+#                                width=100,
+#                                height=25,
+#                                fg_color=("white", "gray"),
+#                                corner_radius=5
+#                                )
+# label_lat.place(relx=0.5, rely=0.3, anchor=tkinter.W)
+
+# latitude_name = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="e.g., 44.05",
+#                                width=210,
+#                                height=25,
+#                                border_width=2,
+#                                corner_radius=10
+#                                )
+# latitude_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
+
+# label = customtkinter.CTkLabel(master=app,
+#                                text="Date:",
+#                                width=100,
+#                                height=25,
+#                                fg_color=("white", "gray"),
+#                                corner_radius=5
 #                                )
 
-# label.place(relx=0.5, rely=0.3, anchor=tkinter.W)
+# label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
 
-# time_name = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="00",
-#                                width=120,
+# date_name = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="MM.DD.YYYY",
+#                                width=150,
 #                                height=25,
 #                                border_width=2,
 #                                corner_radius=10
 #                                )
 
-# time_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
+# date_name.place(relx=0.7, rely=0.4, anchor=tkinter.W)
 
-label = customtkinter.CTkLabel(master=app,
-                               text="Date:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
+# label = customtkinter.CTkLabel(master=app,
+#                                text="Time:",
+#                                width=100,
+#                                height=25,
+#                                fg_color=("white", "gray"),
+#                                corner_radius=5
+#                                )
 
-label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
+# label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
 
-date_name = customtkinter.CTkEntry(master=app,
-                               placeholder_text="MM.DD.YYYY",
-                               width=150,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
+# curr_time = customtkinter.CTkEntry(master=app,
+#                                placeholder_text="00:00",
+#                                width=70,
+#                                height=25,
+#                                border_width=2,
+#                                corner_radius=10
+#                               )
 
-date_name.place(relx=0.7, rely=0.4, anchor=tkinter.W)
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Time:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-
-label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
-
-curr_time = customtkinter.CTkEntry(master=app,
-                               placeholder_text="00:00",
-                               width=70,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                              )
-
-curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
+# curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
 
 
 
@@ -589,31 +606,6 @@ combobox = customtkinter.CTkComboBox(master=app,
 combobox.pack(padx=5, pady=5)
 combobox.set("am")  # set initial value
 combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
-
-# This function is to add hint labels to entry widgets when the user starts typing
-# the goal is to have the hints under the entry or to the side so that the user knows what format to use
-
-# def add_hint_label(entry_widget, hint_text, position="below"):
-# #Adds a small gray hint label that appears when the user starts typing.
-#     hint_label = customtkinter.CTkLabel(master=app,
-#                                         text=hint_text,
-#                                         text_color="gray50",
-#                                         font=("Arial", 10))
-#     hint_label.place_forget()  # Hidden until user types
-
-#     def on_type(event):
-#         content = entry_widget.get()
-#         if content.strip():
-#             x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
-#             if position == "below":
-#                 hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
-#             else:  # show beside
-#                 hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
-#         else:
-#             hint_label.place_forget()
-
-#     # Bind typing events
-#     entry_widget.bind("<KeyRelease>", on_type)
 
 # Enhanced hint label
 # It will only shows for active entry
