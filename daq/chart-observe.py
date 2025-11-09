@@ -59,7 +59,6 @@ def start():
 
     #the variables taken from the entry inputs
     sUser = customtkinter.CTkEntry.get(user_name)
-    # sLocation = customtkinter.CTkEntry.get(location_name) 
     sLongitude = customtkinter.CTkEntry.get(longitude_name) #getting the longitude from the entry
     sLatitude = customtkinter.CTkEntry.get(latitude_name)  #getting the latitude from the entry
     # trial = customtkinter.CTkEntry.get(time_name)
