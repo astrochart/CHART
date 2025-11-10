@@ -314,297 +314,114 @@ def mode():
         customtkinter.set_appearance_mode("Light")
 
 
-
+# below is the layout in the GUI
 mode_switch = customtkinter.CTkSwitch(master=app, text="Dark Mode", command=mode, onvalue="on", offvalue="off")
-mode_switch.pack(padx=20, pady=10)
-mode_switch.place(relx=0.1, rely=.03, anchor=tkinter.CENTER)
+mode_switch.pack(padx=20, pady=(10, 0), anchor="w")
 
-#this is the start of the gui design where everything is layed out
-label = customtkinter.CTkLabel(master=app,
-                               text="Initial Frequency(in MHz): ",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=9)
+# Scrollable Frame for all widgets
+scroll_frame = customtkinter.CTkScrollableFrame(master=app, width=760, height=440)
+scroll_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-label.place(relx=0.1, rely=0.1, anchor=tkinter.W)
+# Configure flexible grid layout
+for i in range(12):
+    scroll_frame.rowconfigure(i, weight=1)
+for j in range(2):
+    scroll_frame.columnconfigure(j, weight=1)
 
-freq_i_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text= default_freq_i,
-                               width=80,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-
-freq_i_in.place(relx=0.35, rely=0.1, anchor=tkinter.W)
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Final Frequency: (in MHz)",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-
-label.place(relx=0.1, rely=0.2, anchor=tkinter.W)
-
-freq_f_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text= default_freq_f,
-                               width=80,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-
-freq_f_in.place(relx=0.3, rely=0.2, anchor=tkinter.W)
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Integration Time:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-
-label.place(relx=0.1, rely=0.3, anchor=tkinter.W)
-
-int_time_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text=default_int_time,
-                               width=80,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-
-int_time_in.place(relx=0.3, rely=0.3, anchor=tkinter.W)
-
-label = customtkinter.CTkLabel(master=app,
-                               text="Number of Integrations:",
-                               width=100,
-                               height=25,
-                               fg_color=("white", "gray"),
-                               corner_radius=5
-                               )
-
-label.place(relx=0.07, rely=0.4, anchor=tkinter.W)
-
-nint_in = customtkinter.CTkEntry(master=app,
-                               placeholder_text=default_nint,
-                               width=80,
-                               height=25,
-                               border_width=2,
-                               corner_radius=10
-                               )
-
-nint_in.place(relx=0.34, rely=0.4, anchor=tkinter.W)
-
-default_parameters_switch = customtkinter.CTkSwitch(master=app, text="Use Default Parameters", command=default_parameters, onvalue="on", offvalue="off")
-default_parameters_switch.pack(padx=20, pady=10)
-default_parameters_switch.place(relx=0.25, rely=.5, anchor=tkinter.CENTER)
-
-biasT_switch = customtkinter.CTkSwitch(master=app, text="Enable Bias-T", command=biasT_switch, onvalue="on", offvalue="off")
-biasT_switch.pack(padx=20, pady=10)
-biasT_switch.place(relx=0.25, rely=.57, anchor=tkinter.CENTER)
-
-description = customtkinter.CTkEntry(master=app,
-                               placeholder_text="Describe what you are looking at.",
-                               width=310,
-                               height=30,
-                               border_width=2,
-                               corner_radius=10
-                               )
-
-description.place(relx=0.05, rely=0.67, anchor=tkinter.W)
-
-
-#below is the right side layout in the GUI
-start_button = customtkinter.CTkButton(master=app, text="Start", command=start)
-start_button.place(relx=0.5, rely=.8, anchor=tkinter.CENTER)
-start_button.configure(state=tkinter.NORMAL)
-
-
-stop_button = customtkinter.CTkButton(master=app, text="Stop", command=stop)
-stop_button.place(relx=0.5, rely=.9, anchor=tkinter.CENTER)
-stop_button.configure(state=tkinter.DISABLED)
-#start with stop disabled so you cannot click stop before start
-
-jupyter_button = customtkinter.CTkButton(master=app, text="Open Jupyter Hub to Upload", command=open_jupyter)
-jupyter_button.place(relx=0.8, rely=.8, anchor=tkinter.CENTER)
-jupyter_button.configure(state=tkinter.NORMAL)
-
-local_jupyter_button = customtkinter.CTkButton(master=app, text="Open LOCAL Jupyter Notebook", command=open_local_jupyter)
-local_jupyter_button.place(relx=0.8, rely=.9, anchor=tkinter.CENTER)
-local_jupyter_button.configure(state=tkinter.NORMAL)
-
-
-# Create a main frame to hold all widgets
-main_frame = customtkinter.CTkFrame(master=app)
-main_frame.pack(fill="both", expand=True, padx=20, pady=20)
-
-# Configure the grid weights for flexibility
-for i in range(6):  # 6 rows for now, you can adjust
-    main_frame.rowconfigure(i, weight=1)
-for j in range(2):  # two columns: label + entry
-    main_frame.columnconfigure(j, weight=1)
-
+# Configure flexible grid layout
+for i in range(12):
+    scroll_frame.rowconfigure(i, weight=1)
+for j in range(2):
+    scroll_frame.columnconfigure(j, weight=1)
 
 # Row 0 — Username
-label_user = customtkinter.CTkLabel(main_frame, text="Username:")
+label_user = customtkinter.CTkLabel(scroll_frame, text="Username:")
 label_user.grid(row=0, column=0, sticky="e", padx=10, pady=10)
-user_name = customtkinter.CTkEntry(main_frame, placeholder_text="Enter Here")
+user_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="Enter Here")
 user_name.grid(row=0, column=1, sticky="we", padx=10, pady=10)
 
 # Row 1 — Longitude
-label_long = customtkinter.CTkLabel(main_frame, text="Longitude:")
+label_long = customtkinter.CTkLabel(scroll_frame, text="Longitude:")
 label_long.grid(row=1, column=0, sticky="e", padx=10, pady=10)
-longitude_name = customtkinter.CTkEntry(main_frame, placeholder_text="e.g., -91.64")
+longitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., -91.64")
 longitude_name.grid(row=1, column=1, sticky="we", padx=10, pady=10)
 
 # Row 2 — Latitude
-label_lat = customtkinter.CTkLabel(main_frame, text="Latitude:")
+label_lat = customtkinter.CTkLabel(scroll_frame, text="Latitude:")
 label_lat.grid(row=2, column=0, sticky="e", padx=10, pady=10)
-latitude_name = customtkinter.CTkEntry(main_frame, placeholder_text="e.g., 44.05")
+latitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., 44.05")
 latitude_name.grid(row=2, column=1, sticky="we", padx=10, pady=10)
 
 # Row 3 — Date
-label_date = customtkinter.CTkLabel(main_frame, text="Date:")
+label_date = customtkinter.CTkLabel(scroll_frame, text="Date:")
 label_date.grid(row=3, column=0, sticky="e", padx=10, pady=10)
-date_name = customtkinter.CTkEntry(main_frame, placeholder_text="MM.DD.YYYY")
+date_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="MM.DD.YYYY")
 date_name.grid(row=3, column=1, sticky="we", padx=10, pady=10)
 
 # Row 4 — Time and AM/PM combo
-label_time = customtkinter.CTkLabel(main_frame, text="Time:")
+label_time = customtkinter.CTkLabel(scroll_frame, text="Time:")
 label_time.grid(row=4, column=0, sticky="e", padx=10, pady=10)
-
-time_frame = customtkinter.CTkFrame(main_frame)
+time_frame = customtkinter.CTkFrame(scroll_frame)
 time_frame.grid(row=4, column=1, sticky="we", padx=10, pady=10)
 time_frame.columnconfigure(0, weight=1)
-time_frame.columnconfigure(1, weight=0)
-
 curr_time = customtkinter.CTkEntry(time_frame, placeholder_text="00:00")
 curr_time.grid(row=0, column=0, sticky="we", padx=(0, 5))
 combobox = customtkinter.CTkComboBox(time_frame, values=["am", "pm"], width=55)
 combobox.grid(row=0, column=1)
 combobox.set("am")
 
-# Row 5 — Frequency Inputs
-label_freq_i = customtkinter.CTkLabel(main_frame, text="Initial Frequency (MHz):")
+# Row 5 — Initial Frequency
+label_freq_i = customtkinter.CTkLabel(scroll_frame, text="Initial Frequency (MHz):")
 label_freq_i.grid(row=5, column=0, sticky="e", padx=10, pady=10)
-freq_i_in = customtkinter.CTkEntry(main_frame, placeholder_text="1415")
+freq_i_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1415")
 freq_i_in.grid(row=5, column=1, sticky="we", padx=10, pady=10)
 
-label_freq_f = customtkinter.CTkLabel(main_frame, text="Final Frequency (MHz):")
+# Row 6 — Final Frequency
+label_freq_f = customtkinter.CTkLabel(scroll_frame, text="Final Frequency (MHz):")
 label_freq_f.grid(row=6, column=0, sticky="e", padx=10, pady=10)
-freq_f_in = customtkinter.CTkEntry(main_frame, placeholder_text="1425")
+freq_f_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1425")
 freq_f_in.grid(row=6, column=1, sticky="we", padx=10, pady=10)
 
+# Row 7 — Integration Time
+label_int_time = customtkinter.CTkLabel(scroll_frame, text="Integration Time (s):")
+label_int_time.grid(row=7, column=0, sticky="e", padx=10, pady=10)
+int_time_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="5")
+int_time_in.grid(row=7, column=1, sticky="we", padx=10, pady=10)
 
-# label = customtkinter.CTkLabel(master=app,
-#                                text="Username:",
-#                                width=100,
-#                                height=25,
-#                                fg_color=("white", "gray"),
-#                                corner_radius=5
-#                                )
+# Row 8 — Number of Integrations
+label_nint = customtkinter.CTkLabel(scroll_frame, text="Number of Integrations:")
+label_nint.grid(row=8, column=0, sticky="e", padx=10, pady=10)
+nint_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="10")
+nint_in.grid(row=8, column=1, sticky="we", padx=10, pady=10)
 
-# label.place(relx=0.5, rely=0.1, anchor=tkinter.W)
+# Row 9 — Description
+label_desc = customtkinter.CTkLabel(scroll_frame, text="Description:")
+label_desc.grid(row=9, column=0, sticky="ne", padx=10, pady=10)
+description = customtkinter.CTkEntry(scroll_frame,
+    placeholder_text="Describe what you are looking at.")
+description.grid(row=9, column=1, sticky="we", padx=10, pady=10)
 
-# user_name = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="Enter Here",
-#                                width=210,
-#                                height=25,
-#                                border_width=2,
-#                                corner_radius=10
-#                                )
+# Row 10 — Switches
+switch_frame = customtkinter.CTkFrame(scroll_frame)
+switch_frame.grid(row=10, column=0, columnspan=2, pady=10)
+default_parameters_switch = customtkinter.CTkSwitch(switch_frame, text="Use Default Parameters", command=default_parameters)
+biasT_switch = customtkinter.CTkSwitch(switch_frame, text="Enable Bias-T", command=biasT_switch)
+system_date_time_switch = customtkinter.CTkSwitch(switch_frame, text="Use System Date and Time", command=current_date_time)
+default_parameters_switch.grid(row=0, column=0, padx=10)
+biasT_switch.grid(row=0, column=1, padx=10)
+system_date_time_switch.grid(row=0, column=2, padx=10)
 
-# user_name.place(relx=0.7, rely=0.1, anchor=tkinter.W)
-
-# # Adding Latitude and Longitude instead of general location
-# label_long = customtkinter.CTkLabel(master=app,
-#                                text="Longitude:",
-#                                width=100,
-#                                height=25,
-#                                fg_color=("white", "gray"),
-#                                corner_radius=5
-#                                )
-# label_long.place(relx=0.5, rely=0.2, anchor=tkinter.W)
-
-# longitude_name = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="e.g., -91.64",
-#                                width=210,
-#                                height=25,
-#                                border_width=2,
-#                                corner_radius=10
-#                                )
-# longitude_name.place(relx=0.7, rely=0.2, anchor=tkinter.W)
-
-# label_lat = customtkinter.CTkLabel(master=app,
-#                                text="Latitude:",
-#                                width=100,
-#                                height=25,
-#                                fg_color=("white", "gray"),
-#                                corner_radius=5
-#                                )
-# label_lat.place(relx=0.5, rely=0.3, anchor=tkinter.W)
-
-# latitude_name = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="e.g., 44.05",
-#                                width=210,
-#                                height=25,
-#                                border_width=2,
-#                                corner_radius=10
-#                                )
-# latitude_name.place(relx=0.7, rely=0.3, anchor=tkinter.W)
-
-# label = customtkinter.CTkLabel(master=app,
-#                                text="Date:",
-#                                width=100,
-#                                height=25,
-#                                fg_color=("white", "gray"),
-#                                corner_radius=5
-#                                )
-
-# label.place(relx=0.5, rely=0.4, anchor=tkinter.W)
-
-# date_name = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="MM.DD.YYYY",
-#                                width=150,
-#                                height=25,
-#                                border_width=2,
-#                                corner_radius=10
-#                                )
-
-# date_name.place(relx=0.7, rely=0.4, anchor=tkinter.W)
-
-# label = customtkinter.CTkLabel(master=app,
-#                                text="Time:",
-#                                width=100,
-#                                height=25,
-#                                fg_color=("white", "gray"),
-#                                corner_radius=5
-#                                )
-
-# label.place(relx=0.5, rely=0.5, anchor=tkinter.W)
-
-# curr_time = customtkinter.CTkEntry(master=app,
-#                                placeholder_text="00:00",
-#                                width=70,
-#                                height=25,
-#                                border_width=2,
-#                                corner_radius=10
-#                               )
-
-# curr_time.place(relx=0.7, rely=0.5, anchor=tkinter.W)
-
-
-
-combobox = customtkinter.CTkComboBox(master=app,
-                                     values=["am", "pm"],
-                                     height = 25, width = 55, variable = "")
-combobox.pack(padx=5, pady=5)
-combobox.set("am")  # set initial value
-combobox.place(relx=0.81, rely=0.5, anchor=tkinter.W)
+# Row 11 — Buttons
+button_frame = customtkinter.CTkFrame(scroll_frame)
+button_frame.grid(row=11, column=0, columnspan=2, pady=(15, 5))
+start_button = customtkinter.CTkButton(button_frame, text="Start", command=start)
+stop_button = customtkinter.CTkButton(button_frame, text="Stop", command=stop)
+jupyter_button = customtkinter.CTkButton(button_frame, text="Open Jupyter Hub", command=open_jupyter)
+local_jupyter_button = customtkinter.CTkButton(button_frame, text="Open Local Jupyter", command=open_local_jupyter)
+start_button.grid(row=0, column=0, padx=10)
+stop_button.grid(row=0, column=1, padx=10)
+jupyter_button.grid(row=0, column=2, padx=10)
+local_jupyter_button.grid(row=0, column=3, padx=10)
 
 # Enhanced hint label
 # It will only shows for active entry
@@ -629,13 +446,8 @@ def add_hint_label(entry_widget, hint_text, position="below"):
             active_hint_label.place_forget()
 
         # Show this hint
-        content = entry_widget.get()
         x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
-        if position == "below":
-            hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
-        else:
-            hint_label.place(x=x + entry_widget.winfo_width() + 5, y=y)
-
+        hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
         active_hint_label = hint_label
 
     def hide_hint(event):
@@ -649,24 +461,26 @@ def add_hint_label(entry_widget, hint_text, position="below"):
 
 
 #here are the two switches at the bottom of each side. You can view the location with relx and rely
-system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
-system_date_time_switch.pack(padx=20, pady=10)
-system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
+# system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
+# system_date_time_switch.pack(padx=20, pady=10)
+# system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
 
 # Add hint labels for all entries with appropriate positions
 # Position can be "below" or "beside" as needed
-add_hint_label(freq_i_in, "Start frequency in MHz", position="below")
-add_hint_label(freq_f_in, "End frequency in MHz", position="below")
-add_hint_label(int_time_in, "Integration time in seconds", position="below")
-add_hint_label(nint_in, "Number of integrations", position="below")
-add_hint_label(user_name, "Your WSU username or observer name", position="below")
-# add_hint_label(location_name, "e.g., Winona, MN or Observatory", position="below")
-add_hint_label(longitude_name, "Longitude in decimal degrees (East/West)", position="below")
-add_hint_label(latitude_name, "Latitude in decimal degrees (North/South)", position="below")
-# add_hint_label(time_name, "Trial number (1, 2, 3…)", position="below")
-add_hint_label(date_name, "Format: MM.DD.YYYY", position="below")
-add_hint_label(curr_time, "Format: HH:MM with am/pm toggle", position="below")
-add_hint_label(description, "Short description of observation", position="below")
+add_hint_label(user_name, "Your WSU username or observer name")
+add_hint_label(longitude_name, "Longitude in decimal degrees (East/West)")
+add_hint_label(latitude_name, "Latitude in decimal degrees (North/South)")
+add_hint_label(date_name, "Format: MM.DD.YYYY")
+add_hint_label(curr_time, "Format: HH:MM with am/pm toggle")
+add_hint_label(freq_i_in, "Start frequency in MHz")
+add_hint_label(freq_f_in, "End frequency in MHz")
+add_hint_label(int_time_in, "Integration time in seconds")
+add_hint_label(nint_in, "Number of integrations")
+add_hint_label(description, "Short description of observation")
+
+# Make window responsive
+app.rowconfigure(0, weight=1)
+app.columnconfigure(0, weight=1)
 
 
 app.mainloop()
