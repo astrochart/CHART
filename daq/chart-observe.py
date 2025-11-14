@@ -334,76 +334,79 @@ for i in range(12):
 for j in range(2):
     scroll_frame.columnconfigure(j, weight=1)
 
+# Store references to all fields for responsive layout
+responsive_widgets = []
+
+# === Input Fields (Adaptive Grid) ===
+
 # Row 0 — Username
 label_user = customtkinter.CTkLabel(scroll_frame, text="Username:")
-label_user.grid(row=0, column=0, sticky="e", padx=10, pady=10)
-user_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="Enter Here")
-user_name.grid(row=0, column=1, sticky="we", padx=10, pady=10)
+label_user.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+user_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="Enter Here", width=180)
+user_name.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
-# Row 1 — Longitude
+# Row 0 (right side) — Longitude
 label_long = customtkinter.CTkLabel(scroll_frame, text="Longitude:")
-label_long.grid(row=1, column=0, sticky="e", padx=10, pady=10)
-longitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., -91.64")
-longitude_name.grid(row=1, column=1, sticky="we", padx=10, pady=10)
+label_long.grid(row=0, column=2, sticky="w", padx=10, pady=10)
+longitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., -91.64", width=120)
+longitude_name.grid(row=0, column=3, sticky="w", padx=10, pady=10)
 
-# Row 2 — Latitude
+# Row 1 — Latitude
 label_lat = customtkinter.CTkLabel(scroll_frame, text="Latitude:")
-label_lat.grid(row=2, column=0, sticky="e", padx=10, pady=10)
-latitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., 44.05")
-latitude_name.grid(row=2, column=1, sticky="we", padx=10, pady=10)
+label_lat.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+latitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., 44.05", width=120)
+latitude_name.grid(row=1, column=1, sticky="w", padx=10, pady=10)
 
-# Row 3 — Date
+# Row 1 (right side) — Date
 label_date = customtkinter.CTkLabel(scroll_frame, text="Date:")
-label_date.grid(row=3, column=0, sticky="e", padx=10, pady=10)
-date_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="MM.DD.YYYY")
-date_name.grid(row=3, column=1, sticky="we", padx=10, pady=10)
+label_date.grid(row=1, column=2, sticky="w", padx=10, pady=10)
+date_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="MM.DD.YYYY", width=120)
+date_name.grid(row=1, column=3, sticky="w", padx=10, pady=10)
 
-# Row 4 — Time and AM/PM combo
+# Row 2 — Time + AM/PM combo
 label_time = customtkinter.CTkLabel(scroll_frame, text="Time:")
-label_time.grid(row=4, column=0, sticky="e", padx=10, pady=10)
+label_time.grid(row=2, column=0, sticky="w", padx=10, pady=10)
 time_frame = customtkinter.CTkFrame(scroll_frame)
-time_frame.grid(row=4, column=1, sticky="we", padx=10, pady=10)
-time_frame.columnconfigure(0, weight=1)
-curr_time = customtkinter.CTkEntry(time_frame, placeholder_text="00:00")
-curr_time.grid(row=0, column=0, sticky="we", padx=(0, 5))
-combobox = customtkinter.CTkComboBox(time_frame, values=["am", "pm"], width=55)
+time_frame.grid(row=2, column=1, sticky="w", padx=10, pady=10)
+curr_time = customtkinter.CTkEntry(time_frame, placeholder_text="00:00", width=80)
+curr_time.grid(row=0, column=0, sticky="w", padx=(0, 5))
+combobox = customtkinter.CTkComboBox(time_frame, values=["am", "pm"], width=60)
 combobox.grid(row=0, column=1)
 combobox.set("am")
 
-# Row 5 — Initial Frequency
+# Row 2 (right side) — Initial Frequency
 label_freq_i = customtkinter.CTkLabel(scroll_frame, text="Initial Frequency (MHz):")
-label_freq_i.grid(row=5, column=0, sticky="e", padx=10, pady=10)
-freq_i_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1415")
-freq_i_in.grid(row=5, column=1, sticky="we", padx=10, pady=10)
+label_freq_i.grid(row=2, column=2, sticky="w", padx=10, pady=10)
+freq_i_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1415", width=100)
+freq_i_in.grid(row=2, column=3, sticky="w", padx=10, pady=10)
 
-# Row 6 — Final Frequency
+# Row 3 — Final Frequency
 label_freq_f = customtkinter.CTkLabel(scroll_frame, text="Final Frequency (MHz):")
-label_freq_f.grid(row=6, column=0, sticky="e", padx=10, pady=10)
-freq_f_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1425")
-freq_f_in.grid(row=6, column=1, sticky="we", padx=10, pady=10)
+label_freq_f.grid(row=3, column=0, sticky="w", padx=10, pady=10)
+freq_f_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1425", width=100)
+freq_f_in.grid(row=3, column=1, sticky="w", padx=10, pady=10)
 
-# Row 7 — Integration Time
+# Row 3 (right side) — Integration Time
 label_int_time = customtkinter.CTkLabel(scroll_frame, text="Integration Time (s):")
-label_int_time.grid(row=7, column=0, sticky="e", padx=10, pady=10)
-int_time_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="5")
-int_time_in.grid(row=7, column=1, sticky="we", padx=10, pady=10)
+label_int_time.grid(row=3, column=2, sticky="w", padx=10, pady=10)
+int_time_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="5", width=100)
+int_time_in.grid(row=3, column=3, sticky="w", padx=10, pady=10)
 
-# Row 8 — Number of Integrations
+# Row 4 — Number of Integrations
 label_nint = customtkinter.CTkLabel(scroll_frame, text="Number of Integrations:")
-label_nint.grid(row=8, column=0, sticky="e", padx=10, pady=10)
-nint_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="10")
-nint_in.grid(row=8, column=1, sticky="we", padx=10, pady=10)
+label_nint.grid(row=4, column=0, sticky="w", padx=10, pady=10)
+nint_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="10", width=100)
+nint_in.grid(row=4, column=1, sticky="w", padx=10, pady=10)
 
-# Row 9 — Description
+# Row 4 (right side) — Description
 label_desc = customtkinter.CTkLabel(scroll_frame, text="Description:")
-label_desc.grid(row=9, column=0, sticky="ne", padx=10, pady=10)
-description = customtkinter.CTkEntry(scroll_frame,
-    placeholder_text="Describe what you are looking at.")
-description.grid(row=9, column=1, sticky="we", padx=10, pady=10)
+label_desc.grid(row=4, column=2, sticky="w", padx=10, pady=10)
+description = customtkinter.CTkEntry(scroll_frame, placeholder_text="Describe observation", width=280)
+description.grid(row=4, column=3, sticky="w", padx=10, pady=10)
 
-# Row 10 — Switches
+# Row 5 — Switches
 switch_frame = customtkinter.CTkFrame(scroll_frame)
-switch_frame.grid(row=10, column=0, columnspan=2, pady=10)
+switch_frame.grid(row=5, column=0, columnspan=4, pady=10, sticky="w")
 default_parameters_switch = customtkinter.CTkSwitch(switch_frame, text="Use Default Parameters", command=default_parameters)
 biasT_switch = customtkinter.CTkSwitch(switch_frame, text="Enable Bias-T", command=biasT_switch)
 system_date_time_switch = customtkinter.CTkSwitch(switch_frame, text="Use System Date and Time", command=current_date_time)
@@ -411,9 +414,9 @@ default_parameters_switch.grid(row=0, column=0, padx=10)
 biasT_switch.grid(row=0, column=1, padx=10)
 system_date_time_switch.grid(row=0, column=2, padx=10)
 
-# Row 11 — Buttons
+# Row 6 — Buttons
 button_frame = customtkinter.CTkFrame(scroll_frame)
-button_frame.grid(row=11, column=0, columnspan=2, pady=(15, 5))
+button_frame.grid(row=6, column=0, columnspan=4, pady=(15, 5), sticky="w")
 start_button = customtkinter.CTkButton(button_frame, text="Start", command=start)
 stop_button = customtkinter.CTkButton(button_frame, text="Stop", command=stop)
 jupyter_button = customtkinter.CTkButton(button_frame, text="Open Jupyter Hub", command=open_jupyter)
@@ -422,6 +425,7 @@ start_button.grid(row=0, column=0, padx=10)
 stop_button.grid(row=0, column=1, padx=10)
 jupyter_button.grid(row=0, column=2, padx=10)
 local_jupyter_button.grid(row=0, column=3, padx=10)
+
 
 # Enhanced hint label
 # It will only shows for active entry
