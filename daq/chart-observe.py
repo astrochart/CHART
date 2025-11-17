@@ -69,11 +69,6 @@ def start():
         date = customtkinter.CTkEntry.get(date_name)
         time = customtkinter.CTkEntry.get(curr_time)
 
-    #checking for empty trials
-    if not trial:
-        trial = '1'
-
-
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
     # location = sLocation.replace(" ", "-")
@@ -328,12 +323,6 @@ for i in range(12):
 for j in range(2):
     scroll_frame.columnconfigure(j, weight=1)
 
-# Configure flexible grid layout
-for i in range(12):
-    scroll_frame.rowconfigure(i, weight=1)
-for j in range(2):
-    scroll_frame.columnconfigure(j, weight=1)
-
 # Store references to all fields for responsive layout
 responsive_widgets = []
 
@@ -404,15 +393,50 @@ label_desc.grid(row=4, column=2, sticky="w", padx=10, pady=10)
 description = customtkinter.CTkEntry(scroll_frame, placeholder_text="Describe observation", width=280)
 description.grid(row=4, column=3, sticky="w", padx=10, pady=10)
 
+# Fix minimum label widths so text never disappears
+MIN_LABEL_WIDTH = 150
+
+all_labels = [
+    label_user, label_long, label_lat, label_date, label_time,
+    label_freq_i, label_freq_f, label_int_time, label_nint, label_desc
+]
+
+for lbl in all_labels:
+    lbl.configure(width=MIN_LABEL_WIDTH)
+
+
 # Row 5 — Switches
 switch_frame = customtkinter.CTkFrame(scroll_frame)
 switch_frame.grid(row=5, column=0, columnspan=4, pady=10, sticky="w")
-default_parameters_switch = customtkinter.CTkSwitch(switch_frame, text="Use Default Parameters", command=default_parameters)
-biasT_switch = customtkinter.CTkSwitch(switch_frame, text="Enable Bias-T", command=biasT_switch)
-system_date_time_switch = customtkinter.CTkSwitch(switch_frame, text="Use System Date and Time", command=current_date_time)
+
+default_parameters_switch = customtkinter.CTkSwitch(
+    switch_frame,
+    text="Use Default Parameters",
+    command=default_parameters,
+    onvalue="on",
+    offvalue="off"
+)
+
+biasT_switch = customtkinter.CTkSwitch(
+    switch_frame,
+    text="Enable Bias-T",
+    command=biasT_switch,
+    onvalue="on",
+    offvalue="off"
+)
+
+system_date_time_switch = customtkinter.CTkSwitch(
+    switch_frame,
+    text="Use System Date and Time",
+    command=current_date_time,
+    onvalue="on",
+    offvalue="off"
+)
+
 default_parameters_switch.grid(row=0, column=0, padx=10)
 biasT_switch.grid(row=0, column=1, padx=10)
 system_date_time_switch.grid(row=0, column=2, padx=10)
+
 
 # Row 6 — Buttons
 button_frame = customtkinter.CTkFrame(scroll_frame)
@@ -432,13 +456,16 @@ local_jupyter_button.grid(row=0, column=3, padx=10)
 active_hint_label = None  # global tracker
 
 def add_hint_label(entry_widget, hint_text, position="below"):
-# Adds a small gray hint label that appears only while typing in this entry."""
+    # Adds a small gray hint label that appears only while typing in this entry.
     global active_hint_label
 
-    hint_label = customtkinter.CTkLabel(master=app,
-                                        text=hint_text,
-                                        text_color="gray50",
-                                        font=("Arial", 10))
+    hint_label = customtkinter.CTkLabel(
+        master=scroll_frame,
+        text=hint_text,
+        text_color="gray50",
+        font=("Arial", 10)
+    )
+
     hint_label.place_forget()  # start hidden
 
     def show_hint(event):
@@ -483,6 +510,88 @@ add_hint_label(nint_in, "Number of integrations")
 add_hint_label(description, "Short description of observation")
 
 # Make window responsive
+# Responsive layout: switch between 2-column and 1-column when resizing
+def on_resize(event):
+    width = app.winfo_width()
+
+    # Threshold for two-column layout
+def on_resize(event):
+    width = app.winfo_width()
+    if width < 900:
+
+        # Reflow input fields (already working)
+        label_user.grid_configure(row=0, column=0)
+        user_name.grid_configure(row=0, column=1)
+
+        label_long.grid_configure(row=1, column=0)
+        longitude_name.grid_configure(row=1, column=1)
+
+        label_lat.grid_configure(row=2, column=0)
+        latitude_name.grid_configure(row=2, column=1)
+
+        label_date.grid_configure(row=3, column=0)
+        date_name.grid_configure(row=3, column=1)
+
+        label_time.grid_configure(row=4, column=0)
+        time_frame.grid_configure(row=4, column=1)
+
+        label_freq_i.grid_configure(row=5, column=0)
+        freq_i_in.grid_configure(row=5, column=1)
+
+        label_freq_f.grid_configure(row=6, column=0)
+        freq_f_in.grid_configure(row=6, column=1)
+
+        label_int_time.grid_configure(row=7, column=0)
+        int_time_in.grid_configure(row=7, column=1)
+
+        label_nint.grid_configure(row=8, column=0)
+        nint_in.grid_configure(row=8, column=1)
+
+        label_desc.grid_configure(row=9, column=0)
+        description.grid_configure(row=9, column=1)
+
+        switch_frame.grid_configure(row=10, column=0, columnspan=2, sticky="w", padx=10, pady=(20, 10))
+
+        button_frame.grid_configure(row=11, column=0, columnspan=2, sticky="w", padx=10, pady=(10, 20))
+    else:
+
+        label_user.grid_configure(row=0, column=0)
+        user_name.grid_configure(row=0, column=1)
+
+        label_long.grid_configure(row=0, column=2)
+        longitude_name.grid_configure(row=0, column=3)
+
+        label_lat.grid_configure(row=1, column=0)
+        latitude_name.grid_configure(row=1, column=1)
+
+        label_date.grid_configure(row=1, column=2)
+        date_name.grid_configure(row=1, column=3)
+
+        label_time.grid_configure(row=2, column=0)
+        time_frame.grid_configure(row=2, column=1)
+
+        label_freq_i.grid_configure(row=2, column=2)
+        freq_i_in.grid_configure(row=2, column=3)
+
+        label_freq_f.grid_configure(row=3, column=0)
+        freq_f_in.grid_configure(row=3, column=1)
+
+        label_int_time.grid_configure(row=3, column=2)
+        int_time_in.grid_configure(row=3, column=3)
+
+        label_nint.grid_configure(row=4, column=0)
+        nint_in.grid_configure(row=4, column=1)
+
+        label_desc.grid_configure(row=4, column=2)
+        description.grid_configure(row=4, column=3)
+
+        switch_frame.grid_configure(row=5, column=0, columnspan=4, sticky="w", padx=10, pady=10)
+
+        button_frame.grid_configure(row=6, column=0, columnspan=4, sticky="w", padx=10, pady=10)
+
+# Bind the handler
+app.bind("<Configure>", on_resize)
+
 app.rowconfigure(0, weight=1)
 app.columnconfigure(0, weight=1)
 
