@@ -70,7 +70,6 @@ def start():
 
     tDay = combobox.get()
     #make sure the location does not have spaces or slashes that many people accidentally do
-    # location = sLocation.replace(" ", "-")
     date = date.replace("/", ".")
     user = sUser.replace("_", ".")
 
