@@ -61,7 +61,6 @@ def start():
     sUser = customtkinter.CTkEntry.get(user_name)
     sLongitude = customtkinter.CTkEntry.get(longitude_name) #getting the longitude from the entry
     sLatitude = customtkinter.CTkEntry.get(latitude_name)  #getting the latitude from the entry
-    # trial = customtkinter.CTkEntry.get(time_name)
     date_name.configure(state=tkinter.NORMAL)
 
     #checking if date was empty so that it knows to use the input from entry or the one from the system time and date
