@@ -190,7 +190,6 @@ def default_parameters():
         int_time_in.configure(state=tkinter.DISABLED)
         nint_in.configure(state=tkinter.DISABLED)
 
-# Why these defaults? 
 default_freq_i = '1415'
 default_freq_f = '1425'
 default_int_time = '5'
