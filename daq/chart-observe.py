@@ -452,37 +452,50 @@ local_jupyter_button.grid(row=0, column=3, padx=10)
 # It will only shows for active entry
 active_hint_label = None  # global tracker
 
-def add_hint_label(entry_widget, hint_text, position="below"):
-    # Adds a small gray hint label that appears only while typing in this entry.
-    global active_hint_label
+# Enhanced responsive hint labels
+active_hint_label = None
+HINT_MODE = "below"   # this will dynamically switch based on window width
 
+def add_hint_label(entry_widget, hint_text):
+
+    global active_hint_label
     hint_label = customtkinter.CTkLabel(
         master=scroll_frame,
         text=hint_text,
         text_color="gray50",
-        font=("Arial", 10)
+        font=("Arial", 9)
     )
-
-    hint_label.place_forget()  # start hidden
+    hint_label.place_forget()
 
     def show_hint(event):
-        """Show this hint and hide others."""
-        global active_hint_label
+        global active_hint_label, HINT_MODE
 
-        # Hide any previously active hint
-        if active_hint_label is not None and active_hint_label != hint_label:
+        # Hide previous hint
+        if active_hint_label and active_hint_label != hint_label:
             active_hint_label.place_forget()
 
-        # Show this hint
-        x, y = entry_widget.winfo_x(), entry_widget.winfo_y()
-        hint_label.place(x=x, y=y + entry_widget.winfo_height() + 2)
+        # Get widget coords relative to scroll_frame
+        entry_x = entry_widget.winfo_x()
+        entry_y = entry_widget.winfo_y()
+
+        if HINT_MODE == "side":
+            # Side placement
+            hint_label.place(
+                x=entry_x + entry_x/2,
+                y=entry_y
+            )
+        else:
+            # Below placement
+            hint_label.place(
+                x=entry_x,
+                y=entry_y + entry_widget.winfo_height()/2
+            )
+
         active_hint_label = hint_label
 
     def hide_hint(event):
-        """Hide hint when leaving this box."""
         hint_label.place_forget()
 
-    # Bind focus events
     entry_widget.bind("<FocusIn>", show_hint)
     entry_widget.bind("<FocusOut>", hide_hint)
 
@@ -514,6 +527,13 @@ def on_resize(event):
     # Threshold for two-column layout
 def on_resize(event):
     width = app.winfo_width()
+
+    # Making the hint global to adjust its position
+    global HINT_MODE
+    if width < 900:
+        HINT_MODE = "side"
+    else:
+        HINT_MODE = "below"
     if width < 900:
 
         # Reflow input fields (already working)
