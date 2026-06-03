@@ -496,8 +496,8 @@ def add_hint_label(entry_widget, hint_text):
     def hide_hint(event):
         hint_label.place_forget()
 
-    entry_widget.bind("<FocusIn>", show_hint)
-    entry_widget.bind("<FocusOut>", hide_hint)
+    entry_widget.bind("<Enter>", show_hint)
+    entry_widget.bind("<Leave>", hide_hint)
 
 
 
