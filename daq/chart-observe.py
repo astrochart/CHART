@@ -287,7 +287,9 @@ def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
 
 def open_local_jupyter():
-    os.system('jupyter notebook --notebook-dir=~')
+    subprocess.Popen(["jupyter","notebook","--notebook-dir=~"])
+    # os.system('jupyter notebook --notebook-dir=~') old
+    
 
 def biasT_switch():
     global biasT
