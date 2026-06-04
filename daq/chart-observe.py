@@ -449,10 +449,6 @@ local_jupyter_button.grid(row=0, column=3, padx=10)
 
 
 # Enhanced hint label
-# It will only shows for active entry
-active_hint_label = None  # global tracker
-
-# Enhanced responsive hint labels
 active_hint_label = None
 HINT_MODE = "below"   # this will dynamically switch based on window width
 
@@ -521,10 +517,6 @@ add_hint_label(description, "Short description of observation")
 
 # Make window responsive
 # Responsive layout: switch between 2-column and 1-column when resizing
-def on_resize(event):
-    width = app.winfo_width()
-
-    # Threshold for two-column layout
 def on_resize(event):
     width = app.winfo_width()
 
