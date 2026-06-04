@@ -21,11 +21,27 @@ customtkinter.set_widget_scaling(1.1)
 
 global biasT
 biasT = False
-global proc
-#the stop method from the stop_button allows you to stop the program running
+proc_collect = None  
+proc_jupyter = None
+
+#ending processes when GUI is closed 
+def on_close():
+    if proc_collect != None and proc_collect.poll() == None:
+        proc_collect.terminate()
+        proc_collect.wait()
+    if proc_jupyter != None and proc_jupyter.poll() == None:
+        proc_jupyter.terminate()
+        proc_jupyter.wait()
+    app.destroy()
+
+#the stop method from the stop_button allows you to stop the collection program running
 def stop():
     global proc
-    proc.terminate()
+
+    if proc_collect == None:
+        return
+
+    proc_collect.terminate()
     print("Data collection halted!")
     start_button.configure(state=tkinter.NORMAL)
     stop_button.configure(state=tkinter.DISABLED)
@@ -42,7 +58,7 @@ def stop():
     #runs the program with the directory created
 def start():
     #global variables that also align with the method current_date_time
-    global proc
+    global proc_collect
     global date
     global time
     global data_directory
@@ -172,7 +188,7 @@ def start():
 
     copy_command = copy_command.split(' ')
 
-    proc = subprocess.Popen(copy_command)
+    proc_collect = subprocess.Popen(copy_command)
 
 
 #the method default_parameters allows the user to use the default parameters set
@@ -264,12 +280,12 @@ def current_date_time():
     #print("Minute : ", current_time.minute)
 
 def create_zip():
-    global proc
+    global proc_collect
     global data_direcotry
     global direcotry
-    app.after(10000, create_zip)
+    app.after(10000, create_zip)   ## needs to be dynamic!!!! currently relies on data collection taking less than 10 minutes 
     try:
-        if proc.poll() is not None and proc.poll() == 0:
+        if proc_collect.poll() is not None and proc_collect.poll() == 0:
             print("creating text file")
             desc = customtkinter.CTkEntry.get(description)
             with open(data_directory+'/'+directory+'/description.txt', 'w') as f:
@@ -287,7 +303,8 @@ def open_jupyter():
     webbrowser.open_new('https://radiolab.winona.edu/')
 
 def open_local_jupyter():
-    subprocess.Popen(["jupyter","notebook","--notebook-dir=~"])
+    global proc_jupyter
+    proc_jupyter = subprocess.Popen(["jupyter","notebook","--notebook-dir=~"])
     # os.system('jupyter notebook --notebook-dir=~') old
     
 
@@ -311,6 +328,8 @@ def mode():
 # below is the layout in the GUI
 mode_switch = customtkinter.CTkSwitch(master=app, text="Dark Mode", command=mode, onvalue="on", offvalue="off")
 mode_switch.pack(padx=20, pady=(10, 0), anchor="w")
+
+app.protocol("WM_DELETE_WINDOW", on_close)  # runs close command when the GUI is closed
 
 # Scrollable Frame for all widgets
 scroll_frame = customtkinter.CTkScrollableFrame(master=app, width=760, height=440)
