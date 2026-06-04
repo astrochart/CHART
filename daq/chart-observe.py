@@ -459,7 +459,7 @@ def add_hint_label(entry_widget, hint_text):
         master=scroll_frame,
         text=hint_text,
         text_color="gray50",
-        font=("Arial", 9)
+        font=("Arial", 10)
     )
     hint_label.place_forget()
 
