@@ -65,7 +65,6 @@ def start():
     global directory
     global biasT
 
-    create_zip()
     #this is the call to the method so that even after the second start it can check the time and date correctly if system time is used
     current_date_time()
 
@@ -189,6 +188,7 @@ def start():
     copy_command = copy_command.split(' ')
 
     proc_collect = subprocess.Popen(copy_command)
+    create_zip()
 
 
 #the method default_parameters allows the user to use the default parameters set
@@ -283,7 +283,7 @@ def create_zip():
     global proc_collect
     global data_direcotry
     global direcotry
-    app.after(10000, create_zip)   ## needs to be dynamic!!!! currently relies on data collection taking less than 10 minutes 
+    app.after(10000, create_zip)    
     try:
         if proc_collect.poll() is not None and proc_collect.poll() == 0:
             print("creating text file")
