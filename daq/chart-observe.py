@@ -239,7 +239,7 @@ class ChartApp(customtkinter.CTk):
         )
         print(date_time)
 
-        change_date ='sudo date -s {date_time}'
+        change_date =f'sudo date -s {date_time}'
         os.system(change_date)
 
 
