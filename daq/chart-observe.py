@@ -1,629 +1,321 @@
 #!/usr/bin/python3
-import tkinter #you do need tkinter and customtkinter
+import tkinter
 import customtkinter
-import os #this allows you to use the command line to change the date
-import subprocess #this allows you to run and stop the program without using os
-import datetime #this allows you to get the system date and time
-import time #this allows you to use "after" to call the date_time method and update the date and time
-import glob #for compressing the zip files to import into jupyter hub
+import os
+import subprocess
+import datetime
+import time
+import glob
 import shutil
 import webbrowser
 from tkinter import messagebox
 
-customtkinter.set_appearance_mode("Light")  # Modes: system (default), light, dark
-customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
-#create CTk window like you do with the Tk window
-app = customtkinter.CTk()
-app.geometry("786x480")
-app.title("CHART Data Collection")
-customtkinter.set_widget_scaling(1.1)
+class ObservationSession:
 
-global biasT
-biasT = False
-proc_collect = None  
-proc_jupyter = None
+    def __init__(self, user, location, altitude, azimuth, date, time, description):
 
-#ending processes when GUI is closed 
-def on_close():
-    if proc_collect != None and proc_collect.poll() == None:
-        proc_collect.terminate()
-        proc_collect.wait()
-    if proc_jupyter != None and proc_jupyter.poll() == None:
-        proc_jupyter.terminate()
-        proc_jupyter.wait()
-    app.destroy()
+        self.user = user
+        self.altitude = altitude
+        self.azimuth = azimuth
+        self.date = date
+        self.time = time 
+        self.description = description
+    
+    def createDirectoryName(self):
+        return (
+            f"{self.user}"
+            f"_loc{self.location}"
+            f"_lon{self.longitude}"
+            f"_lat{self.latitude}"
+            f"_{self.date}"
+            f"_{self.time}"
+        )
 
-#the stop method from the stop_button allows you to stop the collection program running
-def stop():
-    global proc
+class CollectionConfig:
+    
+    def __init__(self, freq_i="1415", freq_f ="1425", int_time="5", nint="10", bias_t=False):
 
-    if proc_collect == None:
-        return
+        self.freq_i = freq_i
+        self.freq_f = freq_f
+        self.int_time = int_time
+        self.nint = nint
+        self.bias_t = bias_t
 
-    proc_collect.terminate()
-    print("Data collection halted!")
-    start_button.configure(state=tkinter.NORMAL)
-    stop_button.configure(state=tkinter.DISABLED)
-    del proc
+class DataManager:
 
-
-
-#the start method from the start_button allows you to run the program
-    #it runs the method current_date_time to make sure that they are using the correct time
-    #disables the start_button so that you cannot start twice and enables the stop_button
-    #creates the directory data and a new directory from their input
-    #does not allow a creation of the same directory so there is an error window
-    #uses the papameters entered to take data or uses the default shown on the gui
-    #runs the program with the directory created
-def start():
-    #global variables that also align with the method current_date_time
-    global proc_collect
-    global date
-    global time
-    global data_directory
-    global directory
-    global biasT
-
-    #this is the call to the method so that even after the second start it can check the time and date correctly if system time is used
-    current_date_time()
-
-    #diabled start so that the user cannot click start twice and they can now click stop
-    start_button.configure(state=tkinter.DISABLED)
-    stop_button.configure(state=tkinter.NORMAL)
-
-    #the variables taken from the entry inputs
-    sUser = customtkinter.CTkEntry.get(user_name)
-    sLongitude = customtkinter.CTkEntry.get(longitude_name) #getting the longitude from the entry
-    sLatitude = customtkinter.CTkEntry.get(latitude_name)  #getting the latitude from the entry
-    date_name.configure(state=tkinter.NORMAL)
-
-    #checking if date was empty so that it knows to use the input from entry or the one from the system time and date
-    if (system_date_time_switch.get() == "off"):
-        date = customtkinter.CTkEntry.get(date_name)
-        time = customtkinter.CTkEntry.get(curr_time)
-
-    tDay = combobox.get()
-    #make sure the location does not have spaces or slashes that many people accidentally do
-    date = date.replace("/", ".")
-    user = sUser.replace("_", ".")
-
-    #set the time
-    #the format to chang the date and time = sudo date -s "2006-08-14T02:34:56"
-    #change the month to have 2
-    month, day, year = date.split(".")
-
-    date_y_m_d = year+"."+month+"."+day
-
-    # New format without location and with latitude and longitude
-    # I used f strings here for clarity
-    directory = f"{user}_lon{sLongitude}_lat{sLatitude}_{date_y_m_d}_{time.replace(':', '.')}_{tDay}"
-    print(directory)
-
-    if(len(month) == 1):
-        month= "0"+month
-
-    if(len(day) ==1):
-        day = "0"+day
-
-    if(len(year) == 2):
-        "20"+year
+    def __init__(self):
+        self.base_dir = os.path.expanduser("~/data")
 
 
-    hour, minute = time.split(":")
-    #we needed to add the seconds onto the time
-    if(tDay == "pm"):
-        if(hour != "12"):
-            t = int(hour)+12
-            hour = str(t)
-            print("hour is "+hour)
-            time = hour+":"+minute
-    #making sure there is a 0 if the hour is a signle digit to be the correct format
-    if(len(hour) == 1):
-        time = "0"+hour+":"+minute
-        print("time is "+time)
+class DataCollector:
 
-    #adding seconds
-    time = time+":00"
-    change_date = "sudo date -s \""+year+"-"+month+"-"+day+"T"+time+"\""
-    os.system(change_date)
+    def __init__(self):
+        self.process = None
+    
+    def start(self, command):
+        self.process = subprocess.Popen(command)
+    
+    def stop(self):
+        if self.process is not None and self.process.poll() is None:
+            self.process.terminate()
+            print("Data collection halted!")
+    
+    def isRunning(self):
+        return(
+            self.process is not None and self.process.poll() is None
+        )
 
-    #creating a directory called data to store the data. This only happens once
-    home_name = os.path.expanduser('~')
-    data_directory = home_name+'/data'
+class ChartApp(customtkinter.CTk):
 
-    #checking to see if the directory data exists and if it does then nothing happens
-    if((os.path.isdir(data_directory)) == False):
-        os.mkdir(data_directory, mode = 0o1777)
-        print("Directory '% s' is built!" % data_directory)
-    else:
-        print("directory data already exists")
+    def __init__(self):
+        super().__init__()
 
-    #this is the main direcotry
-    main_dir = data_directory+'/'+directory
+        self.collector = DataCollector()
+        self.data_manager = DataManager()
 
-    #check if the directory does not exists made from the users input
-    if(os.path.isdir(main_dir) == False):
-        os.mkdir(main_dir, mode = 0o1777)
-        print("Directory '% s' is built!" % main_dir)
-    else:
-        # create error window to show that there was an error when they did not change the inputs so they know what to change
-        messagebox.showerror('ERROR', 'File already exists.\nChange the time and/or trial number before clicking start.')
+        self.current_directory = None
+    
+        self.data_directory = None
+        self.bias_t = False
 
-        #allow for the start button to be clicked because then they can change the trial number and continue
-        start_button.configure(state=tkinter.NORMAL)
-        stop_button.configure(state=tkinter.DISABLED)
-        #returns so that the files do not write to that old diecotry
-        return
+        self.default_freq_i = "1415"
+        self.default_freq_f = "1425"
+        self.default_int_time = "5"
+        self.default_nint = "10"
 
+        self.buildWindow()
+        self.buildWidgets()
 
-    #getting the directory to be used
-    use_directory = str(data_directory)+'/'+str(directory)
-    print("directory being used: "+use_directory)
+    def buildWindow(self):
 
+        customtkinter.set_appearance_mode("light")
+        customtkinter.set_default_color_theme("blue")
 
-    freq_i = customtkinter.CTkEntry.get(freq_i_in)
-    freq_f = customtkinter.CTkEntry.get(freq_f_in)
-    int_time = customtkinter.CTkEntry.get(int_time_in)
-    nint = customtkinter.CTkEntry.get(nint_in)
+        self.geometry("786x480")
+        self.title("CHART Data Collection")
 
-    #checking each parameter to see if anyone entered a variable or if the default numbers should be used
-    if not freq_i:
-        freq_i = default_freq_i
+        self.protocol(
+            "WM_DELETE_WINDOW",
+            self.on_close
+        )
+    
+    def buildWidgets(self):  #set up GUI and call widgets
 
-    if not freq_f:
-        freq_f = default_freq_f
+        self.mode_switch = customtkinter.CTkSwitch(self, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
+        self.mode_switch.grid(column=0, row=0, padx=10, pady=10, sticky="NW")
 
-    if not int_time:
-        int_time = default_int_time
+        self.time_button = customtkinter.CTkButton(self, text="Set System DateTime", command=self.openTimeWindow)
+        self.time_button.grid(column=0, row=0, padx=10, pady=10, sticky="N")
 
-    if not nint:
-        nint = default_nint
+        self.rowconfigure(1, weight=1)   # defines what rows can expand
+        self.rowconfigure(0, weight=0)
+        self.columnconfigure(0, weight=1)
 
-    if biasT:
-        copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory+' --biasT=True'
-    else:
-        copy_command = 'freq_and_time_scan.py --freq_i='+freq_i+' --freq_f='+freq_f+' --int_time='+int_time+' --nint='+nint+' --data_dir='+use_directory
+        self.scroll_frame = customtkinter.CTkScrollableFrame(self)
+        self.scroll_frame.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+        self.scroll_frame.columnconfigure(1, weight=1)
+        self.scroll_frame.columnconfigure(3, weight=1)
 
-    copy_command = copy_command.split(' ')
-
-    proc_collect = subprocess.Popen(copy_command)
-    create_zip()
+        self.buildEntries()
+        self.buildSwitches()
+        self.buildButtons()
+    
+    def buildEntries(self):
 
 
-#the method default_parameters allows the user to use the default parameters set
-    #they can either enter new parameters or they can use what is already displayed in the entry
-    #the entry is disabled when they chose to use the default
-def default_parameters():
-    print("using default parameters")
-    freq_i_in.configure(state=tkinter.NORMAL)
-    freq_f_in.configure(state=tkinter.NORMAL)
-    int_time_in.configure(state=tkinter.NORMAL)
-    nint_in.configure(state=tkinter.NORMAL)
-    if (default_parameters_switch.get() == "on"):
-        freq_i_in.configure(state=tkinter.DISABLED)
-        freq_f_in.configure(state=tkinter.DISABLED)
-        int_time_in.configure(state=tkinter.DISABLED)
-        nint_in.configure(state=tkinter.DISABLED)
+        #left side
+        self.observer_name_label = customtkinter.CTkLabel(self.scroll_frame, text="Observer Name")
+        self.observer_name_label.grid(column=0, row=0, padx=10, pady=5)
+        self.observer_name_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.observer_name_entry.grid(column=1, row=0, padx=10, pady=5, sticky="ew")
 
-default_freq_i = '1415'
-default_freq_f = '1425'
-default_int_time = '5'
-default_nint = '10'
+        self.location_label = customtkinter.CTkLabel(self.scroll_frame, text="Location")
+        self.location_label.grid(column=0, row=1, padx=10, pady=5, sticky="n")
+        self.location_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.location_entry.grid(column=1, row=1, padx=10, pady=5, sticky="nwe")
 
-#the method current_date_time from the switch system_date_time_switch
-    #gets the system time if the switch is on and disables the entry boxes for date, time, and time of day(am/pm)
-    #the method after being called once runs every 10000 miliseconds to update the time and show the correct system time on the gui if the switch is on
-    #saves the date and time in a global variable so that it can be used in the start metod to create a directory
-def current_date_time():
-    current_time = datetime.datetime.now()
-    #you have to set them to normal and then change them
-    date_name.configure(state=tkinter.NORMAL)
-    curr_time.configure(state=tkinter.NORMAL)
-    combobox.configure(state=tkinter.NORMAL)
+        self.altitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Altitude (deg)")
+        self.altitude_label.grid(column=0, row=5, padx=10, pady=5)
+        self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.altitude_entry.grid(column=1, row=5, padx=10, pady=5, sticky="ew")
 
-    if (system_date_time_switch.get() == "on"):
-        date_entry = str(current_time.month)+"."+str(current_time.day)+"."+str(current_time.year)
-        time_day_hour = current_time.hour
-        #sets the time of day to pm when it is 12 or after 12 and corrects for mulitary time
-        if(time_day_hour >= 12):
-            if(time_day_hour > 12):
-                time_day_hour = time_day_hour - 12
-                combobox.set("pm")
-            else:
-                combobox.set("pm")
+        self.azimuth_label = customtkinter.CTkLabel(self.scroll_frame, text="Azimuth (deg)")
+        self.azimuth_label.grid(column=0, row=6, padx=10, pady=5, sticky="n")
+        self.azimuth_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.azimuth_entry.grid(column=1, row=6, padx=10, pady=5, sticky="nwe")
 
-        min_entry = str(current_time.minute)
-        #makes sure there is a 0 when there is a minute before 10 like 2 - 02
-        if (len(min_entry) == 1):
-            min_entry = "0"+min_entry
-        #adds the times togethere including the :
-        time_entry = str(time_day_hour)+":"+min_entry
-        #print("This is the date entry: "+date_entry)
-        #print("This is the time entry: "+time_entry)
-        date_name.configure(textvariable=date_entry)
-
-        #global date and time to use in the start method
-        global date
-        date = date_entry
-        global time
-        time = time_entry
-
-        #setting the placeholders so that the user knows what time and date is being used
-        date_name.clear_placeholder()
-        date_name.placeholder_text = date_entry
-        date_name.set_placeholder()
-        curr_time.clear_placeholder()
-        curr_time.placeholder_text = time_entry
-        curr_time.set_placeholder()
+        self.description_label = customtkinter.CTkLabel(self.scroll_frame, text="Description (optional)")
+        self.description_label.grid(column=0, row=7, padx=10, pady=5, sticky="sew")
+        self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=50)
+        self.description_entry.grid(column=0, row=8, padx=10, pady=5, sticky="news", columnspan=2, rowspan=2)
 
 
-        #disable the entry so that they cannot enter a different date and time
-        date_name.configure(state=tkinter.DISABLED)
-        curr_time.configure(state=tkinter.DISABLED)
-        combobox.configure(state=tkinter.DISABLED)
-        #this calls the method after 10000 miliseconds to check the time is correct
-        app.after(10000, current_date_time)
+        #right side
+        self.frequency_label = customtkinter.CTkLabel(self.scroll_frame, text="Frequency Scan Setup")
+        self.frequency_label.grid(column=2, row=0, padx=10, pady=5, sticky="we")
 
-    #print("switch toggled, current value:", system_date_time_switch.get())
+        self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="Start Frequency (MHz)")
+        self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5)
+        self.frequency_start_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1415")
+        self.frequency_start_entry.grid(column=3, row=3, padx=10, pady=5, sticky="ew")
 
-    if (system_date_time_switch.get() == "off"):
-        date_name.configure(state=tkinter.NORMAL)
-        curr_time.configure(state=tkinter.NORMAL)
-        combobox.configure(state=tkinter.NORMAL)
-    #below you can uncomment and use the print statements to make sure the correct date and time are being used
-    #print("The attributes of now() are :")
-    #print("Year :", current_time.year)
-    #print("Month : ", current_time.month)
-    #print("Day : ", current_time.day)
-    #print("Hour : ", current_time.hour)
-    #print("Minute : ", current_time.minute)
+        self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="Stop Frequency (MHz)")
+        self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="n")
+        self.frequency_stop_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1425")
+        self.frequency_stop_entry.grid(column=3, row=4, padx=10, pady=5, sticky="nwe")
 
-def create_zip():
-    global proc_collect
-    global data_direcotry
-    global direcotry
-    app.after(10000, create_zip)    
-    try:
-        if proc_collect.poll() is not None and proc_collect.poll() == 0:
-            print("creating text file")
-            desc = customtkinter.CTkEntry.get(description)
-            with open(data_directory+'/'+directory+'/description.txt', 'w') as f:
-                f.write(desc)
-            print("Creating zip file")
-            home_name = os.path.expanduser('~')
-            shutil.make_archive(data_directory+'/'+directory, "zip", data_directory, directory)
-            print("done")
-            stop()
-    except NameError:
-        pass
+        self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="Integration time (s)")
+        self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="n")
+        self.integration_time_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="5")
+        self.integration_time_entry.grid(column=3, row=5, padx=10, pady=5, sticky="nwe")
+
+        self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="Integrations per scan step")
+        self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="n")
+        self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10")
+        self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
+
+    def buildSwitches(self):
+        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off")
+        self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
+
+        self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off")
+        self.bias_switch.grid(column=2, row=7, padx=10, pady=10, sticky="w")
+    
+    def buildButtons(self):
+        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start")
+        self.start_button.grid(column=2, row=8, padx=10, pady=10, sticky="ew")
+
+        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop")
+        self.stop_button.grid(column=3, row=8, padx=10, pady=10, sticky="ew")
+
+        self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub")
+        self.jupyter_upload_button.grid(column=2, row=9, padx=10, pady=10, sticky="ew")
+
+        self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook")
+        self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=10, sticky="ew")
+    
+    def submitTime(self):
+
+        try:
+            day = int(self.day_menu.get())
+            month = int(self.month_menu.get())
+            year = int(self.year_menu.get())
+            hour = int(self.hour_menu.get())
+            minute = int(self.minute_menu.get())
+        except ValueError:
+            messagebox.showerror(
+                "Invalid Input",
+                "All fields must be integers.", parent=self.popup
+            )
+            return
+
+        if not (1 <= day <= 31):
+            messagebox.showerror("Error", "Day must be between 1 and 31.", parent=self.popup)
+            return
+
+        if not (1 <= month <= 12):
+            messagebox.showerror("Error", "Month must be between 1 and 12.", parent=self.popup)
+            return
+
+        if not (2026 <= year <= 2080):
+            messagebox.showerror("Error", "Year must be between 2026 and 2080.", parent=self.popup)
+            return
+
+        if not (0 <= hour <= 23):
+            messagebox.showerror("Error", "Hour must be between 0 and 23.", parent=self.popup)
+            return
+
+        if not (0 <= minute <= 59):
+            messagebox.showerror("Error", "Minute must be between 0 and 59.", parent=self.popup)
+            return
+
+        date_time = datetime.datetime(
+            year,
+            month,
+            day,
+            hour,
+            minute
+        )
+        print(date_time)
+
+        change_date ='sudo date -s {date_time}'
+        os.system(change_date)
 
 
-def open_jupyter():
-    webbrowser.open_new('https://radiolab.winona.edu/')
 
-def open_local_jupyter():
-    global proc_jupyter
-    proc_jupyter = subprocess.Popen(["jupyter","notebook","--notebook-dir=~"])
-    # os.system('jupyter notebook --notebook-dir=~') old
+    def openTimeWindow(self):
+        self.popup = customtkinter.CTkToplevel(self)
+        self.popup.title("System Date and Time")
+        self.popup.geometry("200x200")
+        self.popup.columnconfigure(1, weight=1)
+        self.popup.columnconfigure(0, weight=1)
+
+
+        self.day_var = tkinter.StringVar(value="1")
+        self.month_var = tkinter.StringVar(value="1")
+        self.year_var = tkinter.StringVar(value="2026")
+        self.hour_var = tkinter.StringVar(value="12")
+        self.minute_var = tkinter.StringVar(value="00")
+
+        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Day:")
+        self.day_menu_label.grid(column=0, row=1, sticky="e", padx=10)
+        self.day_menu = tkinter.Spinbox(self.popup, from_=1, to=31, textvariable=self.day_var, width=5)
+        self.day_menu.grid(column=1, row=1)
+
+        self.month_menu_label = customtkinter.CTkLabel(self.popup, text="Month:")
+        self.month_menu_label.grid(column=0, row=2, sticky="e", padx=10)
+        self.month_menu = tkinter.Spinbox(self.popup, from_=1, to=12, textvariable=self.month_var, width=5)
+        self.month_menu.grid(column=1, row=2)
+
+        self.year_menu_label = customtkinter.CTkLabel(self.popup, text="Year:")
+        self.year_menu_label.grid(column=0, row=3, sticky="e", padx=10)
+        self.year_menu = tkinter.Spinbox(self.popup, from_=2026, to=2080, textvariable=self.year_var, width=5)
+        self.year_menu.grid(column=1, row=3)
+
+        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Hour (0-24)")
+        self.day_menu_label.grid(column=0, row=4, sticky="e", padx=10)
+        self.hour_menu = tkinter.Spinbox(self.popup, from_=0, to=23, textvariable=self.hour_var, width=5)
+        self.hour_menu.grid(column=1, row=4)
+
+        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Minute")
+        self.day_menu_label.grid(column=0, row=5, sticky="e", padx=10)
+        self.minute_menu = tkinter.Spinbox(self.popup, from_=0, to=59, textvariable=self.minute_var, width=5,)
+        self.minute_menu.grid(column=1, row=5)
+
+        self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime)
+        self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2)
+
+
+        self.popup.focus()
+        self.popup.grab_set()
     
 
-def biasT_switch():
-    global biasT
-    biasT = False
-    if (biasT_switch.get() == "on"):
-        biasT = True
-        messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
-
-        return
-
-#change the display to be able to see better
-def mode():
-    if (mode_switch.get() == "on"):
-        customtkinter.set_appearance_mode("Dark")
-    else:
-        customtkinter.set_appearance_mode("Light")
-
-
-# below is the layout in the GUI
-mode_switch = customtkinter.CTkSwitch(master=app, text="Dark Mode", command=mode, onvalue="on", offvalue="off")
-mode_switch.pack(padx=20, pady=(10, 0), anchor="w")
-
-app.protocol("WM_DELETE_WINDOW", on_close)  # runs close command when the GUI is closed
-
-# Scrollable Frame for all widgets
-scroll_frame = customtkinter.CTkScrollableFrame(master=app, width=760, height=440)
-scroll_frame.pack(fill="both", expand=True, padx=10, pady=10)
-
-# Configure flexible grid layout
-for i in range(12):
-    scroll_frame.rowconfigure(i, weight=1)
-for j in range(2):
-    scroll_frame.columnconfigure(j, weight=1)
-
-# Store references to all fields for responsive layout
-responsive_widgets = []
-
-# === Input Fields (Adaptive Grid) ===
-
-# Row 0 — Username
-label_user = customtkinter.CTkLabel(scroll_frame, text="Username:")
-label_user.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-user_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="Enter Here", width=180)
-user_name.grid(row=0, column=1, sticky="w", padx=10, pady=10)
-
-# Row 0 (right side) — Longitude
-label_long = customtkinter.CTkLabel(scroll_frame, text="Longitude:")
-label_long.grid(row=0, column=2, sticky="w", padx=10, pady=10)
-longitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., -91.64", width=120)
-longitude_name.grid(row=0, column=3, sticky="w", padx=10, pady=10)
-
-# Row 1 — Latitude
-label_lat = customtkinter.CTkLabel(scroll_frame, text="Latitude:")
-label_lat.grid(row=1, column=0, sticky="w", padx=10, pady=10)
-latitude_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="e.g., 44.05", width=120)
-latitude_name.grid(row=1, column=1, sticky="w", padx=10, pady=10)
-
-# Row 1 (right side) — Date
-label_date = customtkinter.CTkLabel(scroll_frame, text="Date:")
-label_date.grid(row=1, column=2, sticky="w", padx=10, pady=10)
-date_name = customtkinter.CTkEntry(scroll_frame, placeholder_text="MM.DD.YYYY", width=120)
-date_name.grid(row=1, column=3, sticky="w", padx=10, pady=10)
-
-# Row 2 — Time + AM/PM combo
-label_time = customtkinter.CTkLabel(scroll_frame, text="Time:")
-label_time.grid(row=2, column=0, sticky="w", padx=10, pady=10)
-time_frame = customtkinter.CTkFrame(scroll_frame)
-time_frame.grid(row=2, column=1, sticky="w", padx=10, pady=10)
-curr_time = customtkinter.CTkEntry(time_frame, placeholder_text="00:00", width=80)
-curr_time.grid(row=0, column=0, sticky="w", padx=(0, 5))
-combobox = customtkinter.CTkComboBox(time_frame, values=["am", "pm"], width=60)
-combobox.grid(row=0, column=1)
-combobox.set("am")
-
-# Row 2 (right side) — Initial Frequency
-label_freq_i = customtkinter.CTkLabel(scroll_frame, text="Initial Frequency (MHz):")
-label_freq_i.grid(row=2, column=2, sticky="w", padx=10, pady=10)
-freq_i_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1415", width=100)
-freq_i_in.grid(row=2, column=3, sticky="w", padx=10, pady=10)
-
-# Row 3 — Final Frequency
-label_freq_f = customtkinter.CTkLabel(scroll_frame, text="Final Frequency (MHz):")
-label_freq_f.grid(row=3, column=0, sticky="w", padx=10, pady=10)
-freq_f_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="1425", width=100)
-freq_f_in.grid(row=3, column=1, sticky="w", padx=10, pady=10)
-
-# Row 3 (right side) — Integration Time
-label_int_time = customtkinter.CTkLabel(scroll_frame, text="Integration Time (s):")
-label_int_time.grid(row=3, column=2, sticky="w", padx=10, pady=10)
-int_time_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="5", width=100)
-int_time_in.grid(row=3, column=3, sticky="w", padx=10, pady=10)
-
-# Row 4 — Number of Integrations
-label_nint = customtkinter.CTkLabel(scroll_frame, text="Number of Integrations:")
-label_nint.grid(row=4, column=0, sticky="w", padx=10, pady=10)
-nint_in = customtkinter.CTkEntry(scroll_frame, placeholder_text="10", width=100)
-nint_in.grid(row=4, column=1, sticky="w", padx=10, pady=10)
-
-# Row 4 (right side) — Description
-label_desc = customtkinter.CTkLabel(scroll_frame, text="Description:")
-label_desc.grid(row=4, column=2, sticky="w", padx=10, pady=10)
-description = customtkinter.CTkEntry(scroll_frame, placeholder_text="Describe observation", width=280)
-description.grid(row=4, column=3, sticky="w", padx=10, pady=10)
-
-# Fix minimum label widths so text never disappears
-MIN_LABEL_WIDTH = 150
-
-all_labels = [
-    label_user, label_long, label_lat, label_date, label_time,
-    label_freq_i, label_freq_f, label_int_time, label_nint, label_desc
-]
-
-for lbl in all_labels:
-    lbl.configure(width=MIN_LABEL_WIDTH)
-
-
-# Row 5 — Switches
-switch_frame = customtkinter.CTkFrame(scroll_frame)
-switch_frame.grid(row=5, column=0, columnspan=4, pady=10, sticky="w")
-
-default_parameters_switch = customtkinter.CTkSwitch(
-    switch_frame,
-    text="Use Default Parameters",
-    command=default_parameters,
-    onvalue="on",
-    offvalue="off"
-)
-
-biasT_switch = customtkinter.CTkSwitch(
-    switch_frame,
-    text="Enable Bias-T",
-    command=biasT_switch,
-    onvalue="on",
-    offvalue="off"
-)
-
-system_date_time_switch = customtkinter.CTkSwitch(
-    switch_frame,
-    text="Use System Date and Time",
-    command=current_date_time,
-    onvalue="on",
-    offvalue="off"
-)
-
-default_parameters_switch.grid(row=0, column=0, padx=10)
-biasT_switch.grid(row=0, column=1, padx=10)
-system_date_time_switch.grid(row=0, column=2, padx=10)
-
-
-# Row 6 — Buttons
-button_frame = customtkinter.CTkFrame(scroll_frame)
-button_frame.grid(row=6, column=0, columnspan=4, pady=(15, 5), sticky="w")
-start_button = customtkinter.CTkButton(button_frame, text="Start", command=start)
-stop_button = customtkinter.CTkButton(button_frame, text="Stop", command=stop)
-jupyter_button = customtkinter.CTkButton(button_frame, text="Open Jupyter Hub", command=open_jupyter, corner_radius=0)
-local_jupyter_button = customtkinter.CTkButton(button_frame, text="Open Local Jupyter", command=open_local_jupyter)
-start_button.grid(row=0, column=0, padx=10)
-stop_button.grid(row=0, column=1, padx=10)
-jupyter_button.grid(row=0, column=2, padx=10)
-local_jupyter_button.grid(row=0, column=3, padx=10)
-
-
-# Enhanced hint label
-active_hint_label = None
-HINT_MODE = "below"   # this will dynamically switch based on window width
-
-def add_hint_label(entry_widget, hint_text):
-
-    global active_hint_label
-    hint_label = customtkinter.CTkLabel(
-        master=scroll_frame,
-        text=hint_text,
-        text_color="gray50",
-        font=("Arial", 10)
-    )
-    hint_label.place_forget()
-
-    def show_hint(event):
-        global active_hint_label, HINT_MODE
-
-        # Hide previous hint
-        if active_hint_label and active_hint_label != hint_label:
-            active_hint_label.place_forget()
-
-        # Get widget coords relative to scroll_frame
-        entry_x = entry_widget.winfo_x()
-        entry_y = entry_widget.winfo_y()
-
-        if HINT_MODE == "side":
-            # Side placement
-            hint_label.place(
-                x=entry_x + entry_x/2,
-                y=entry_y
-            )
-        else:
-            # Below placement
-            hint_label.place(
-                x=entry_x,
-                y=entry_y + entry_widget.winfo_height()/2
-            )
-
-        active_hint_label = hint_label
-
-    def hide_hint(event):
-        hint_label.place_forget()
-
-    entry_widget.bind("<Enter>", show_hint)
-    entry_widget.bind("<Leave>", hide_hint)
-
-
-
-#here are the two switches at the bottom of each side. You can view the location with relx and rely
-# system_date_time_switch = customtkinter.CTkSwitch(master=app, text="Use System Date and Time", command=current_date_time, onvalue="on", offvalue="off")
-# system_date_time_switch.pack(padx=20, pady=10)
-# system_date_time_switch.place(relx=0.7, rely=.6, anchor=tkinter.CENTER)
-
-# Add hint labels for all entries with appropriate positions
-# Position can be "below" or "beside" as needed
-add_hint_label(user_name, "Your WSU username or observer name")
-add_hint_label(longitude_name, "Longitude in decimal degrees (East/West)")
-add_hint_label(latitude_name, "Latitude in decimal degrees (North/South)")
-add_hint_label(date_name, "Format: MM.DD.YYYY")
-add_hint_label(curr_time, "Format: HH:MM with am/pm toggle")
-add_hint_label(freq_i_in, "Start frequency in MHz")
-add_hint_label(freq_f_in, "End frequency in MHz")
-add_hint_label(int_time_in, "Integration time in seconds")
-add_hint_label(nint_in, "Number of integrations")
-add_hint_label(description, "Short description of observation")
-
-# Make window responsive
-# Responsive layout: switch between 2-column and 1-column when resizing
-def on_resize(event):
-    width = app.winfo_width()
-
-    # Making the hint global to adjust its position
-    global HINT_MODE
-    if width < 900:
-        HINT_MODE = "side"
-    else:
-        HINT_MODE = "below"
-    if width < 900:
-
-        # Reflow input fields (already working)
-        label_user.grid_configure(row=0, column=0)
-        user_name.grid_configure(row=0, column=1)
-
-        label_long.grid_configure(row=1, column=0)
-        longitude_name.grid_configure(row=1, column=1)
-
-        label_lat.grid_configure(row=2, column=0)
-        latitude_name.grid_configure(row=2, column=1)
-
-        label_date.grid_configure(row=3, column=0)
-        date_name.grid_configure(row=3, column=1)
-
-        label_time.grid_configure(row=4, column=0)
-        time_frame.grid_configure(row=4, column=1)
-
-        label_freq_i.grid_configure(row=5, column=0)
-        freq_i_in.grid_configure(row=5, column=1)
-
-        label_freq_f.grid_configure(row=6, column=0)
-        freq_f_in.grid_configure(row=6, column=1)
-
-        label_int_time.grid_configure(row=7, column=0)
-        int_time_in.grid_configure(row=7, column=1)
-
-        label_nint.grid_configure(row=8, column=0)
-        nint_in.grid_configure(row=8, column=1)
-
-        label_desc.grid_configure(row=9, column=0)
-        description.grid_configure(row=9, column=1)
-
-        switch_frame.grid_configure(row=10, column=0, columnspan=2, sticky="w", padx=10, pady=(20, 10))
-
-        button_frame.grid_configure(row=11, column=0, columnspan=2, sticky="w", padx=10, pady=(10, 20))
-    else:
-
-        label_user.grid_configure(row=0, column=0)
-        user_name.grid_configure(row=0, column=1)
-
-        label_long.grid_configure(row=0, column=2)
-        longitude_name.grid_configure(row=0, column=3)
-
-        label_lat.grid_configure(row=1, column=0)
-        latitude_name.grid_configure(row=1, column=1)
-
-        label_date.grid_configure(row=1, column=2)
-        date_name.grid_configure(row=1, column=3)
-
-        label_time.grid_configure(row=2, column=0)
-        time_frame.grid_configure(row=2, column=1)
-
-        label_freq_i.grid_configure(row=2, column=2)
-        freq_i_in.grid_configure(row=2, column=3)
-
-        label_freq_f.grid_configure(row=3, column=0)
-        freq_f_in.grid_configure(row=3, column=1)
-
-        label_int_time.grid_configure(row=3, column=2)
-        int_time_in.grid_configure(row=3, column=3)
-
-        label_nint.grid_configure(row=4, column=0)
-        nint_in.grid_configure(row=4, column=1)
-
-        label_desc.grid_configure(row=4, column=2)
-        description.grid_configure(row=4, column=3)
-
-        switch_frame.grid_configure(row=5, column=0, columnspan=4, sticky="w", padx=10, pady=10)
-
-        button_frame.grid_configure(row=6, column=0, columnspan=4, sticky="w", padx=10, pady=10)
-
-# Bind the handler
-app.bind("<Configure>", on_resize)
-
-app.rowconfigure(0, weight=1)
-app.columnconfigure(0, weight=1)
-
-
-app.mainloop()
+    # def startCollection(self):
+        
+        # session = ObservationSession(
+        #     user=self.observer_name_entry.get(),
+        #     location=self.location_entry.get(),
+        #     altitude=self.altitude_entry.get(),
+        #     azimuth=self.azimuth_entry.get(),
+        #     date=self.dat
+        #     time
+        #     description
+        # )
+        
+
+    def toggleDarkMode(self):
+        if self.mode_switch.get() == "on":
+            customtkinter.set_appearance_mode("Dark")
+        else: customtkinter.set_appearance_mode("Light")
+    
+    def on_close(self):
+        self.collector.stop()
+        self.destroy()
+
+
+
+if __name__ == "__main__":
+
+    app = ChartApp()
+    app.mainloop()
