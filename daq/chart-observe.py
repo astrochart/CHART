@@ -9,25 +9,26 @@ import glob
 import shutil
 import webbrowser
 from tkinter import messagebox
+import re
 
 
 class ObservationSession:
 
     def __init__(self, user, location, altitude, azimuth, date, time, description):
 
-        self.user = user
-        self.altitude = altitude
-        self.azimuth = azimuth
-        self.date = date
-        self.time = time 
-        self.description = description
+        self.user = re.sub(r'[^A-Za-z0-9_-]', '', user)
+        self.altitude = re.sub(r'[^A-Za-z0-9_-]', '', altitude)
+        self.azimuth = re.sub(r'[^A-Za-z0-9_-]', '', azimuth)
+        self.date = re.sub(r'[^A-Za-z0-9_-]', '', date)
+        self.time = time.strip().replace(":","-")
+        self.description = re.sub(r'[^A-Za-z0-9_-]', '', description)
     
     def createDirectoryName(self):
         return (
             f"{self.user}"
             f"_loc{self.location}"
-            f"_lon{self.longitude}"
-            f"_lat{self.latitude}"
+            f"_lon{self.altitude}"
+            f"_lat{self.longitude}"
             f"_{self.date}"
             f"_{self.time}"
         )
@@ -103,19 +104,24 @@ class ChartApp(customtkinter.CTk):
     def buildWidgets(self):  #set up GUI and call widgets
 
         self.mode_switch = customtkinter.CTkSwitch(self, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
-        self.mode_switch.grid(column=0, row=0, padx=10, pady=10, sticky="NW")
+        self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="NW")
 
         self.time_button = customtkinter.CTkButton(self, text="Set System DateTime", command=self.openTimeWindow)
-        self.time_button.grid(column=0, row=0, padx=10, pady=10, sticky="N")
+        self.time_button.grid(column=0, row=0, padx=10, pady=2, sticky="N")
 
+        self.rowconfigure(2, weight=0)
         self.rowconfigure(1, weight=1)   # defines what rows can expand
         self.rowconfigure(0, weight=0)
         self.columnconfigure(0, weight=1)
 
         self.scroll_frame = customtkinter.CTkScrollableFrame(self)
-        self.scroll_frame.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+        self.scroll_frame.grid(column=0, row=1, padx=10, pady=0, sticky="nsew")
         self.scroll_frame.columnconfigure(1, weight=1)
         self.scroll_frame.columnconfigure(3, weight=1)
+
+        self.terminal = customtkinter.CTkTextbox(self, height=80)
+        self.terminal.grid(row=2, column=0, sticky="ew", padx=10, pady=(0,10))
+        self.terminal.configure(state="disabled")
 
         self.buildEntries()
         self.buildSwitches()
@@ -184,16 +190,26 @@ class ChartApp(customtkinter.CTk):
     
     def buildButtons(self):
         self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start")
-        self.start_button.grid(column=2, row=8, padx=10, pady=10, sticky="ew")
+        self.start_button.grid(column=2, row=8, padx=10, pady=3, sticky="ew")
 
         self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop")
-        self.stop_button.grid(column=3, row=8, padx=10, pady=10, sticky="ew")
+        self.stop_button.grid(column=3, row=8, padx=10, pady=3, sticky="ew")
 
         self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub")
-        self.jupyter_upload_button.grid(column=2, row=9, padx=10, pady=10, sticky="ew")
+        self.jupyter_upload_button.grid(column=2, row=9, padx=10, pady=3, sticky="new")
 
         self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook")
-        self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=10, sticky="ew")
+        self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=3, sticky="new")
+    
+    def log(self, message):
+
+        self.terminal.configure(state="normal")
+        self.terminal.insert(
+            "end",
+            f"{message}\n"
+        )
+        self.terminal.see("end")
+        self.terminal.configure(state="disabled")
     
     def submitTime(self):
 
@@ -237,12 +253,10 @@ class ChartApp(customtkinter.CTk):
             hour,
             minute
         )
-        print(date_time)
+        self.log(f"{date_time} is set!")
 
         change_date =f'sudo date -s {date_time}'
         os.system(change_date)
-
-
 
     def openTimeWindow(self):
         self.popup = customtkinter.CTkToplevel(self)
@@ -286,7 +300,7 @@ class ChartApp(customtkinter.CTk):
         self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime)
         self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2)
 
-
+        self.popup.wait_visibility()
         self.popup.focus()
         self.popup.grab_set()
     
@@ -307,6 +321,7 @@ class ChartApp(customtkinter.CTk):
     def toggleDarkMode(self):
         if self.mode_switch.get() == "on":
             customtkinter.set_appearance_mode("Dark")
+            self.log("DarkMode enabled!")
         else: customtkinter.set_appearance_mode("Light")
     
     def on_close(self):
