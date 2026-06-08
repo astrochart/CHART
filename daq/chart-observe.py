@@ -10,72 +10,109 @@ import shutil
 import webbrowser
 from tkinter import messagebox
 import re
+import threading
+import numpy as np
+import time
+import chart
 
 
 class ObservationSession:
 
-    def __init__(self, user, location, altitude, azimuth, date, time, description):
+    def __init__(self, config, logger):
 
-        self.user = re.sub(r'[^A-Za-z0-9_-]', '', user)
-        self.altitude = re.sub(r'[^A-Za-z0-9_-]', '', altitude)
-        self.azimuth = re.sub(r'[^A-Za-z0-9_-]', '', azimuth)
-        self.date = re.sub(r'[^A-Za-z0-9_-]', '', date)
-        self.time = time.strip().replace(":","-")
-        self.description = re.sub(r'[^A-Za-z0-9_-]', '', description)
+        self.log = logger
+        self.running = False
+        self.tb = None
+
+        self.cfg = config
+
+        self.cfg["observer"] = self.clean(config.get("observer", ""))
+        self.cfg["location"] = self.clean(config.get("location", ""))
+        self.cfg["latitude"] = self.clean(config.get("latitude", ""))
+        self.cfg["longitude"] = self.clean(config.get("longitude", ""))
+        self.cfg["altitude"] = self.clean(config.get("altitude", ""))
+        self.cfg["azimuth"] = self.clean(config.get("azimuth", ""))
+        self.cfg["description"] = self.clean(config.get("description", ""))
+
+        self.cfg["freq_i"] = float(config["freq_i"])
+        self.cfg["freq_f"] = float(config["freq_f"])
+        self.cfg["df"] = float(config["df"])
+        self.cfg["scan_period"] = float(config["scan_period"])
+        self.cfg["total_time"] = float(config["total_time"])
+        self.cfg["veclength"] = int(config["veclength"])
+        self.cfg["samp_rate"] = float(config["samp_rate"])
+        self.cfg["int_length"] = int(config["int_length"])
+        self.cfg["nint"] = int(config["nint"])
+        self.cfg.setdefault("bias_t", False)
+        self.cfg.setdefault("data_dir", "./data")
+
+    def clean(self, value):
+        if value is None:
+            return ""
+        return re.sub(r'[^A-Za-z0-9_-]', '', str(value))
     
-    def createDirectoryName(self):
-        return (
-            f"{self.user}"
-            f"_loc{self.location}"
-            f"_lon{self.altitude}"
-            f"_lat{self.longitude}"
-            f"_{self.date}"
-            f"_{self.time}"
-        )
-
-class CollectionConfig:
-    
-    def __init__(self, freq_i="1415", freq_f ="1425", int_time="5", nint="10", bias_t=False):
-
-        self.freq_i = freq_i
-        self.freq_f = freq_f
-        self.int_time = int_time
-        self.nint = nint
-        self.bias_t = bias_t
-
-class DataManager:
-
-    def __init__(self):
-        self.base_dir = os.path.expanduser("~/data")
-
-
-class DataCollector:
-
-    def __init__(self):
-        self.process = None
-    
-    def start(self, command):
-        self.process = subprocess.Popen(command)
     
     def stop(self):
-        if self.process is not None and self.process.poll() is None:
-            self.process.terminate()
-            print("Data collection halted!")
+        self.running = False
+
     
-    def isRunning(self):
-        return(
-            self.process is not None and self.process.poll() is None
+    def run(self):
+
+        self.running = True
+
+        self.tb = chart.blocks.TopBlock(
+            c_freq=self.cfg["freq_i"],
+            veclength=self.cfg["veclength"],
+            samp_rate=self.cfg["samp_rate"],
+            int_length=self.cfg["int_length"],
+            nint=self.cfg["nint"],
+            bias=self.cfg["bias_t"],
+            data_dir=self.cfg["data_dir"],
+            metadata=self.cfg
         )
+
+        start = time.time()
+        scan_index = 0
+
+        while self.running and (time.time() - start < self.cfg["total_time"]):
+
+            self.log(f"Scan {scan_index}")
+
+            for f in np.arange(self.cfg["freq_i"],
+                            self.cfg["freq_f"],
+                            self.cfg["df"]):
+
+                if not self.running:
+                    break
+
+                self.log(f"{f/1e6:.3f} MHz")
+
+                self.tb.set_c_freq(f)
+                self.tb.blocks_head_0.reset()
+                self.tb.set_filename()
+
+                self.tb.start()
+                self.tb.wait()
+
+                self.tb.meta_save()
+
+            scan_index += 1
+            time.sleep(self.cfg["scan_period"])
+
+        self.log("Observation complete")
+
+        if self.tb:
+            del self.tb
+
+
+
 
 class ChartApp(customtkinter.CTk):
 
     def __init__(self):
         super().__init__()
 
-        self.collector = DataCollector()
-        self.data_manager = DataManager()
-
-        self.current_directory = None
+        self.session = None
     
         self.data_directory = None
         self.bias_t = False
@@ -98,7 +135,7 @@ class ChartApp(customtkinter.CTk):
 
         self.protocol(
             "WM_DELETE_WINDOW",
-            self.on_close
+            self.onClose
         )
     
     def buildWidgets(self):  #set up GUI and call widgets
@@ -149,6 +186,16 @@ class ChartApp(customtkinter.CTk):
         self.location_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
         self.location_entry.grid(column=1, row=1, padx=10, pady=5, sticky="nwe")
 
+        self.latitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Latitude")
+        self.latitude_label.grid(column=0, row=3, padx=10, pady=5)
+        self.latitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.latitude_entry.grid(column=1, row=3, padx=10, pady=5, sticky="ew")
+
+        self.longitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Longitude")
+        self.longitude_label.grid(column=0, row=4, padx=10, pady=5, sticky="n")
+        self.longitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.longitude_entry.grid(column=1, row=4, padx=10, pady=5, sticky="nwe")
+
         self.altitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Altitude (deg)")
         self.altitude_label.grid(column=0, row=5, padx=10, pady=5)
         self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
@@ -190,17 +237,17 @@ class ChartApp(customtkinter.CTk):
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
     def buildSwitches(self):
-        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off")
+        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off", command=self.enableDefaults)
         self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
-        self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off")
+        self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off", command=self.biasTwarn)
         self.bias_switch.grid(column=2, row=7, padx=10, pady=10, sticky="w")
     
     def buildButtons(self):
-        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start")
+        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection)
         self.start_button.grid(column=2, row=8, padx=10, pady=3, sticky="ew")
 
-        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop")
+        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection)
         self.stop_button.grid(column=3, row=8, padx=10, pady=3, sticky="ew")
 
         self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub")
@@ -324,19 +371,102 @@ class ChartApp(customtkinter.CTk):
         )
         self.after(1000, self.updateClock)
     
+    def enableDefaults(self):
+        if self.default_switch.get() =="on":
 
-    # def startCollection(self):
-        
-        # session = ObservationSession(
-        #     user=self.observer_name_entry.get(),
-        #     location=self.location_entry.get(),
-        #     altitude=self.altitude_entry.get(),
-        #     azimuth=self.azimuth_entry.get(),
-        #     date=self.dat
-        #     time
-        #     description
-        # )
-        
+            self.frequency_start_entry.delete(0, "end")
+            self.frequency_stop_entry.delete(0, "end")
+            self.integration_scans_entry.delete(0, "end")
+            self.integration_time_entry.delete(0, "end")
+            self.frequency_start_entry.configure(state="disabled", placeholder_text="1415", fg_color=("gray80", "gray10"))
+            self.frequency_stop_entry.configure(state="disabled", placeholder_text="1425", fg_color=("gray80", "gray10"))
+            self.integration_scans_entry.configure(state="disabled", placeholder_text="10", fg_color=("gray80", "gray10"))
+            self.integration_time_entry.configure(state="disabled", placeholder_text="5", fg_color=("gray80", "gray10"))
+            self.log("Using default parameters")
+        else:
+            self.frequency_start_entry.configure(state="normal", placeholder_text="1415", fg_color=("white", "gray21"))
+            self.frequency_stop_entry.configure(state="normal", placeholder_text="1425", fg_color=("white", "gray21"))
+            self.integration_scans_entry.configure(state="normal", placeholder_text="10", fg_color=("white", "gray21"))
+            self.integration_time_entry.configure(state="normal", placeholder_text="5", fg_color=("white", "gray21"))
+
+    
+    def startCollection(self):
+
+        if self.default_switch.get() == "on":
+            freq_i = float(self.default_freq_i)
+            freq_f = float(self.default_freq_f)
+            int_length = int(self.default_int_time)
+            nint = int(self.default_nint)
+            
+        else:
+            try:
+                freq_i = float(self.frequency_start_entry.get())
+                freq_f = float(self.frequency_stop_entry.get())
+                int_length = int(self.integration_time_entry.get())
+                nint = int(self.integration_scans_entry.get())
+            except ValueError:
+                messagebox.showerror(
+                    "Invalid Input",
+                    "Frequency, integration time, and integrations per scan must be numeric."
+                )
+                return
+            
+            if freq_i <= 0:
+                messagebox.showerror(
+                    "Invalid Frequency",
+                    "Start frequency must be greater than zero."
+                )
+                return
+
+            if freq_f <= freq_i:
+                messagebox.showerror(
+                    "Invalid Frequency",
+                    "Stop frequency must be greater than start frequency."
+                )
+                return
+
+            if int_length <= 0:
+                messagebox.showerror(
+                    "Invalid Integration Time",
+                    "Integration time must be greater than zero."
+                )
+                return
+
+            if nint <= 0:
+                messagebox.showerror(
+                    "Invalid Integrations",
+                    "Integrations per scan must be greater than zero."
+                )
+                return
+
+        cfg = {
+            "observer": self.observer_name_entry.get(),
+            "location": self.location_entry.get(),
+            "latitude": self.latitude_entry.get(),
+            "longitude": self.longitude_entry.get(),
+            "altitude": self.altitude_entry.get(),
+            "azimuth": self.azimuth_entry.get(),
+            "description": self.description_entry.get("1.0", "end"),
+
+            "freq_i": float(self.frequency_start_entry.get()) * 1e6,
+            "freq_f": float(self.frequency_stop_entry.get()) * 1e6,
+            "df": 1.0,
+            "scan_period": float(self.default_int_time),
+            "total_time": 60,
+            "veclength": 1024,
+            "samp_rate": 2e6,
+            "int_length": float(self.integration_time_entry.get()),
+            "nint": int(self.integration_scans_entry.get()),
+            "bias_t": self.bias_switch.get() == "on",
+            "data_dir": self.data_directory or "./data"
+        }
+
+        self.session = ObservationSession(cfg, self.log)
+        threading.Thread(target=self.session.run, daemon=True).start()
+
+    def stopCollection(self):
+        if self.session:
+            self.session.stop()
 
     def toggleDarkMode(self):
         if self.mode_switch.get() == "on":
@@ -344,9 +474,14 @@ class ChartApp(customtkinter.CTk):
             self.log("DarkMode enabled!")
         else: customtkinter.set_appearance_mode("Light")
     
-    def on_close(self):
-        self.collector.stop()
+    def biasTwarn(self):
+        if self.bias_switch.get() == "on":
+            messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
+    
+    def onClose(self):
+        # self.collector.stop()
         self.destroy()
+
 
 
 
@@ -354,3 +489,5 @@ if __name__ == "__main__":
 
     app = ChartApp()
     app.mainloop()
+           
+           
