@@ -268,11 +268,12 @@ class ChartApp(customtkinter.CTk):
             self.log("ERROR: Could not set system date and time. Administrator permisions are required")
         else:
             self.log(f"{date_time} is set!")
+            self.updateClock()
 
     def openTimeWindow(self):
         self.popup = customtkinter.CTkToplevel(self)
         self.popup.title("System Date and Time")
-        self.popup.geometry("200x200")
+        self.popup.geometry("240x200")
         self.popup.columnconfigure(1, weight=1)
         self.popup.columnconfigure(0, weight=1)
 
