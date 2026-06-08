@@ -44,7 +44,8 @@ class ObservationSession:
         self.cfg["int_length"] = int(config["int_length"])
         self.cfg["nint"] = int(config["nint"])
         self.cfg.setdefault("bias_t", False)
-        self.cfg.setdefault("data_dir", "./data")
+        self.cfg["data_dir"] = os.path.join("./data",f"{self.cfg.get("observer", "Unknown")}_{datetime.datetime.now().strftime("%Y-%m-%d")}")
+
 
     def clean(self, value):
         if value is None:
@@ -58,51 +59,55 @@ class ObservationSession:
     
     def run(self):
 
-        self.running = True
+        try:
+            self.running = True
 
-        self.tb = chart.blocks.TopBlock(
-            c_freq=self.cfg["freq_i"],
-            veclength=self.cfg["veclength"],
-            samp_rate=self.cfg["samp_rate"],
-            int_length=self.cfg["int_length"],
-            nint=self.cfg["nint"],
-            bias=self.cfg["bias_t"],
-            data_dir=self.cfg["data_dir"],
-            metadata=self.cfg
-        )
+            self.tb = chart.blocks.TopBlock(
+                c_freq=self.cfg["freq_i"],
+                veclength=self.cfg["veclength"],
+                samp_rate=self.cfg["samp_rate"],
+                int_length=self.cfg["int_length"],
+                nint=self.cfg["nint"],
+                bias=self.cfg["bias_t"],
+                data_dir=self.cfg["data_dir"],
+                metadata=self.cfg
+            )
 
-        start = time.time()
-        scan_index = 0
+            start = time.time()
+            scan_index = 0
 
-        while self.running and (time.time() - start < self.cfg["total_time"]):
+            while self.running and (time.time() - start < self.cfg["total_time"]):
 
-            self.log(f"Scan {scan_index}")
+                self.log(f"Scan {scan_index}")
 
-            for f in np.arange(self.cfg["freq_i"],
-                            self.cfg["freq_f"],
-                            self.cfg["df"]):
+                for f in np.arange(self.cfg["freq_i"],
+                                self.cfg["freq_f"],
+                                self.cfg["df"]):
 
-                if not self.running:
-                    break
+                    if not self.running:
+                        break
 
-                self.log(f"{f/1e6:.3f} MHz")
+                    self.log(f"{f/1e6:.3f} MHz")
 
-                self.tb.set_c_freq(f)
-                self.tb.blocks_head_0.reset()
-                self.tb.set_filename()
+                    self.tb.set_c_freq(f)
+                    self.tb.blocks_head_0.reset()
+                    self.tb.set_filename()
 
-                self.tb.start()
-                self.tb.wait()
+                    self.tb.start()
+                    self.tb.wait()
 
-                self.tb.meta_save()
+                    self.tb.meta_save()
 
-            scan_index += 1
-            time.sleep(self.cfg["scan_period"])
+                scan_index += 1
+                time.sleep(self.cfg["scan_period"])
 
-        self.log("Observation complete")
+            self.log("Observation complete")
 
-        if self.tb:
-            del self.tb
+            if self.tb:
+                del self.tb
+        except Exception as e:
+            self.log(f"ERROR: {e}")
+            raise
 
 
 
@@ -393,17 +398,17 @@ class ChartApp(customtkinter.CTk):
     def startCollection(self):
 
         if self.default_switch.get() == "on":
-            freq_i = float(self.default_freq_i)
-            freq_f = float(self.default_freq_f)
-            int_length = int(self.default_int_time)
-            nint = int(self.default_nint)
+            self.freq_i = float(self.default_freq_i)
+            self.freq_f = float(self.default_freq_f)
+            self.int_length = int(self.default_int_time)
+            self.nint = int(self.default_nint)
             
         else:
             try:
-                freq_i = float(self.frequency_start_entry.get())
-                freq_f = float(self.frequency_stop_entry.get())
-                int_length = int(self.integration_time_entry.get())
-                nint = int(self.integration_scans_entry.get())
+                self.freq_i = float(self.frequency_start_entry.get())
+                self.freq_f = float(self.frequency_stop_entry.get())
+                self.int_length = int(self.integration_time_entry.get())
+                self.nint = int(self.integration_scans_entry.get())
             except ValueError:
                 messagebox.showerror(
                     "Invalid Input",
@@ -411,28 +416,28 @@ class ChartApp(customtkinter.CTk):
                 )
                 return
             
-            if freq_i <= 0:
+            if self.freq_i <= 0:
                 messagebox.showerror(
                     "Invalid Frequency",
                     "Start frequency must be greater than zero."
                 )
                 return
 
-            if freq_f <= freq_i:
+            if self.freq_f <= self.freq_i:
                 messagebox.showerror(
                     "Invalid Frequency",
                     "Stop frequency must be greater than start frequency."
                 )
                 return
 
-            if int_length <= 0:
+            if self.int_length <= 0:
                 messagebox.showerror(
                     "Invalid Integration Time",
                     "Integration time must be greater than zero."
                 )
                 return
 
-            if nint <= 0:
+            if self.nint <= 0:
                 messagebox.showerror(
                     "Invalid Integrations",
                     "Integrations per scan must be greater than zero."
