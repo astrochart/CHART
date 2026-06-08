@@ -14,6 +14,7 @@ import threading
 import numpy as np
 import time
 import chart
+import sys
 
 
 class ObservationSession:
@@ -44,8 +45,9 @@ class ObservationSession:
         self.cfg["int_length"] = int(config["int_length"])
         self.cfg["nint"] = int(config["nint"])
         self.cfg.setdefault("bias_t", False)
-        self.cfg["data_dir"] = os.path.join("./data",f"{self.cfg.get("observer", "Unknown")}_{datetime.datetime.now().strftime("%Y-%m-%d")}")
-
+        self.cfg["data_dir"] = os.path.join("./data",f"{self.cfg.get('observer', 'Unknown')}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')}")
+        os.makedirs(self.cfg["data_dir"], exist_ok=True)
+        self.log(f"Data directory is: {self.cfg['data_dir']}")
 
     def clean(self, value):
         if value is None:
@@ -72,13 +74,16 @@ class ObservationSession:
                 data_dir=self.cfg["data_dir"],
                 metadata=self.cfg
             )
+            try:
+                os.remove(self.tb.data_file)
+            except FileNotFoundError:
+                pass
 
             start = time.time()
             scan_index = 0
 
             while self.running and (time.time() - start < self.cfg["total_time"]):
 
-                self.log(f"Scan {scan_index}")
 
                 for f in np.arange(self.cfg["freq_i"],
                                 self.cfg["freq_f"],
@@ -92,7 +97,6 @@ class ObservationSession:
                     self.tb.set_c_freq(f)
                     self.tb.blocks_head_0.reset()
                     self.tb.set_filename()
-
                     self.tb.start()
                     self.tb.wait()
 
@@ -121,6 +125,7 @@ class ChartApp(customtkinter.CTk):
     
         self.data_directory = None
         self.bias_t = False
+        self.jupyter_proc = None
 
         self.default_freq_i = "1415"
         self.default_freq_f = "1425"
@@ -255,22 +260,21 @@ class ChartApp(customtkinter.CTk):
         self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection)
         self.stop_button.grid(column=3, row=8, padx=10, pady=3, sticky="ew")
 
-        self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub")
+        self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub", command=self.jupyter_upload)
         self.jupyter_upload_button.grid(column=2, row=9, padx=10, pady=3, sticky="new")
 
-        self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook")
+        self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local)
         self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=3, sticky="new")
     
     def log(self, message):
+        self.after(0, self._log, message)
 
+    def _log(self, message):
         self.terminal.configure(state="normal")
-        self.terminal.insert(
-            "end",
-            f"{message}\n"
-        )
+        self.terminal.insert("end", f"{message}\n")
         self.terminal.see("end")
         self.terminal.configure(state="disabled")
-    
+
     def submitTime(self):
 
         try:
@@ -400,14 +404,15 @@ class ChartApp(customtkinter.CTk):
         if self.default_switch.get() == "on":
             self.freq_i = float(self.default_freq_i)
             self.freq_f = float(self.default_freq_f)
-            self.int_length = int(self.default_int_time)
+            self.int_length = int(self.default_int_time) * 2e6 /1024
             self.nint = int(self.default_nint)
             
         else:
             try:
                 self.freq_i = float(self.frequency_start_entry.get())
                 self.freq_f = float(self.frequency_stop_entry.get())
-                self.int_length = int(self.integration_time_entry.get())
+                self.int_time = float(self.integration_time_entry.get())
+                self.int_length = int(int_time * 2e6 / 1024)
                 self.nint = int(self.integration_scans_entry.get())
             except ValueError:
                 messagebox.showerror(
@@ -455,12 +460,12 @@ class ChartApp(customtkinter.CTk):
 
             "freq_i": self.freq_i * 1e6,
             "freq_f": self.freq_f * 1e6,
-            "df": 1.0,
-            "scan_period": float(self.default_int_time),
-            "total_time": 60,
+            "df": 1e6,
+            "scan_period": 3600*0.001,
+            "total_time": 3600*0.001,
             "veclength": 1024,
             "samp_rate": 2e6,
-            "int_length": float(self.int_length),
+            "int_length": int(self.int_length),
             "nint": int(self.nint),
             "bias_t": self.bias_switch.get() == "on",
             "data_dir": self.data_directory or "./data"
@@ -468,6 +473,14 @@ class ChartApp(customtkinter.CTk):
 
         self.session = ObservationSession(cfg, self.log)
         threading.Thread(target=self.session.run, daemon=True).start()
+
+    def jupyter_local(self):
+        if self.jupyter_proc is None or self.jupyter_proc.poll() is not None:
+            self.jupyter_proc = subprocess.Popen(["jupyter", "notebook", "--notebook-dir=~"],)
+            self.log("Local Jupyter server started!")
+
+    def jupyter_upload(self):
+        webbrowser.open_new('https://radiolab.winona.edu/')
 
     def stopCollection(self):
         if self.session:
@@ -485,7 +498,10 @@ class ChartApp(customtkinter.CTk):
     
     def onClose(self):
         # self.collector.stop()
+        if self.jupyter_proc is not None:
+            self.jupyter_proc.terminate()
         self.destroy()
+
 
 
 
