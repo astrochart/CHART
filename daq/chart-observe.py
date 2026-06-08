@@ -109,6 +109,14 @@ class ChartApp(customtkinter.CTk):
         self.time_button = customtkinter.CTkButton(self, text="Set System DateTime", command=self.openTimeWindow)
         self.time_button.grid(column=0, row=0, padx=10, pady=2, sticky="N")
 
+        self.clock_frame = customtkinter.CTkFrame(self, fg_color="transparent")
+        self.clock_frame.grid(column=0, row=0, padx=2, pady=2, sticky="NE")
+        self.clock_label_description = customtkinter.CTkLabel(self.clock_frame, text="Observation Time: ")
+        self.clock_label_description.grid(column=0, row=0, padx=2, pady=2, sticky="E")
+        self.clock_label = customtkinter.CTkLabel(self.clock_frame, text="")
+        self.clock_label.grid(column=2, row=0, padx=2, pady=2, sticky="W")
+        self.updateClock()
+
         self.rowconfigure(2, weight=0)
         self.rowconfigure(1, weight=1)   # defines what rows can expand
         self.rowconfigure(0, weight=0)
@@ -253,10 +261,13 @@ class ChartApp(customtkinter.CTk):
             hour,
             minute
         )
-        self.log(f"{date_time} is set!")
-
-        change_date =f'sudo date -s {date_time}'
-        os.system(change_date)
+        
+        timeChange = subprocess.run(["sudo", "-n", "date", "-s", str(date_time)])
+        
+        if timeChange.returncode != 0:
+            self.log("ERROR: Could not set system date and time. Administrator permisions are required")
+        else:
+            self.log(f"{date_time} is set!")
 
     def openTimeWindow(self):
         self.popup = customtkinter.CTkToplevel(self)
@@ -303,6 +314,14 @@ class ChartApp(customtkinter.CTk):
         self.popup.wait_visibility()
         self.popup.focus()
         self.popup.grab_set()
+
+    def updateClock(self):
+        now = datetime.datetime.now()
+
+        self.clock_label.configure(
+            text=now.strftime("%Y-%m-%d %H:%M:%S")
+        )
+        self.after(1000, self.updateClock)
     
 
     # def startCollection(self):
