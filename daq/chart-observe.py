@@ -448,15 +448,15 @@ class ChartApp(customtkinter.CTk):
             "azimuth": self.azimuth_entry.get(),
             "description": self.description_entry.get("1.0", "end"),
 
-            "freq_i": float(self.frequency_start_entry.get()) * 1e6,
-            "freq_f": float(self.frequency_stop_entry.get()) * 1e6,
+            "freq_i": self.freq_i * 1e6,
+            "freq_f": self.freq_f * 1e6,
             "df": 1.0,
             "scan_period": float(self.default_int_time),
             "total_time": 60,
             "veclength": 1024,
             "samp_rate": 2e6,
-            "int_length": float(self.integration_time_entry.get()),
-            "nint": int(self.integration_scans_entry.get()),
+            "int_length": float(self.int_length),
+            "nint": int(self.nint),
             "bias_t": self.bias_switch.get() == "on",
             "data_dir": self.data_directory or "./data"
         }
