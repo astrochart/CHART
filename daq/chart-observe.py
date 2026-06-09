@@ -45,7 +45,7 @@ class ObservationSession:
         self.cfg["int_length"] = int(config["int_length"])
         self.cfg["nint"] = int(config["nint"])
         self.cfg.setdefault("bias_t", False)
-        self.cfg["data_dir"] = os.path.join("./data",f"{self.cfg.get('observer', 'Unknown')}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')}")
+        self.cfg["data_dir"] = os.path.join(os.path.expanduser("~/data"),f"{self.cfg.get('observer', 'Unknown')}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')}")
         os.makedirs(self.cfg["data_dir"], exist_ok=True)
         self.log(f"Data directory is: {self.cfg['data_dir']}")
 
@@ -64,6 +64,7 @@ class ObservationSession:
         try:
             self.running = True
 
+            self.log(self.cfg["bias_t"])
             self.tb = chart.blocks.TopBlock(
                 c_freq=self.cfg["freq_i"],
                 veclength=self.cfg["veclength"],
@@ -80,7 +81,6 @@ class ObservationSession:
                 pass
 
             start = time.time()
-            scan_index = 0
 
             while self.running and (time.time() - start < self.cfg["total_time"]):
 
@@ -102,7 +102,6 @@ class ObservationSession:
 
                     self.tb.meta_save()
 
-                scan_index += 1
                 time.sleep(self.cfg["scan_period"])
 
             self.log("Observation complete")
@@ -122,9 +121,6 @@ class ChartApp(customtkinter.CTk):
         super().__init__()
 
         self.session = None
-    
-        self.data_directory = None
-        self.bias_t = False
         self.jupyter_proc = None
 
         self.default_freq_i = "1415"
@@ -411,8 +407,7 @@ class ChartApp(customtkinter.CTk):
             try:
                 self.freq_i = float(self.frequency_start_entry.get())
                 self.freq_f = float(self.frequency_stop_entry.get())
-                self.int_time = float(self.integration_time_entry.get())
-                self.int_length = int(int_time * 2e6 / 1024)
+                self.int_length = int(self.integration_time_entry.get()* 2e6 / 1024)
                 self.nint = int(self.integration_scans_entry.get())
             except ValueError:
                 messagebox.showerror(
@@ -467,8 +462,7 @@ class ChartApp(customtkinter.CTk):
             "samp_rate": 2e6,
             "int_length": int(self.int_length),
             "nint": int(self.nint),
-            "bias_t": self.bias_switch.get() == "on",
-            "data_dir": self.data_directory or "./data"
+            "bias_t": self.bias_switch.get() == "on"
         }
 
         self.session = ObservationSession(cfg, self.log)
