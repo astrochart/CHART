@@ -19,6 +19,8 @@ import sys
 
 class ObservationSession:
 
+    # this class will be rewritten and is here for testing
+
     def __init__(self, config, logger):
 
         self.log = logger
@@ -120,8 +122,8 @@ class ChartApp(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.session = None
-        self.jupyter_proc = None
+        self.session = None     # Data collection thread is stored here
+        self.jupyter_proc = None    # jupyter local subprocess
 
         self.default_freq_i = "1415"
         self.default_freq_f = "1425"
@@ -132,6 +134,8 @@ class ChartApp(customtkinter.CTk):
         self.buildWidgets()
 
     def buildWindow(self):
+
+        #builds main GUI window and captures when GUI is closed
 
         customtkinter.set_appearance_mode("light")
         customtkinter.set_default_color_theme("blue")
@@ -144,7 +148,9 @@ class ChartApp(customtkinter.CTk):
             self.onClose
         )
     
-    def buildWidgets(self):  #set up GUI and call widgets
+    def buildWidgets(self):  
+        
+        #set up GUI frames and widgets that are not inside the scroll frame
 
         self.mode_switch = customtkinter.CTkSwitch(self, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
         self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="NW")
@@ -160,8 +166,10 @@ class ChartApp(customtkinter.CTk):
         self.clock_label.grid(column=2, row=0, padx=2, pady=2, sticky="W")
         self.updateClock()
 
+        # defines what rows can expand
+        self.rowconfigure(0, weight=0)
         self.rowconfigure(2, weight=0)
-        self.rowconfigure(1, weight=1)   # defines what rows can expand
+        self.rowconfigure(1, weight=1) 
         self.rowconfigure(0, weight=0)
         self.columnconfigure(0, weight=1)
 
@@ -174,6 +182,7 @@ class ChartApp(customtkinter.CTk):
         self.terminal.grid(row=2, column=0, sticky="ew", padx=10, pady=(0,10))
         self.terminal.configure(state="disabled")
 
+        #widgets inside of the scroll frame is called with the following functions
         self.buildEntries()
         self.buildSwitches()
         self.buildButtons()
@@ -263,15 +272,23 @@ class ChartApp(customtkinter.CTk):
         self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=3, sticky="new")
     
     def log(self, message):
+
+        # adds log command to a loop to prevent application freezing as it waits for a log message
+
         self.after(0, self._log, message)
 
     def _log(self, message):
+
+        # logs message to "terminal" text box
+
         self.terminal.configure(state="normal")
         self.terminal.insert("end", f"{message}\n")
         self.terminal.see("end")
         self.terminal.configure(state="disabled")
 
     def submitTime(self):
+
+        # a command that will verify time values and set system date and time
 
         try:
             day = int(self.day_menu.get())
@@ -323,10 +340,13 @@ class ChartApp(customtkinter.CTk):
             self.updateClock()
 
     def openTimeWindow(self):
+
+        # a simple popup menu that will set system date and time using spinboxes and submittime() function
+
         self.popup = customtkinter.CTkToplevel(self)
         self.popup.title("System Date and Time")
         self.popup.geometry("240x200")
-        self.popup.columnconfigure(1, weight=1)
+        self.popup.columnconfigure(1, weight=1) #defines what columns can expand
         self.popup.columnconfigure(0, weight=1)
 
 
@@ -364,11 +384,14 @@ class ChartApp(customtkinter.CTk):
         self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime)
         self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2)
 
-        self.popup.wait_visibility()
-        self.popup.focus()
-        self.popup.grab_set()
+        self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
+        self.popup.focus() # brings popup in front of GUI
+        self.popup.grab_set() # freezes main GUI
 
     def updateClock(self):
+
+        # sets the clock label on the GUI to the current system time
+
         now = datetime.datetime.now()
 
         self.clock_label.configure(
@@ -377,6 +400,10 @@ class ChartApp(customtkinter.CTk):
         self.after(1000, self.updateClock)
     
     def enableDefaults(self):
+
+        # removes text in entrys and disables them
+        #!!! this function does not apply default parameters. That is controlled by startCollection function
+
         if self.default_switch.get() =="on":
 
             self.frequency_start_entry.delete(0, "end")
@@ -396,6 +423,11 @@ class ChartApp(customtkinter.CTk):
 
     
     def startCollection(self):
+
+        # checks for default switch and returns either default values or text in the entry boxes
+        # if default switch is off, data in the entry boxes is collected and is then checked to make sure its valid
+        # a cfg dictionary is then created along with the other entrys in the GUI.  !!! The other entries are checked in the observationSession class as typos are not critical. 
+        # The cfg is then passed to the observation session Class
 
         if self.default_switch.get() == "on":
             self.freq_i = float(self.default_freq_i)
@@ -469,6 +501,9 @@ class ChartApp(customtkinter.CTk):
         threading.Thread(target=self.session.run, daemon=True).start()
 
     def jupyter_local(self):
+
+        #starts a single jupyter server in a subprocess.
+
         if self.jupyter_proc is None or self.jupyter_proc.poll() is not None:
             self.jupyter_proc = subprocess.Popen(["jupyter", "notebook", "--notebook-dir=~"],)
             self.log("Local Jupyter server started!")
@@ -477,21 +512,31 @@ class ChartApp(customtkinter.CTk):
         webbrowser.open_new('https://radiolab.winona.edu/')
 
     def stopCollection(self):
+
+        #sends a command to stop data collection 
+
         if self.session:
             self.session.stop()
 
     def toggleDarkMode(self):
+
         if self.mode_switch.get() == "on":
             customtkinter.set_appearance_mode("Dark")
             self.log("DarkMode enabled!")
         else: customtkinter.set_appearance_mode("Light")
     
     def biasTwarn(self):
+
+        # displays a warning message if BiasT is enabled
+        # !!! This function does not enable BiasT. Instead the startCollection() function passes along the value for the switch, which is then enabled when the data collection is started.
+
         if self.bias_switch.get() == "on":
             messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
     
     def onClose(self):
-        # self.collector.stop()
+
+        # defines a safe shutdown procedure that closes all subprocesses before exiting the GUI
+
         if self.jupyter_proc is not None:
             self.jupyter_proc.terminate()
         self.destroy()
@@ -504,5 +549,4 @@ if __name__ == "__main__":
 
     app = ChartApp()
     app.mainloop()
-           
            
