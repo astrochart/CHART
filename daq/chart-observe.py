@@ -468,7 +468,7 @@ class ChartApp(customtkinter.CTk):
             daemon=True
         )
         self.session.start()
-        time.sleep(0.1)
+        time.sleep(0.2)    #wait for GNU Radio logs
         self.stopLogCapture()
         self.plotObservation()
 
@@ -492,6 +492,10 @@ class ChartApp(customtkinter.CTk):
         else:
             if not self.last_data_dir:
                 self.log("No observation data found.")
+                return
+            
+            if not glob.glob(os.path.join(self.last_data_dir, "*.dat")):
+                self.log("No data files found - skipping plot.")
                 return
 
             self.log("Creating plot with corrections...")

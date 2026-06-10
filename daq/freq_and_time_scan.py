@@ -140,15 +140,22 @@ def runObservation(cfg, logger=print, stop_event=None):
     if not os.path.isdir(cfg["data_dir"]): #checks that data directory exists
         raise FileNotFoundError(f"Data directory does not exist: {cfg['data_dir']}")
 
-    tb = chart.blocks.TopBlock(
-        c_freq=cfg["freq_i"],
-        veclength=cfg["veclength"],
-        samp_rate=cfg["samp_rate"],
-        int_length=cfg["int_length"],
-        nint=cfg["nint"],
-        bias=cfg["bias_t"],
-        data_dir=cfg["data_dir"],
-        metadata=cfg,)
+    try:
+        tb = chart.blocks.TopBlock(
+            c_freq=cfg["freq_i"],
+            veclength=cfg["veclength"],
+            samp_rate=cfg["samp_rate"],
+            int_length=cfg["int_length"],
+            nint=cfg["nint"],
+            bias=cfg["bias_t"],
+            data_dir=cfg["data_dir"],
+            metadata=cfg,)
+    
+    except Exception as e:
+
+        logger(f"SDR error: {e}\nStopping collection!!!")
+        raise
+    
 
     try:
         os.remove(tb.data_file)   #removes data file created when tb is created 
@@ -197,7 +204,7 @@ def runObservation(cfg, logger=print, stop_event=None):
 
 def main():
 
-    args = getCollectArgs()
+    args = collectArgs()
 
     cfg = buildConfig(args)
 
