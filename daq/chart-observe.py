@@ -8,114 +8,16 @@ import time
 import glob
 import shutil
 import webbrowser
-from tkinter import messagebox
 import re
 import threading
 import numpy as np
-import time
 import chart
 import sys
+import matplotlib.pyplot as plt
 
-
-class ObservationSession:
-
-    # this class will be rewritten and is here for testing
-
-    def __init__(self, config, logger):
-
-        self.log = logger
-        self.running = False
-        self.tb = None
-
-        self.cfg = config
-
-        self.cfg["observer"] = self.clean(config.get("observer", ""))
-        self.cfg["location"] = self.clean(config.get("location", ""))
-        self.cfg["latitude"] = self.clean(config.get("latitude", ""))
-        self.cfg["longitude"] = self.clean(config.get("longitude", ""))
-        self.cfg["altitude"] = self.clean(config.get("altitude", ""))
-        self.cfg["azimuth"] = self.clean(config.get("azimuth", ""))
-        self.cfg["description"] = self.clean(config.get("description", ""))
-
-        self.cfg["freq_i"] = float(config["freq_i"])
-        self.cfg["freq_f"] = float(config["freq_f"])
-        self.cfg["df"] = float(config["df"])
-        self.cfg["scan_period"] = float(config["scan_period"])
-        self.cfg["total_time"] = float(config["total_time"])
-        self.cfg["veclength"] = int(config["veclength"])
-        self.cfg["samp_rate"] = float(config["samp_rate"])
-        self.cfg["int_length"] = int(config["int_length"])
-        self.cfg["nint"] = int(config["nint"])
-        self.cfg.setdefault("bias_t", False)
-        self.cfg["data_dir"] = os.path.join(os.path.expanduser("~/data"),f"{self.cfg.get('observer', 'Unknown')}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')}")
-        os.makedirs(self.cfg["data_dir"], exist_ok=True)
-        self.log(f"Data directory is: {self.cfg['data_dir']}")
-
-    def clean(self, value):
-        if value is None:
-            return ""
-        return re.sub(r'[^A-Za-z0-9_-]', '', str(value))
-    
-    
-    def stop(self):
-        self.running = False
-
-    
-    def run(self):
-
-        try:
-            self.running = True
-
-            self.log(self.cfg["bias_t"])
-            self.tb = chart.blocks.TopBlock(
-                c_freq=self.cfg["freq_i"],
-                veclength=self.cfg["veclength"],
-                samp_rate=self.cfg["samp_rate"],
-                int_length=self.cfg["int_length"],
-                nint=self.cfg["nint"],
-                bias=self.cfg["bias_t"],
-                data_dir=self.cfg["data_dir"],
-                metadata=self.cfg
-            )
-            try:
-                os.remove(self.tb.data_file)
-            except FileNotFoundError:
-                pass
-
-            start = time.time()
-
-            while self.running and (time.time() - start < self.cfg["total_time"]):
-
-
-                for f in np.arange(self.cfg["freq_i"],
-                                self.cfg["freq_f"],
-                                self.cfg["df"]):
-
-                    if not self.running:
-                        break
-
-                    self.log(f"{f/1e6:.3f} MHz")
-
-                    self.tb.set_c_freq(f)
-                    self.tb.blocks_head_0.reset()
-                    self.tb.set_filename()
-                    self.tb.start()
-                    self.tb.wait()
-
-                    self.tb.meta_save()
-
-                time.sleep(self.cfg["scan_period"])
-
-            self.log("Observation complete")
-
-            if self.tb:
-                del self.tb
-        except Exception as e:
-            self.log(f"ERROR: {e}")
-            raise
-
-
-
+from tkinter import messagebox
+from argparse import Namespace
+from freq_and_time_scan import buildConfig, runObservation
 
 class ChartApp(customtkinter.CTk):
 
@@ -124,6 +26,13 @@ class ChartApp(customtkinter.CTk):
 
         self.session = None     # Data collection thread is stored here
         self.jupyter_proc = None    # jupyter local subprocess
+        self.last_data_dir = None   # stores last directory created for plotting function
+
+        #storage for stdout/stderr pipe required to capture GNU radio messages 
+        self._log_pipe_r = None
+        self._log_pipe_w = None
+        self._stdout_saved = None
+        self._stderr_saved = None
 
         self.default_freq_i = "1415"
         self.default_freq_f = "1425"
@@ -429,17 +338,23 @@ class ChartApp(customtkinter.CTk):
         # a cfg dictionary is then created along with the other entrys in the GUI.  !!! The other entries are checked in the observationSession class as typos are not critical. 
         # The cfg is then passed to the observation session Class
 
+        if self.session and self.session.is_alive():
+            messagebox.showwarning(
+                "Observation Running",
+                "Stop the current observation before starting another.")
+            return
+
         if self.default_switch.get() == "on":
             self.freq_i = float(self.default_freq_i)
             self.freq_f = float(self.default_freq_f)
-            self.int_length = int(self.default_int_time) * 2e6 /1024
+            self.int_time = float(self.default_int_time)
             self.nint = int(self.default_nint)
             
         else:
             try:
                 self.freq_i = float(self.frequency_start_entry.get())
                 self.freq_f = float(self.frequency_stop_entry.get())
-                self.int_length = int(self.integration_time_entry.get()* 2e6 / 1024)
+                self.int_time = float(self.integration_time_entry.get())
                 self.nint = int(self.integration_scans_entry.get())
             except ValueError:
                 messagebox.showerror(
@@ -462,7 +377,7 @@ class ChartApp(customtkinter.CTk):
                 )
                 return
 
-            if self.int_length <= 0:
+            if self.int_time <= 0:
                 messagebox.showerror(
                     "Invalid Integration Time",
                     "Integration time must be greater than zero."
@@ -475,30 +390,182 @@ class ChartApp(customtkinter.CTk):
                     "Integrations per scan must be greater than zero."
                 )
                 return
+        try:
 
-        cfg = {
-            "observer": self.observer_name_entry.get(),
-            "location": self.location_entry.get(),
-            "latitude": self.latitude_entry.get(),
-            "longitude": self.longitude_entry.get(),
-            "altitude": self.altitude_entry.get(),
-            "azimuth": self.azimuth_entry.get(),
-            "description": self.description_entry.get("1.0", "end"),
+            latitude = (
+                float(self.latitude_entry.get())
+                if self.latitude_entry.get().strip()
+                else None
+            )
 
-            "freq_i": self.freq_i * 1e6,
-            "freq_f": self.freq_f * 1e6,
-            "df": 1e6,
-            "scan_period": 3600*0.001,
-            "total_time": 3600*0.001,
-            "veclength": 1024,
-            "samp_rate": 2e6,
-            "int_length": int(self.int_length),
-            "nint": int(self.nint),
-            "bias_t": self.bias_switch.get() == "on"
-        }
+            longitude = (
+                float(self.longitude_entry.get())
+                if self.longitude_entry.get().strip()
+                else None
+            )
 
-        self.session = ObservationSession(cfg, self.log)
-        threading.Thread(target=self.session.run, daemon=True).start()
+            altitude = (
+                float(self.altitude_entry.get())
+                if self.altitude_entry.get().strip()
+                else None
+            )
+
+            azimuth = (
+                float(self.azimuth_entry.get())
+                if self.azimuth_entry.get().strip()
+                else None
+            )
+
+        except ValueError:
+
+            messagebox.showerror(
+                "Invalid data",
+                "Latitude, longitude, altitude, and azimuth must be numeric."
+            )
+            return
+
+        args = Namespace(
+            observer=self.observer_name_entry.get(),
+            location=self.location_entry.get(),
+            latitude=latitude,
+            longitude=longitude,
+            altitude=altitude,
+            azimuth=azimuth,
+            description=self.description_entry.get("1.0", "end").strip(),
+
+            freq_i=self.freq_i,
+            freq_f=self.freq_f,
+
+            df=1.0,
+
+            veclength=1024,
+            samp_rate=2.0,
+
+            #int_length=100, #ignored when int_time is supplied
+            int_time=self.int_time,
+
+            nint=self.nint,
+
+            biasT=self.bias_switch.get() == "on",
+
+            data_dir=None,
+
+            sleep_time=5.0,
+
+            #causes a single sweep, ignore
+            scan_period=0.001,
+            total_time=0.001
+        )
+
+
+        self.startLogCapture()
+        cfg = buildConfig(args, self.log)
+        self.last_data_dir = cfg["data_dir"]
+        self.stop_event = threading.Event()
+        self.session = threading.Thread(
+            target=runObservation,
+            args=(cfg, self.log, self.stop_event),
+            daemon=True
+        )
+        self.session.start()
+        time.sleep(0.1)
+        self.stopLogCapture()
+        self.plotObservation()
+
+    def stopCollection(self):
+
+        #sends a command to stop data collection 
+
+        if self.stop_event:
+            self.stop_event.set()
+
+        self.log("Stopping observation...\nWaiting for current frequency scan to finish...")
+
+    def plotObservation(self):
+
+        if self.session is None:
+            return
+        
+        if self.session.is_alive():
+            self.after(1000, self.plotObservation)
+
+        else:
+            if not self.last_data_dir:
+                self.log("No observation data found.")
+                return
+
+            self.log("Creating plot with corrections...")
+
+            d, m = chart.analysis.read_run(directory=self.last_data_dir)
+
+            d = np.array(d)
+
+            nchans = m[0]["vector_length"]
+
+            levels = np.median(
+                d[:, :, nchans // 4:(-nchans // 4)],
+                axis=(1, 2)
+            )
+
+            rescaled = d / levels.reshape(-1, 1, 1)
+
+            bp = np.median(rescaled, axis=(0, 1))
+
+            spectra = []
+            freqs = []
+
+            nremove = nchans // 16
+
+            for scan_data, metadata in zip(d, m):
+
+                spectrum = np.mean(scan_data, axis=0) / bp
+                spectrum = 10 * np.log10(spectrum)
+
+                spectrum = spectrum[nremove:-nremove]
+
+                frequencies = (
+                    (np.arange(metadata["vector_length"])
+                    - metadata["vector_length"] / 2)
+                    * metadata["samp_rate"]
+                    / metadata["vector_length"]
+                    + metadata["frequency"]
+                )
+
+                frequencies = 1e-9 * frequencies[nremove:-nremove]
+
+                spectra.append(spectrum)
+                freqs.append(frequencies)
+
+            for k in range(len(spectra) - 1):
+
+                spec1 = spectra[k]
+                spec2 = spectra[k + 1]
+
+                freq1 = freqs[k]
+                freq2 = freqs[k + 1]
+
+                ncommon = np.sum([1 if f in freq2 else 0 for f in freq1])
+
+                if ncommon > 0:
+                    spec2 += (
+                        np.median(spec1[-ncommon:])
+                        - np.median(spec2[:ncommon])
+                    )
+
+                    spectra[k + 1] = spec2
+
+            plt.figure(figsize=(8, 4))
+
+            for f, s in zip(freqs, spectra):
+                plt.plot(f, s)
+
+            plt.xlabel("Frequency [GHz]")
+            plt.ylabel("[dB]")
+            plt.title(os.path.basename(self.last_data_dir))
+
+            plt.tight_layout()
+            plt.show()
+
 
     def jupyter_local(self):
 
@@ -510,13 +577,8 @@ class ChartApp(customtkinter.CTk):
 
     def jupyter_upload(self):
         webbrowser.open_new('https://radiolab.winona.edu/')
+        self.plot_observation()
 
-    def stopCollection(self):
-
-        #sends a command to stop data collection 
-
-        if self.session:
-            self.session.stop()
 
     def toggleDarkMode(self):
 
@@ -541,8 +603,37 @@ class ChartApp(customtkinter.CTk):
             self.jupyter_proc.terminate()
         self.destroy()
 
+    def startLogCapture(self):
+        self._log_pipe_r, self._log_pipe_w = os.pipe()
 
+        self._stdout_saved = os.dup(1)
+        self._stderr_saved = os.dup(2)
 
+        os.dup2(self._log_pipe_w, 1)
+        os.dup2(self._log_pipe_w, 2)
+
+        os.close(self._log_pipe_w)
+
+        def reader():
+            while True:
+                data = os.read(self._log_pipe_r, 4096)
+                if not data:
+                    break
+                for line in data.decode(errors="ignore").splitlines():
+                    self.log(line)
+
+        threading.Thread(target=reader, daemon=True).start()
+    
+    def stopLogCapture(self):
+        if self._stdout_saved is None:
+            return
+
+        os.dup2(self._stdout_saved, 1)
+        os.dup2(self._stderr_saved, 2)
+
+        os.close(self._stdout_saved)
+        os.close(self._stderr_saved)
+    
 
 
 if __name__ == "__main__":

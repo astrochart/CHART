@@ -21,6 +21,7 @@ class meta_trig_py_ff(gr.sync_block):
                                in_sig=[(np.float32, self.veclength)],
                                out_sig=[(np.float32, self.veclength)])
 
+
     def work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
@@ -32,12 +33,11 @@ class meta_trig_py_ff(gr.sync_block):
     def get_times(self):
         return self.times
 
-
 class TopBlock(gr.top_block):
     """Class to collect RTL data and metadata."""
 
     def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
-                 nint=100, bias=False, data_dir=None, metadata=None ):
+                 nint=100, bias=False, data_dir=None, metadata=None):
 
         """Initialize the collect top block.    
         Parameters

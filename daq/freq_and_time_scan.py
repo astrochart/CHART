@@ -1,114 +1,207 @@
-#!/usr/bin/env python2
-import chart
-import time
-import numpy as np
+#!/usr/bin/env python3
+
 import argparse
 import os
+import time
 import warnings
+import datetime
 
+import numpy as np
+import chart
+import sys
 
 def str2bool(v):
-    # Quick helper function to allow flexible boolean cmd args
     if isinstance(v, bool):
         return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+
+    if v.lower() in ("yes", "true", "t", "y", "1"):
         return True
-    elif v.lower() in ('no', 'false','f', 'n', '0'):
+
+    if v.lower() in ("no", "false", "f", "n", "0"):
         return False
+
+    raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
+def collectArgs():
+
+    ap = argparse.ArgumentParser(prog="freq_and_time_scan.py", description="CHART data collection utility", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+
+    # long time observation settings
+    ap.add_argument("--scan_period", default=0.001, type=float, help="Time between scans in hours. Low values causes a single scan")
+    ap.add_argument("--total_time", default=0.001, type=float, help="Total observation time in hours. Low values causes a single scan")
+
+    # frequency settings
+    ap.add_argument("--freq_i", default=1410.0, type=float, help="Starting frequency (MHz)")
+    ap.add_argument("--freq_f", default=1430.0, type=float, help="Ending frequency (MHz)")
+    ap.add_argument("--df", default=1.0, type=float, help="Frequency step size (MHz)")
+
+    # radio settings
+    ap.add_argument("--veclength", default=1024, type=int, help="Number of channels for spectrum estimation")
+    ap.add_argument("--samp_rate", default=2.0,type=float,help="Sample rate (MHz)")
+    ap.add_argument("--int_length", default=100, type=int, help="Number of samples per integration")
+    ap.add_argument("--int_time", type=float, help="Integration time in seconds. Overrides int_length.")
+    ap.add_argument("--nint", default=500, type=int, help="Number of Integrations per file")
+    ap.add_argument("--data_dir", default=None, type=str, help="Output directory")
+    ap.add_argument("--sleep_time", default=5.0, type=float, help="Time between checks for next scan time, in seconds.")
+    ap.add_argument("--biasT", default=False, type=str2bool, nargs="?", const=True, help="Enable Bias-T power")
+
+    # metadata
+    ap.add_argument("--observer", default="")
+    ap.add_argument("--location", default="")
+    ap.add_argument("--latitude", type=float, default=None)
+    ap.add_argument("--longitude", type=float, default=None)
+    ap.add_argument("--altitude", type=float, default=None)
+    ap.add_argument("--azimuth", type=float, default=None)
+    ap.add_argument("--description", default="")
+
+    return ap.parse_args()
+
+def buildConfig(args, logger=print):
+
+    #builds a cfg dictionary from arguments
+    #logging is included for CHART GUI
+
+    if args.data_dir is None: #default for CHART GUI
+
+        observer = args.observer.strip().replace(" ", "_")
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M") #current time
+
+        data_dir = os.path.join(os.path.expanduser("~/data"), f"{observer}_{timestamp}")
+        logger(f"Data directory: {data_dir}")
+
     else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+        data_dir = os.path.expanduser(args.data_dir)
+        logger(f"Data directory: {data_dir}")
 
-def get_collect_args():
-    """Get an argument parser for the collect script."""
-    ap = argparse.ArgumentParser()
-    ap.prog = "Collect.py"
+    try: 
+        os.makedirs(data_dir)        #makes data directory and checks for errors 
+    
+    except FileExistsError:
+        logger(f"Data directory already exists: {data_dir}")
+        raise
+    
+    except OSError as e:
+        logger(f"Could not create data directory: {e} \nCheck for write permissions or for illegal characters in observer name!!! ")
+        raise 
 
-    ap.add_argument('--scan_period', default=0.001, type=float, help='Time '
-                    'between a scan and the next, in hours. Default is 0.001, '
-                    'which with the default `total_time` will result in a single scan.')
-    ap.add_argument('--total_time', default=0.001, type=float,
-                    help='Total time for all scans, in hours. Default is .001, '
-                    'which is used for a single scan.')
-    ap.add_argument('--freq_i', default=1410., type=float, help='Starting frequency, '
-                    'in MHz. Default is 1410.')
-    ap.add_argument('--freq_f', default=1430., type=float, help='Ending frequency, '
-                    'in MHz. Default is 1430.')
-    ap.add_argument('--df', default=1., type=float, help='Frequency tuning step '
-                    'size, in MHz. Default is 1.')
-    ap.add_argument('--sleep_time', default=5., type=float, help='Sleep time '
-                    'between checks for next scan time, in seconds. Default is 5.')
-    ap.add_argument('--veclength', default=1024, type=int, help='Vector length '
-                    '(number of channels) for spectrum estimation. Default is 1024.')
-    ap.add_argument('--samp_rate', default=2., type=float, help='Sample rate '
-                    'of the radio, in MHz. Default is 2.')
-    ap.add_argument('--int_length', default=100, type=int, help='Number of samples '
-                    'per integration. Default is 100.')
-    ap.add_argument('--int_time', type=float, help='Integration time, in seconds.'
-                    ' Overrides the --int_length argument.')
-    ap.add_argument('--nint', default=500, type=int, help='Number of integrations '
-                    'per file. Default is 500.')
-    ap.add_argument('--data_dir', default=None, type=str, help='Data directory. '
-                    'Defaults to current working directory.')
-    ap.add_argument('--biasT', default=False, type=str2bool,
-                    nargs='?', const=True, help='biasT state. '
-                    'Change to True to turn on biasT power. '
-                    'Defaults to False.')
+    # Caclulations for integration length
+    if args.int_time is not None:
 
-    args = ap.parse_args()
-    # Convert some units for internal use
-    args.scan_period *= 3600
-    args.total_time *= 3600
-    args.freq_i *= 1e6
-    args.freq_f *= 1e6
-    args.df *= 1e6
-    args.samp_rate *= 1e6
-    # Do a quick check on the data directory
-    if args.data_dir is None:
-        args.data_dir = os.getcwd()
+        int_length = int(args.int_time * (args.samp_rate * 1e6) / args.veclength)
+        actual_time = (args.veclength /(args.samp_rate * 1e6)) * int_length
+
+        logger(f"Requested integration time: {args.int_time:.3f} s")
+        logger(f"Actual integration time: {actual_time:.3f} s")
+
     else:
-        args.data_dir = os.path.expanduser(args.data_dir)
-    if not os.path.isdir(args.data_dir):
-        bad_dir = args.data_dir
-        args.data_dir = os.getcwd()
-        warnings.warn(bad_dir + 'Data directory not valid, using cwd = ' + args.data_dir)
+        int_length = args.int_length
+        actual_time = (args.veclength / (args.samp_rate * 1e6)) * int_length
 
-    return args
+        logger(f"Integration time: {actual_time:.3f} s")
+
+    cfg = {
+
+        # metadata
+        "observer": args.observer,
+        "location": args.location,
+        "latitude": args.latitude,
+        "longitude": args.longitude,
+        "altitude": args.altitude,
+        "azimuth": args.azimuth,
+        "description": args.description,
+
+        # radio
+        "freq_i": args.freq_i * 1e6,
+        "freq_f": args.freq_f * 1e6,
+        "df": args.df * 1e6,
+
+        "scan_period": args.scan_period * 3600,
+        "total_time": args.total_time * 3600,
+        "sleep_time": args.sleep_time,
+
+        "veclength": args.veclength,
+        "samp_rate": args.samp_rate * 1e6,
+        "int_length": int_length,
+        "nint": args.nint,
+
+        "bias_t": args.biasT,
+        "data_dir": data_dir,
+    }
+
+    return cfg
+
+
+def runObservation(cfg, logger=print, stop_event=None):
+
+    #builds top block and runs data  collection
+
+    if not os.path.isdir(cfg["data_dir"]): #checks that data directory exists
+        raise FileNotFoundError(f"Data directory does not exist: {cfg['data_dir']}")
+
+    tb = chart.blocks.TopBlock(
+        c_freq=cfg["freq_i"],
+        veclength=cfg["veclength"],
+        samp_rate=cfg["samp_rate"],
+        int_length=cfg["int_length"],
+        nint=cfg["nint"],
+        bias=cfg["bias_t"],
+        data_dir=cfg["data_dir"],
+        metadata=cfg,)
+
+    try:
+        os.remove(tb.data_file)   #removes data file created when tb is created 
+    except FileNotFoundError:
+        pass
+
+    start_time = time.time()
+
+    while (time.time() - start_time < cfg["total_time"]): # only for long time observations
+        
+        if stop_event and stop_event.is_set():
+            del tb
+            logger("Observation Halted!!")
+            return
+
+        for freq in np.arange(      #loops through each frequency step
+            cfg["freq_i"],
+            cfg["freq_f"],
+            cfg["df"]
+        ):
+
+            if stop_event and stop_event.is_set():
+                del tb
+                logger("Observation Halted!!")
+                return
+
+            logger(
+                f"Frequency: {freq / 1e6:.3f} MHz"
+            )
+
+            tb.set_c_freq(freq)
+
+            tb.blocks_head_0.reset()
+
+            tb.set_filename()
+
+            tb.start()
+            tb.wait()
+
+            tb.meta_save()
+
+        time.sleep(cfg["scan_period"])      # only for long time observations
+    logger("Observation Complete")
+    del tb
 
 
 def main():
-    """Create a topblock and loop over frequencies and scans."""
-    args = get_collect_args()
-    if args.int_time is None:
-        int_time = args.veclength / args.samp_rate * args.int_length
-        print('int_length set to ' + str(args.int_length) + ' which corresonds'
-              'to integration time of ' + str(int_time) + ' seconds.')
-    else:
-        args.int_length = int(args.int_time * args.samp_rate / args.veclength)
-        int_time = args.veclength / args.samp_rate * args.int_length
-        print('int_time set to ' + str(args.int_time) + ' seconds. Using '
-              'int_length of ' + str(args.int_length) + '. Actual integraton '
-              'time is ' + str(int_time) + ' seconds.')
-    tb = chart.blocks.TopBlock(c_freq=args.freq_i, veclength=args.veclength,
-                               samp_rate=args.samp_rate, int_length=args.int_length,
-                               nint=args.nint, bias=args.biasT, data_dir=args.data_dir)
-    scan_number = 0  # used as scan counter
-    t0 = time.time()
-    # Remove the empty file that was created when instantiating top block
-    os.remove(tb.data_file)
-    while time.time() - t0 < args.total_time:
-        for c_freq in np.arange(args.freq_i, args.freq_f, args.df):
-            print('Frequency: ' + str(c_freq / 10**6) + ' MHz')
-            tb.set_c_freq(c_freq)
-            tb.blocks_head_0.reset()
-            tb.set_filename()
-            tb.start()
-            tb.wait()
-            tb.meta_save()
-        scan_number += 1
-        while time.time() < t0 + scan_number * args.scan_period:
-            time.sleep(args.sleep_time)  # Sleep before trying again
-    del(tb)
 
+    args = getCollectArgs()
 
-if __name__ == '__main__':
+    cfg = buildConfig(args)
+
+    runObservation(cfg)
+
+if __name__ == "__main__":
     main()
