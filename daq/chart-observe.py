@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
+from chart.azalt import pointing, azalt, gps
 
 class ChartApp(customtkinter.CTk):
 
@@ -58,21 +59,34 @@ class ChartApp(customtkinter.CTk):
         )
     
     def buildWidgets(self):  
-        
         #set up GUI frames and widgets that are not inside the scroll frame
 
-        self.mode_switch = customtkinter.CTkSwitch(self, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
-        self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="NW")
-
-        self.time_button = customtkinter.CTkButton(self, text="Set System DateTime", command=self.openTimeWindow)
-        self.time_button.grid(column=0, row=0, padx=10, pady=2, sticky="N")
-
-        self.clock_frame = customtkinter.CTkFrame(self, fg_color="transparent")
-        self.clock_frame.grid(column=0, row=0, padx=2, pady=2, sticky="NE")
+        # Top bar spanning the full width — its own 3-column grid keeps these
+        # from piling into one cell, and isolates this layout from the body.
+        self.top_bar = customtkinter.CTkFrame(self, fg_color="transparent")
+        self.top_bar.grid(column=0, row=0, padx=5, pady=2, sticky="ew")
+        self.top_bar.grid_columnconfigure(0, weight=1)   # left  (switch)
+        self.top_bar.grid_columnconfigure(1, weight=1)   # center (buttons)
+        self.top_bar.grid_columnconfigure(2, weight=1)   # right (clock)
+        
+        self.mode_switch = customtkinter.CTkSwitch(self.top_bar, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
+        self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="w")
+        
+        self.button_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
+        self.button_frame.grid(column=1, row=0, pady=2)   # centered in its column
+        
+        self.pointing_button = customtkinter.CTkButton(self.button_frame, text="Pointing Calculator", width=160, command=self.openPointingCalculator, hover_color = "purple")
+        self.pointing_button.grid(column=0, row=0, padx=5)
+        
+        self.time_button = customtkinter.CTkButton(self.button_frame, text="Set System DateTime", width=160, command=self.openTimeWindow)
+        self.time_button.grid(column=1, row=0, padx=5)
+        
+        self.clock_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
+        self.clock_frame.grid(column=2, row=0, padx=2, pady=2, sticky="e")
         self.clock_label_description = customtkinter.CTkLabel(self.clock_frame, text="Observation Time: ")
-        self.clock_label_description.grid(column=0, row=0, padx=2, pady=2, sticky="E")
+        self.clock_label_description.grid(column=0, row=0, padx=2, pady=2, sticky="e")
         self.clock_label = customtkinter.CTkLabel(self.clock_frame, text="")
-        self.clock_label.grid(column=2, row=0, padx=2, pady=2, sticky="W")
+        self.clock_label.grid(column=1, row=0, padx=2, pady=2, sticky="w")
         self.updateClock()
 
         # defines what rows can expand
@@ -134,6 +148,13 @@ class ChartApp(customtkinter.CTk):
         self.description_label.grid(column=0, row=7, padx=10, pady=5, sticky="sew")
         self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=50)
         self.description_entry.grid(column=0, row=8, padx=10, pady=5, sticky="news", columnspan=2, rowspan=2)
+
+
+        #adding in a real time moniter of lat and long for the pointing calculator, this will auto input the lat and long from the main menu to the pointing calculator menu
+        for _coord_entry in (self.latitude_entry, self.longitude_entry):
+            _coord_entry.bind("<KeyRelease>", self.syncPointingCoords)
+            _coord_entry.bind("<FocusOut>", self.syncPointingCoords)
+            #sync pointing coords is defined above the open pointing calculator definition
 
 
         #right side
@@ -296,6 +317,149 @@ class ChartApp(customtkinter.CTk):
         self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
         self.popup.focus() # brings popup in front of GUI
         self.popup.grab_set() # freezes main GUI
+
+    def syncPointingCoords(self, event=None):
+        for source, i in ((self.latitude_entry, "pointing_latitude_entry"),(self.longitude_entry, "pointing_longitude_entry"),):
+            target = getattr(self, i, None)
+            if target is not None and target.winfo_exists():
+                target.delete(0, "end")
+                target.insert(0, source.get())
+    
+    def openPointingCalculator(self):
+    
+        self.window = customtkinter.CTkToplevel(self)
+        self.window.title("Pointing Calculator")
+        self.window.geometry("500x500")
+    
+        self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260)
+        self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
+    
+        # === Row 0-1: Lat-Long ===#
+        #Will automatically pull the lat and long from the main window if theyre filled in
+
+        existing_lat = self.latitude_entry.get()
+
+        self.latitude_label = customtkinter.CTkLabel(self.scroll, text = "Latitude:", justify = "left")
+        self.latitude_label.grid(row = 0, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.pointing_latitude_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 40.7128", width = 180)
+        self.pointing_latitude_entry.grid(row = 1, column = 0, sticky = "w", padx = 10, pady = 5)
+        if existing_lat:                                            # only if non-blank
+            self.pointing_latitude_entry.insert(0, existing_lat)
+
+
+        existing_long = self.longitude_entry.get()
+
+        self.longitude_label = customtkinter.CTkLabel(self.scroll, text = "Longitude:", justify = "left")
+        self.longitude_label.grid(row = 0, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.pointing_longitude_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: -74.0060", width = 180)
+        self.pointing_longitude_entry.grid(row = 1, column = 1, sticky = "w", padx = 10, pady = 5)
+        if existing_long:                                            # only if non-blank
+            self.pointing_longitude_entry.insert(0, existing_long)
+    
+
+        # === Row 2-3 increments ===#
+        self.latitude_increment_label = customtkinter.CTkLabel(
+            self.scroll, text="Galactic Latitude Spacing (b)\n(Degrees between points):", justify = "left")
+        self.latitude_increment_label.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.latitude_increment_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 10", width = 180)
+        self.latitude_increment_entry.grid(row = 3, column = 0, sticky = "w", padx = 10, pady = 5)
+    
+        self.longitude_increment_label = customtkinter.CTkLabel(
+            self.scroll, text="Galactic Longitude Spacing (l)\n(Degrees between points):", justify = "left")
+        self.longitude_increment_label.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.longitude_increment_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 10", width = 180)
+        self.longitude_increment_entry.grid(row = 3, column = 1, sticky = "w", padx = 10, pady = 5)
+    
+        # === Row 4-5 Num_points and Delay ===#
+        self.num_points_label = customtkinter.CTkLabel(self.scroll, text = "Number of Data Points:", justify = "left")
+        self.num_points_label.grid(row = 4, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.num_points_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 5", width = 180)
+        self.num_points_entry.grid(row = 5, column = 0, sticky = "w", padx = 10, pady = 5)
+    
+        self.delay_label = customtkinter.CTkLabel(self.scroll, text = "Minutes until first point:", justify = "left")
+        self.delay_label.grid(row = 4, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.delay_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 2 for 2 minutes", width = 180)
+        self.delay_entry.grid(row = 5, column = 1, sticky = "w", padx = 10, pady = 5)
+    
+        # === Row 6: Calculate button (this was missing entirely) ===#
+        self.calculate_button = customtkinter.CTkButton(self.scroll, text="Calculate", command=self.calculate, width = 180, hover_color = "dark blue")
+        self.calculate_button.grid(row = 6, column = 0, padx = 10, pady = 5)
+
+        self.advanced_button = customtkinter.CTkButton(self.scroll, text="Advanced Pointing", command=self.advancedPointing, width = 180, fg_color = "purple", hover_color = "red")
+        self.advanced_button.grid(row = 6, column = 1,  padx = 10, pady = 5)
+    
+        # === Box where the AzAlt text goes ===#
+        self.AzAlt_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
+        self.AzAlt_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+
+    def advancedPointing(self):
+        self.window = customtkinter.CTkToplevel(self)
+        self.window.title("Advanced Pointing")
+        self.window.geometry("500x500")
+    
+        self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260)
+        self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
+
+        #=== GPS Finder ===#
+        self.geolocator_label = customtkinter.CTkLabel(self.scroll, text = "Find your location on GPS\nOnly try if on wifi", justify = "left")
+        self.geolocator_label.grid(row = 1, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.geolocator_label_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: New York City, New York", width = 180)
+        self.geolocator_label_entry.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        Geo_button = customtkinter.CTkButton(self.scroll, text = "FIND ME", command = self.gpsLocator)
+        Geo_button.grid(row = 3, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+
+
+        
+        self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
+        self.Advanced_pointing_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+
+    def gpsLocator(self):
+        try:
+            lat, long = gps(self.geolocator_label_entry.get())
+            text = f"Latitude: {lat}\nLongitude: {long}"
+        except Exception as e:
+            text = str(e)
+        self.Advanced_pointing_box.configure(state = "normal")
+        self.Advanced_pointing_box.delete("0.0", "end")
+        self.Advanced_pointing_box.insert("0.0", text)   
+        self.Advanced_pointing_box.configure(state = "disabled")
+
+    def calculate(self):
+        try:
+            now = datetime.datetime.now()
+
+            self.results = pointing(
+                latitude = float(self.latitude_entry.get()),
+                longitude = float(self.longitude_entry.get()),
+                year = now.year,
+                month = now.month,
+                day = now.day,
+                hour = now.hour,
+                minute = now.minute,
+                delay = float(self.delay_entry.get()),
+                num_points = int(self.num_points_entry.get()),
+                lat_increment = float(self.latitude_increment_entry.get()),
+                long_increment = float(self.longitude_increment_entry.get()),
+            )
+        
+            self.AzAlt = azalt(self.results)
+            
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", self.AzAlt)   
+            self.AzAlt_box.configure(state = "disabled")
+        except ValueError as e:
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", f"Input error: {e}\nCheck that all fields are filled and formatted like the examples.")
+            self.AzAlt_box.configure(state = "disabled")
+        except Exception as e:
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", f"Calculation error: {e}")
+            self.AzAlt_box.configure(state = "disabled")
+
 
     def updateClock(self):
 

@@ -26,7 +26,9 @@ setup_args = {
         'matplotlib',
         'pandas',
         'ipywidgets',
-        'scipy'
+        'scipy',
+        'timezonefinder',
+        'geopy'
     ],
 }
 
