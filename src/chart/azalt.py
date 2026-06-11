@@ -23,8 +23,8 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
     latitude, longitude = float(latitude), float(longitude)
 
 
-    long_span = long_increment * num_points
-    lat_span = lat_increment * num_points
+    long_span = abs(long_increment) * num_points
+    lat_span = abs(lat_increment) * num_points
     
     if long_span > 360:
         raise ValueError(f"Longitude spans {long_span}° which is greater than 360°. \nPlease change the number of points or the Longitude spacing\n")
