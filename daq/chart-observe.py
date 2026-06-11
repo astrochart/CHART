@@ -98,12 +98,12 @@ class ChartApp(customtkinter.CTk):
         self.rowconfigure(0, weight=0)
         self.columnconfigure(0, weight=1)
 
-        self.scroll_frame = customtkinter.CTkScrollableFrame(self)
+        self.scroll_frame = customtkinter.CTkScrollableFrame(self, corner_radius=0)
         self.scroll_frame.grid(column=0, row=1, padx=10, pady=0, sticky="nsew")
         self.scroll_frame.columnconfigure(1, weight=1)
         self.scroll_frame.columnconfigure(3, weight=1)
 
-        self.terminal = customtkinter.CTkTextbox(self, height=80)
+        self.terminal = customtkinter.CTkTextbox(self, height=80, corner_radius=0, border_width=3, border_color="gray")
         self.terminal.grid(row=2, column=0, sticky="ew", padx=10, pady=(0,10))
         self.terminal.configure(state="disabled")
 
@@ -119,30 +119,30 @@ class ChartApp(customtkinter.CTk):
 
         #left side
         #frame for saved settings
-        self.saved_settings_frame = customtkinter.CTkFrame(self.scroll_frame, border_color="gray", border_width=2, corner_radius=0)
-        self.saved_settings_frame.grid(column=0, row=0, padx=1, pady=10, rowspan=6, columnspan=2, sticky="NEWS")
+        self.saved_settings_frame = customtkinter.CTkFrame(self.scroll_frame, border_color="gray", border_width=3, corner_radius=0)
+        self.saved_settings_frame.grid(column=0, row=0, padx=5, pady=10, rowspan=6, columnspan=2, sticky="NEWS")
         self.saved_settings_frame.columnconfigure(0, weight=1)
         self.saved_settings_frame.columnconfigure(1, weight=1)
 
         self.observer_name_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Observer Name")
-        self.observer_name_label.grid(column=0, row=0, padx=10, pady=5)
+        self.observer_name_label.grid(column=0, row=0, padx=10, pady=7)
         self.observer_name_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
-        self.observer_name_entry.grid(column=1, row=0, padx=10, pady=5, sticky="ew")
+        self.observer_name_entry.grid(column=1, row=0, padx=10, pady=(10,7), sticky="sew")
 
         self.location_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Location")
-        self.location_label.grid(column=0, row=1, padx=10, pady=5, sticky="n")
+        self.location_label.grid(column=0, row=1, padx=10, pady=0, sticky="n")
         self.location_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="e.g.: Winona, Minnesota", corner_radius=0)
-        self.location_entry.grid(column=1, row=1, padx=10, pady=5, sticky="nwe")
+        self.location_entry.grid(column=1, row=1, padx=10, pady=0, sticky="nwe")
 
         self.latitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Latitude")
-        self.latitude_label.grid(column=0, row=3, padx=10, pady=5)
+        self.latitude_label.grid(column=0, row=3, padx=10, pady=7)
         self.latitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
-        self.latitude_entry.grid(column=1, row=3, padx=10, pady=5, sticky="ew")
+        self.latitude_entry.grid(column=1, row=3, padx=10, pady=7, sticky="ew")
 
         self.longitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Longitude")
-        self.longitude_label.grid(column=0, row=4, padx=10, pady=5, sticky="n")
+        self.longitude_label.grid(column=0, row=4, padx=10, pady=0, sticky="n")
         self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
-        self.longitude_entry.grid(column=1, row=4, padx=10, pady=5, sticky="nwe")
+        self.longitude_entry.grid(column=1, row=4, padx=10, pady=(0,5), sticky="nwe")
 
 
 
@@ -171,26 +171,26 @@ class ChartApp(customtkinter.CTk):
 
 
         #right side
-        self.frequency_label = customtkinter.CTkLabel(self.scroll_frame, text="Frequency Scan Setup")
-        self.frequency_label.grid(column=2, row=0, padx=10, pady=5, sticky="we")
+        self.frequency_label = customtkinter.CTkLabel(self.scroll_frame, text="Frequency Scan Setup", font=("Arial", 18, "bold")   )
+        self.frequency_label.grid(column=2, row=0, padx=10, pady=5, sticky="we", columnspan=2)
 
-        self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="Start Frequency (MHz)")
-        self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5)
+        self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="      Start Frequency (MHz)")
+        self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5, sticky="w")
         self.frequency_start_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1415", corner_radius=0)
         self.frequency_start_entry.grid(column=3, row=3, padx=10, pady=5, sticky="ew")
 
-        self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="Stop Frequency (MHz)")
-        self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="n")
+        self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="      Stop Frequency (MHz)")
+        self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="wn")
         self.frequency_stop_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1425", corner_radius=0)
         self.frequency_stop_entry.grid(column=3, row=4, padx=10, pady=5, sticky="nwe")
 
-        self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="Integration time (s)")
-        self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="n")
+        self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="      Integration time (s)")
+        self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="wn")
         self.integration_time_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="5", corner_radius=0)
         self.integration_time_entry.grid(column=3, row=5, padx=10, pady=5, sticky="nwe")
 
-        self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="Integrations per scan step")
-        self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="n")
+        self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="      Integrations per scan step")
+        self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="nw")
         self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10", corner_radius=0)
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
@@ -219,10 +219,10 @@ class ChartApp(customtkinter.CTk):
         self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
         self.calculate_location_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Location", command=self.gpsLocator)
-        self.calculate_location_button.grid(row=0,column=0, padx=2)
+        self.calculate_location_button.grid(row=0,column=0, pady=(0,5))
 
         self.save_settings_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Save Settings", command=self.saveLocationSettings)
-        self.save_settings_button.grid(row=0, column=1, padx=2)
+        self.save_settings_button.grid(row=0, column=1, padx=2, pady=(0,5))
 
     
     def log(self, message):
@@ -299,7 +299,7 @@ class ChartApp(customtkinter.CTk):
 
         self.popup = customtkinter.CTkToplevel(self)
         self.popup.title("System Date and Time")
-        self.popup.geometry("240x200")
+        self.popup.geometry("200x200")
         self.popup.columnconfigure(1, weight=1) #defines what columns can expand
         self.popup.columnconfigure(0, weight=1)
 
@@ -313,30 +313,30 @@ class ChartApp(customtkinter.CTk):
         self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Day:")
         self.day_menu_label.grid(column=0, row=1, sticky="e", padx=10)
         self.day_menu = tkinter.Spinbox(self.popup, from_=1, to=31, textvariable=self.day_var, width=5)
-        self.day_menu.grid(column=1, row=1)
+        self.day_menu.grid(column=1, row=1, sticky="w")
 
         self.month_menu_label = customtkinter.CTkLabel(self.popup, text="Month:")
         self.month_menu_label.grid(column=0, row=2, sticky="e", padx=10)
         self.month_menu = tkinter.Spinbox(self.popup, from_=1, to=12, textvariable=self.month_var, width=5)
-        self.month_menu.grid(column=1, row=2)
+        self.month_menu.grid(column=1, row=2, sticky="w")
 
         self.year_menu_label = customtkinter.CTkLabel(self.popup, text="Year:")
         self.year_menu_label.grid(column=0, row=3, sticky="e", padx=10)
         self.year_menu = tkinter.Spinbox(self.popup, from_=2026, to=2080, textvariable=self.year_var, width=5)
-        self.year_menu.grid(column=1, row=3)
+        self.year_menu.grid(column=1, row=3, sticky="w")
 
-        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Hour (0-24)")
+        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Hour (0-24):")
         self.day_menu_label.grid(column=0, row=4, sticky="e", padx=10)
         self.hour_menu = tkinter.Spinbox(self.popup, from_=0, to=23, textvariable=self.hour_var, width=5)
-        self.hour_menu.grid(column=1, row=4)
+        self.hour_menu.grid(column=1, row=4, sticky="w")
 
-        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Minute")
+        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Minute:")
         self.day_menu_label.grid(column=0, row=5, sticky="e", padx=10)
         self.minute_menu = tkinter.Spinbox(self.popup, from_=0, to=59, textvariable=self.minute_var, width=5,)
-        self.minute_menu.grid(column=1, row=5)
+        self.minute_menu.grid(column=1, row=5, sticky="w")
 
         self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime)
-        self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2)
+        self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2, pady=10)
 
         self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
         self.popup.focus() # brings popup in front of GUI
@@ -430,22 +430,14 @@ class ChartApp(customtkinter.CTk):
     
         self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
-
-        #=== GPS Finder ===#
-        self.geolocator_label = customtkinter.CTkLabel(self.scroll, text = "Find your location on GPS\nOnly try if on wifi", justify = "left")
-        self.geolocator_label.grid(row = 1, column = 0, sticky = "w", padx = 10, pady = 5)
-        self.geolocator_label_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: New York City, New York", width = 180)
-        self.geolocator_label_entry.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
-
-        Geo_button = customtkinter.CTkButton(self.scroll, text = "FIND ME", command = self.gpsLocator)
-        Geo_button.grid(row = 3, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
-
-
         
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
         self.Advanced_pointing_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
     def gpsLocator(self):
+
+        #takes location entry and fills latitude and longitude entry
+        #internet is required
 
         if self.testInternet():
 
@@ -466,6 +458,8 @@ class ChartApp(customtkinter.CTk):
             self.log("No internet connection!! Unable to find location.")
     
     def testInternet(self):
+        #simple ping test to check internet
+
         try: 
             socket.create_connection(("8.8.8.8", 53), timeout=3)
             return True
@@ -473,6 +467,8 @@ class ChartApp(customtkinter.CTk):
             return False
 
     def gpsDisable(self):
+
+        #disables calulate location button if no internet is found
         
         if self.testInternet():
             self.calculate_location_button.configure(text="Calculate Location", state="normal")
@@ -517,6 +513,8 @@ class ChartApp(customtkinter.CTk):
 
     def saveLocationSettings(self):
 
+        #checks for entries before saving location entries to a txt file
+
         if not all([self.observer_name_entry.get().strip(), self.location_entry.get().strip(),
          self.latitude_entry.get().strip(), self.longitude_entry.get().strip() ]):
 
@@ -535,6 +533,8 @@ class ChartApp(customtkinter.CTk):
             self.log(f"Error saving settings: {e}")
 
     def loadSettings(self):
+
+        #loads txt settings if user saved them
 
         try:
             with open("GUI_Location_Settings.txt", "r") as file:
@@ -866,6 +866,10 @@ class ChartApp(customtkinter.CTk):
         self.destroy()
 
     def startLogCapture(self):
+
+        #starts a log capture on the terminal to catch commands sent from GNU radio
+        #saves the previous stdout to restore logging
+
         self._log_pipe_r, self._log_pipe_w = os.pipe()
 
         self._stdout_saved = os.dup(1)
