@@ -52,7 +52,7 @@ class ChartApp(customtkinter.CTk):
         customtkinter.set_default_color_theme("blue")
         customtkinter.set_widget_scaling(0.98)
 
-        self.geometry("786x480")
+        self.geometry("786x510")
         self.title("CHART Data Collection")
 
         self.protocol(
