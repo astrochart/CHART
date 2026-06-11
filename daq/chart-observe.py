@@ -13,6 +13,7 @@ import threading
 import numpy as np
 import chart
 import sys
+import socket
 import matplotlib.pyplot as plt
 
 from tkinter import messagebox
@@ -111,6 +112,7 @@ class ChartApp(customtkinter.CTk):
         self.buildSwitches()
         self.buildButtons()
         self.loadSettings()
+        self.gpsDisable()
     
     def buildEntries(self):
 
@@ -129,17 +131,17 @@ class ChartApp(customtkinter.CTk):
 
         self.location_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Location")
         self.location_label.grid(column=0, row=1, padx=10, pady=5, sticky="n")
-        self.location_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
+        self.location_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="e.g.: Winona, Minnesota", corner_radius=0)
         self.location_entry.grid(column=1, row=1, padx=10, pady=5, sticky="nwe")
 
         self.latitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Latitude")
         self.latitude_label.grid(column=0, row=3, padx=10, pady=5)
-        self.latitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
+        self.latitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
         self.latitude_entry.grid(column=1, row=3, padx=10, pady=5, sticky="ew")
 
         self.longitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Longitude")
         self.longitude_label.grid(column=0, row=4, padx=10, pady=5, sticky="n")
-        self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
+        self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
         self.longitude_entry.grid(column=1, row=4, padx=10, pady=5, sticky="nwe")
 
 
@@ -216,7 +218,7 @@ class ChartApp(customtkinter.CTk):
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
         self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
-        self.calculate_location_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Location")
+        self.calculate_location_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Location", command=self.gpsLocator)
         self.calculate_location_button.grid(row=0,column=0, padx=2)
 
         self.save_settings_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Save Settings", command=self.saveLocationSettings)
@@ -444,15 +446,39 @@ class ChartApp(customtkinter.CTk):
         self.Advanced_pointing_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
     def gpsLocator(self):
-        try:
-            lat, long = gps(self.geolocator_label_entry.get())
-            text = f"Latitude: {lat}\nLongitude: {long}"
-        except Exception as e:
-            text = str(e)
-        self.Advanced_pointing_box.configure(state = "normal")
-        self.Advanced_pointing_box.delete("0.0", "end")
-        self.Advanced_pointing_box.insert("0.0", text)   
-        self.Advanced_pointing_box.configure(state = "disabled")
+
+        if self.testInternet():
+
+            try:
+                location = self.location_entry.get()
+                if location != "":
+                    lat, long = gps(location)
+                    self.latitude_entry.delete(0, "end")
+                    self.longitude_entry.delete(0, "end")
+                    self.latitude_entry.insert(0, lat)
+                    self.longitude_entry.insert(0, long)
+                else:
+                    messagebox.showerror("Location error", "Please enter a location")
+
+            except Exception as e:
+                self.log(f"Unable to find location: {e}")
+        else:
+            self.log("No internet connection!! Unable to find location.")
+    
+    def testInternet(self):
+        try: 
+            socket.create_connection(("8.8.8.8", 53), timeout=3)
+            return True
+        except OSError:
+            return False
+
+    def gpsDisable(self):
+        
+        if self.testInternet():
+            self.calculate_location_button.configure(text="Calculate Location", state="normal")
+        else:
+            self.calculate_location_button.configure(text="Internet Required", state="disabled")
+        self.after(10000, self.gpsDisable)
 
     def calculate(self):
         try:
