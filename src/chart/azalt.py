@@ -22,6 +22,21 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
     num_points, long_increment, lat_increment = int(num_points), int(long_increment), int(lat_increment)
     latitude, longitude = float(latitude), float(longitude)
 
+
+    long_span = long_increment * num_points
+    lat_span = lat_increment * num_points
+    
+    if long_span > 360:
+        raise ValueError(f"Longitude spans {long_span}° which is greater than 360°. \nPlease change the number of points or the Longitude spacing\n")
+    if lat_span >180:  
+        raise ValueError(f"Latitude spans {lat_span}° which is greater than 180°. \nPlease change the number of points or the Latitude spacing\n")
+    
+    
+    h = 1
+    if 0 < abs(long_increment) < h:
+        raise ValueError(f"Galactic Longitude Spacing is too small, please stay above {h}\n")
+    if 0 < abs(lat_increment) < h:
+        raise ValueError(f"Galactic Latitude Spacing is too small, please stay above {h}\n")
     
     tz = timezone_of(latitude, longitude)
     location = EarthLocation(lat = latitude * u.deg , lon = longitude * u.deg)
@@ -40,7 +55,7 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
         raise ValueError(
             f"Galactic latitude reaches {b_final:.1f}° at point {num_points}, "
             f"outside the valid ±90° range. With a latitude increment of "
-            f"{lat_increment}°, request at most {max_points} point(s)."
+            f"{lat_increment}°, request at most {max_points} point(s).\n"
         )
 
     
@@ -63,7 +78,9 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
             "Galactic latitudinal offset": lat_increment * i,
             "Altitude": altaz.alt.deg,
             "Azimuth": altaz.az.deg,
-            "Local time": obs_time
+            "Local time": obs_time,
+            "Galactic Longitudinal Increment": long_increment,
+            "Galactic Latitudinal Increment": lat_increment
         })
     return results
 
@@ -73,9 +90,16 @@ def azalt(results):
     for i in results:
         lines.append(f"Observation # {i['Observation #']}:")
         lines.append(f"Local time {i['Local time'].strftime('%I:%M %p')}")
+        if 0 < abs(i['Galactic Longitudinal Increment']) < 5:
+            lines.append(f"WARNING Galactic Longitudinal Increment is below 5 which is very small")
+        if 0 < abs(i['Galactic Latitudinal Increment']) < 5:
+            lines.append(f"WARNING Galactic Latitudinal Increment is below 5 which is very small")
         lines.append(f"    Galactic longitudinal offset {i['Galactic longitudinal offset']}°")
         lines.append(f"    Galactic latitudinal offset {i['Galactic latitudinal offset']}°")
-        lines.append(f"    Altitude {i['Altitude']:.1f}°")
+        if i['Altitude'] < 0:
+            lines.append(f"WARNING ALTITUDE IS BELOW HORIZON (not observable)\n    Altitude {i['Altitude']:.1f}°")
+        else:
+            lines.append(f"    Altitude {i['Altitude']:.1f}°")
         lines.append(f"    Azimuth {i['Azimuth']:.1f}°")
         lines.append("")
     return "\n".join(lines)
@@ -87,7 +111,7 @@ def gps(location):
     except GeocoderServiceError:
         raise ValueError("Need Internet connection for this feature :/\nPlease enter Latitude and Longitude Manually")
     if lat_long is None:
-        raise ValueError(f"Could not find location: {location!r}. Try again.")
+        raise ValueError(f"Could not find location: {location!r}. Try again.\n")
     latitude = lat_long.latitude
     longitude = lat_long.longitude
     return latitude, longitude
