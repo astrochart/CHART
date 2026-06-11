@@ -49,6 +49,7 @@ class ChartApp(customtkinter.CTk):
 
         customtkinter.set_appearance_mode("light")
         customtkinter.set_default_color_theme("blue")
+        customtkinter.set_widget_scaling(0.98)
 
         self.geometry("786x480")
         self.title("CHART Data Collection")
@@ -69,16 +70,16 @@ class ChartApp(customtkinter.CTk):
         self.top_bar.grid_columnconfigure(1, weight=1)   # center (buttons)
         self.top_bar.grid_columnconfigure(2, weight=1)   # right (clock)
         
-        self.mode_switch = customtkinter.CTkSwitch(self.top_bar, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off")
+        self.mode_switch = customtkinter.CTkSwitch(self.top_bar, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off", corner_radius=0)
         self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="w")
         
         self.button_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
         self.button_frame.grid(column=1, row=0, pady=2)   # centered in its column
         
-        self.pointing_button = customtkinter.CTkButton(self.button_frame, text="Pointing Calculator", width=160, command=self.openPointingCalculator, hover_color = "purple")
+        self.pointing_button = customtkinter.CTkButton(self.button_frame, text="Pointing Calculator", width=160, command=self.openPointingCalculator, hover_color = "purple", corner_radius=0)
         self.pointing_button.grid(column=0, row=0, padx=5)
         
-        self.time_button = customtkinter.CTkButton(self.button_frame, text="Set System DateTime", width=160, command=self.openTimeWindow)
+        self.time_button = customtkinter.CTkButton(self.button_frame, text="Set System DateTime", width=160, command=self.openTimeWindow, corner_radius=0)
         self.time_button.grid(column=1, row=0, padx=5)
         
         self.clock_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
@@ -109,45 +110,54 @@ class ChartApp(customtkinter.CTk):
         self.buildEntries()
         self.buildSwitches()
         self.buildButtons()
+        self.loadSettings()
     
     def buildEntries(self):
 
 
         #left side
-        self.observer_name_label = customtkinter.CTkLabel(self.scroll_frame, text="Observer Name")
+        #frame for saved settings
+        self.saved_settings_frame = customtkinter.CTkFrame(self.scroll_frame, border_color="gray", border_width=2, corner_radius=0)
+        self.saved_settings_frame.grid(column=0, row=0, padx=1, pady=10, rowspan=6, columnspan=2, sticky="NEWS")
+        self.saved_settings_frame.columnconfigure(0, weight=1)
+        self.saved_settings_frame.columnconfigure(1, weight=1)
+
+        self.observer_name_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Observer Name")
         self.observer_name_label.grid(column=0, row=0, padx=10, pady=5)
-        self.observer_name_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.observer_name_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
         self.observer_name_entry.grid(column=1, row=0, padx=10, pady=5, sticky="ew")
 
-        self.location_label = customtkinter.CTkLabel(self.scroll_frame, text="Location")
+        self.location_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Location")
         self.location_label.grid(column=0, row=1, padx=10, pady=5, sticky="n")
-        self.location_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.location_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
         self.location_entry.grid(column=1, row=1, padx=10, pady=5, sticky="nwe")
 
-        self.latitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Latitude")
+        self.latitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Latitude")
         self.latitude_label.grid(column=0, row=3, padx=10, pady=5)
-        self.latitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.latitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
         self.latitude_entry.grid(column=1, row=3, padx=10, pady=5, sticky="ew")
 
-        self.longitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Longitude")
+        self.longitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Longitude")
         self.longitude_label.grid(column=0, row=4, padx=10, pady=5, sticky="n")
-        self.longitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
+        self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
         self.longitude_entry.grid(column=1, row=4, padx=10, pady=5, sticky="nwe")
 
+
+
         self.altitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Altitude (deg)")
-        self.altitude_label.grid(column=0, row=5, padx=10, pady=5)
-        self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
-        self.altitude_entry.grid(column=1, row=5, padx=10, pady=5, sticky="ew")
+        self.altitude_label.grid(column=0, row=6, padx=10, pady=5)
+        self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here", corner_radius=0)
+        self.altitude_entry.grid(column=1, row=6, padx=10, pady=5, sticky="ew")
 
         self.azimuth_label = customtkinter.CTkLabel(self.scroll_frame, text="Azimuth (deg)")
-        self.azimuth_label.grid(column=0, row=6, padx=10, pady=5, sticky="n")
-        self.azimuth_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here")
-        self.azimuth_entry.grid(column=1, row=6, padx=10, pady=5, sticky="nwe")
+        self.azimuth_label.grid(column=0, row=7, padx=10, pady=5, sticky="n")
+        self.azimuth_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here", corner_radius=0)
+        self.azimuth_entry.grid(column=1, row=7, padx=10, pady=5, sticky="nwe")
 
         self.description_label = customtkinter.CTkLabel(self.scroll_frame, text="Description (optional)")
-        self.description_label.grid(column=0, row=7, padx=10, pady=5, sticky="sew")
-        self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=50)
-        self.description_entry.grid(column=0, row=8, padx=10, pady=5, sticky="news", columnspan=2, rowspan=2)
+        self.description_label.grid(column=0, row=8, padx=10, sticky="new")
+        self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=50, corner_radius=0)
+        self.description_entry.grid(column=0, row=9, padx=10, pady=0, sticky="new", columnspan=2, rowspan=2)
 
 
         #adding in a real time moniter of lat and long for the pointing calculator, this will auto input the lat and long from the main menu to the pointing calculator menu
@@ -163,43 +173,54 @@ class ChartApp(customtkinter.CTk):
 
         self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="Start Frequency (MHz)")
         self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5)
-        self.frequency_start_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1415")
+        self.frequency_start_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1415", corner_radius=0)
         self.frequency_start_entry.grid(column=3, row=3, padx=10, pady=5, sticky="ew")
 
         self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="Stop Frequency (MHz)")
         self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="n")
-        self.frequency_stop_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1425")
+        self.frequency_stop_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1425", corner_radius=0)
         self.frequency_stop_entry.grid(column=3, row=4, padx=10, pady=5, sticky="nwe")
 
         self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="Integration time (s)")
         self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="n")
-        self.integration_time_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="5")
+        self.integration_time_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="5", corner_radius=0)
         self.integration_time_entry.grid(column=3, row=5, padx=10, pady=5, sticky="nwe")
 
         self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="Integrations per scan step")
         self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="n")
-        self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10")
+        self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10", corner_radius=0)
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
     def buildSwitches(self):
-        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off", command=self.enableDefaults)
+        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off", command=self.enableDefaults, corner_radius=0)
         self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
-        self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off", command=self.biasTwarn)
-        self.bias_switch.grid(column=2, row=7, padx=10, pady=10, sticky="w")
+        self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off", command=self.biasTwarn, corner_radius=0)
+        self.bias_switch.grid(column=2, row=7, padx=10, pady=5, sticky="w")
     
     def buildButtons(self):
-        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection)
-        self.start_button.grid(column=2, row=8, padx=10, pady=3, sticky="ew")
+        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection, corner_radius=0)
+        self.start_button.grid(column=2, row=9, padx=10, pady=3, sticky="ew")
 
-        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection)
-        self.stop_button.grid(column=3, row=8, padx=10, pady=3, sticky="ew")
+        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection, corner_radius=0)
+        self.stop_button.grid(column=3, row=9, padx=10, pady=3, sticky="ew")
 
-        self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub", command=self.jupyter_upload)
-        self.jupyter_upload_button.grid(column=2, row=9, padx=10, pady=3, sticky="new")
+        self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub", command=self.jupyter_upload, corner_radius=0)
+        self.jupyter_upload_button.grid(column=2, row=10, padx=10, pady=3, sticky="new")
 
-        self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local)
-        self.jupyter_local_button.grid(column=3, row=9, padx=10, pady=3, sticky="new")
+        self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local, corner_radius=0)
+        self.jupyter_local_button.grid(column=3, row=10, padx=10, pady=3, sticky="new")
+
+
+        self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
+        self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
+
+        self.calculate_location_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Location")
+        self.calculate_location_button.grid(row=0,column=0, padx=2)
+
+        self.save_settings_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Save Settings", command=self.saveLocationSettings)
+        self.save_settings_button.grid(row=0, column=1, padx=2)
+
     
     def log(self, message):
 
@@ -460,6 +481,40 @@ class ChartApp(customtkinter.CTk):
             self.AzAlt_box.insert("0.0", f"Calculation error: {e}")
             self.AzAlt_box.configure(state = "disabled")
 
+    def saveLocationSettings(self):
+
+        if not all([self.observer_name_entry.get().strip(), self.location_entry.get().strip(),
+         self.latitude_entry.get().strip(), self.longitude_entry.get().strip() ]):
+
+            messagebox.showerror(
+                "Input Error",
+                "Location, latitude, and longitude are required.")
+            return
+        try:
+            with open("GUI_Location_Settings.txt", "w") as file:
+                file.write(self.observer_name_entry.get() + "\n")
+                file.write(self.location_entry.get() + "\n")
+                file.write(self.latitude_entry.get() + "\n")
+                file.write(self.longitude_entry.get() + "\n")
+            self.log("Settings Saved")
+        except Exception as e:
+            self.log(f"Error saving settings: {e}")
+
+    def loadSettings(self):
+
+        try:
+            with open("GUI_Location_Settings.txt", "r") as file:
+                lines = file.readlines()
+
+                if len(lines) >= 4:
+                    self.observer_name_entry.insert(0, lines[0].strip())
+                    self.location_entry.insert(0, lines[1].strip())
+                    self.latitude_entry.insert(0, lines[2].strip())
+                    self.longitude_entry.insert(0, lines[3].strip())
+                    self.log("Saved location data loaded!")
+
+        except FileNotFoundError:
+            self.log("No saved location data found")
 
     def updateClock(self):
 
