@@ -5,6 +5,7 @@ import os
 import time
 import warnings
 import datetime
+import shutil
 
 import numpy as np
 import chart
@@ -199,6 +200,9 @@ def runObservation(cfg, logger=print, stop_event=None):
 
         time.sleep(cfg["scan_period"])      # only for long time observations
     logger("Observation Complete")
+    logger("Creating zip file...")
+    zip_path = shutil.make_archive(cfg["data_dir"], "zip", cfg["data_dir"])     #creates zip
+    shutil.move(zip_path, cfg["data_dir"])      #moves zip from /data to data directory 
     del tb
 
 

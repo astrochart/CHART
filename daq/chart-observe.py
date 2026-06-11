@@ -476,6 +476,10 @@ class ChartApp(customtkinter.CTk):
 
         #sends a command to stop data collection 
 
+        if not self.session or not self.session.is_alive():
+            self.log("Data collection hasn't started")
+            return
+
         if self.stop_event:
             self.stop_event.set()
 
@@ -581,7 +585,6 @@ class ChartApp(customtkinter.CTk):
 
     def jupyter_upload(self):
         webbrowser.open_new('https://radiolab.winona.edu/')
-        self.plot_observation()
 
 
     def toggleDarkMode(self):
@@ -598,7 +601,9 @@ class ChartApp(customtkinter.CTk):
 
         if self.bias_switch.get() == "on":
             messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
-    
+
+            self.log("Bias-T will be enabled!")
+
     def onClose(self):
 
         # defines a safe shutdown procedure that closes all subprocesses before exiting the GUI
