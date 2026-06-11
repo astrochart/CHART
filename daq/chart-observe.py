@@ -161,10 +161,11 @@ class ChartApp(customtkinter.CTk):
 
 
         #adding in a real time moniter of lat and long for the pointing calculator, this will auto input the lat and long from the main menu to the pointing calculator menu
-        for _coord_entry in (self.latitude_entry, self.longitude_entry):
-            _coord_entry.bind("<KeyRelease>", self.syncPointingCoords)
-            _coord_entry.bind("<FocusOut>", self.syncPointingCoords)
-            #sync pointing coords is defined above the open pointing calculator definition
+        self.latitude_entry.bind("<KeyRelease>",  lambda e: self.syncCoords(self.latitude_entry,  "pointing_latitude_entry"))
+        self.latitude_entry.bind("<FocusOut>",    lambda e: self.syncCoords(self.latitude_entry,  "pointing_latitude_entry"))
+        self.longitude_entry.bind("<KeyRelease>", lambda e: self.syncCoords(self.longitude_entry, "pointing_longitude_entry"))
+        self.longitude_entry.bind("<FocusOut>",   lambda e: self.syncCoords(self.longitude_entry, "pointing_longitude_entry"))
+        #sync coords is defined above the open pointing calculator definition
 
 
         #right side
@@ -339,13 +340,14 @@ class ChartApp(customtkinter.CTk):
         self.popup.focus() # brings popup in front of GUI
         self.popup.grab_set() # freezes main GUI
 
-    def syncPointingCoords(self, event=None):
-        for source, i in ((self.latitude_entry, "pointing_latitude_entry"),(self.longitude_entry, "pointing_longitude_entry"),):
-            target = getattr(self, i, None)
-            if target is not None and target.winfo_exists():
-                target.delete(0, "end")
-                target.insert(0, source.get())
-    
+    #function to connect lat long in the main menu to lat long in the pointing window in real time
+    def syncCoords(self, source, target, event=None):
+        if isinstance(target, str):
+            target = getattr(self, target, None)
+        if target is not None and target.winfo_exists():
+            target.delete(0, "end")
+            target.insert(0, source.get())
+   
     def openPointingCalculator(self):
     
         self.window = customtkinter.CTkToplevel(self)
@@ -376,7 +378,13 @@ class ChartApp(customtkinter.CTk):
         self.pointing_longitude_entry.grid(row = 1, column = 1, sticky = "w", padx = 10, pady = 5)
         if existing_long:                                            # only if non-blank
             self.pointing_longitude_entry.insert(0, existing_long)
-    
+
+        self.pointing_latitude_entry.bind("<KeyRelease>",  lambda e: self.syncCoords(self.pointing_latitude_entry, self.latitude_entry))
+        self.pointing_latitude_entry.bind("<FocusOut>",    lambda e: self.syncCoords(self.pointing_latitude_entry, self.latitude_entry))
+
+        
+        self.pointing_longitude_entry.bind("<KeyRelease>", lambda e: self.syncCoords(self.pointing_longitude_entry, self.longitude_entry))
+        self.pointing_longitude_entry.bind("<FocusOut>",   lambda e: self.syncCoords(self.pointing_longitude_entry, self.longitude_entry))
 
         # === Row 2-3 increments ===#
         self.latitude_increment_label = customtkinter.CTkLabel(
