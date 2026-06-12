@@ -42,6 +42,8 @@ def find_dat_files(directory=None):
     if directory is None:
         directory = os.curdir()
     data_list = sorted(glob.glob(os.path.join(directory, '*.dat')))
+    if len(data_list) == 0:
+        raise FileNotFoundError('No data files found in directory: ' + directory)
     return data_list
 
 
@@ -49,6 +51,8 @@ def find_meta_files(directory=None):
     if directory is None:
         directory = os.curdir()
     meta_list = sorted(glob.glob(os.path.join(directory, '*.npz')))
+    if len(meta_list) == 0:
+        raise FileNotFoundError('No metadata files found in directory: ' + directory)
     return meta_list
 
 
