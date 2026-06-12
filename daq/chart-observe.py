@@ -218,8 +218,8 @@ class ChartApp(customtkinter.CTk):
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
         self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
-        self.calculate_location_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Location", command=self.gpsLocator)
-        self.calculate_location_button.grid(row=0,column=0, pady=(0,5))
+        self.calculate_coordinates_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Coordinates", command=self.gpsLocator)
+        self.calculate_coordinates_button.grid(row=0,column=0, pady=(0,5))
 
         self.save_settings_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Save Settings", command=self.saveLocationSettings)
         self.save_settings_button.grid(row=0, column=1, padx=2, pady=(0,5))
@@ -269,13 +269,20 @@ class ChartApp(customtkinter.CTk):
             messagebox.showerror("Error", "Year must be between 2026 and 2080.", parent=self.popup)
             return
 
-        if not (0 <= hour <= 23):
-            messagebox.showerror("Error", "Hour must be between 0 and 23.", parent=self.popup)
+        if not (1 <= hour <= 12):
+            messagebox.showerror("Error", "Hour must be between 1 and 12.", parent=self.popup)
             return
 
         if not (0 <= minute <= 59):
             messagebox.showerror("Error", "Minute must be between 0 and 59.", parent=self.popup)
             return
+        
+        if self.am_pm_menu.get() =="PM":
+            if hour != 12:
+                hour += 12
+        else: 
+            if hour == 12:
+                hour =0
 
         date_time = datetime.datetime(
             year,
@@ -302,6 +309,7 @@ class ChartApp(customtkinter.CTk):
         self.popup.geometry("200x200")
         self.popup.columnconfigure(1, weight=1) #defines what columns can expand
         self.popup.columnconfigure(0, weight=1)
+        self.popup.columnconfigure(2, weight=0)
 
 
         self.day_var = tkinter.StringVar(value="1")
@@ -325,18 +333,21 @@ class ChartApp(customtkinter.CTk):
         self.year_menu = tkinter.Spinbox(self.popup, from_=2026, to=2080, textvariable=self.year_var, width=5)
         self.year_menu.grid(column=1, row=3, sticky="w")
 
-        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Hour (0-24):")
-        self.day_menu_label.grid(column=0, row=4, sticky="e", padx=10)
-        self.hour_menu = tkinter.Spinbox(self.popup, from_=0, to=23, textvariable=self.hour_var, width=5)
+        self.hour_menu_label = customtkinter.CTkLabel(self.popup, text="Hour:")
+        self.hour_menu_label.grid(column=0, row=4, sticky="e", padx=10)
+        self.hour_menu = tkinter.Spinbox(self.popup, from_=1, to=12, textvariable=self.hour_var, width=5)
         self.hour_menu.grid(column=1, row=4, sticky="w")
 
-        self.day_menu_label = customtkinter.CTkLabel(self.popup, text="Minute:")
-        self.day_menu_label.grid(column=0, row=5, sticky="e", padx=10)
+        self.am_pm_menu = customtkinter.CTkOptionMenu(self.popup, corner_radius=0, values=["AM", "PM"], width=60)
+        self.am_pm_menu.grid(column=2, row=4, sticky="w")
+
+        self.minute_menu_label = customtkinter.CTkLabel(self.popup, text="Minute:")
+        self.minute_menu_label.grid(column=0, row=5, sticky="e", padx=10)
         self.minute_menu = tkinter.Spinbox(self.popup, from_=0, to=59, textvariable=self.minute_var, width=5,)
         self.minute_menu.grid(column=1, row=5, sticky="w")
 
         self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime)
-        self.submit_button.grid(column=0, row=6, sticky="s", columnspan=2, pady=10)
+        self.submit_button.grid(column=0, row=6, sticky="s", columnspan=3, pady=10)
 
         self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
         self.popup.focus() # brings popup in front of GUI
@@ -471,9 +482,9 @@ class ChartApp(customtkinter.CTk):
         #disables calulate location button if no internet is found
         
         if self.testInternet():
-            self.calculate_location_button.configure(text="Calculate Location", state="normal")
+            self.calculate_coordinates_button.configure(text="Calculate Coordinates", state="normal")
         else:
-            self.calculate_location_button.configure(text="Internet Required", state="disabled")
+            self.calculate_coordinates_button.configure(text="Internet Required", state="disabled")
         self.after(10000, self.gpsDisable)
 
     def calculate(self):
@@ -520,7 +531,7 @@ class ChartApp(customtkinter.CTk):
 
             messagebox.showerror(
                 "Input Error",
-                "Location, latitude, and longitude are required.")
+                "Observer name, Location, latitude, and longitude are required.")
             return
         try:
             with open("GUI_Location_Settings.txt", "w") as file:
@@ -739,6 +750,9 @@ class ChartApp(customtkinter.CTk):
         self.log("Stopping observation...\nWaiting for current frequency scan to finish...")
 
     def plotObservation(self):
+
+        #creates plot of last observation
+        #Coppied and modified from abbridged analayisis -- untested for accuracy
 
         if self.session is None:
             return
