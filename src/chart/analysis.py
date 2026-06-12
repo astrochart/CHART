@@ -55,17 +55,54 @@ def find_meta_files(directory=None):
         raise FileNotFoundError('No metadata files found in directory: ' + directory)
     return meta_list
 
+def get_meta_param(prompt):
+    res = input(prompt)
+    if res == '':
+        return None
+    else:
+        try:
+            return float(res)
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+            return get_meta_param(prompt)
 
-def read_run(directory=None):
+
+def read_run(directory=None, overwrite_v1=False):
+    if directory is None:
+        directory = os.curdir()
     data_list = find_dat_files(directory=directory)
     meta_list = find_meta_files(directory=directory)
     data = []
     meta = []
+    # Check for old data format. Ask user for missing info. 
+    # If not known, set to None
+    metatemp = np.load(meta_list[0], allow_pickle=True)
+    if 'azimuth' not in metatemp:
+        version = 1
+        print(f'CHART v1 data format in {directory}.')
+        print('Please enter the missing information:')
+        latitude = get_meta_param('Latitude [degrees]: ')
+        longitude = get_meta_param('Longitude [degrees]: ')
+        altitude = get_meta_param('Altitude [degrees]: ')
+        azimuth = get_meta_param('Azimuth [degrees]: ')
+        
+        if overwrite_v1:
+            print('Overwriting metadata files with new format...')
+    else:
+        version = 2
     for dfile, mfile in zip(data_list, meta_list):
         datatemp, metatemp = read_data(dfile, mfile)
+        if version == 1:
+            metatemp['azimuth'] = azimuth
+            metatemp['altitude'] = altitude
+            metatemp['latitude'] = latitude
+            metatemp['longitude'] = longitude
+            if overwrite_v1:
+                np.savez(mfile, **metatemp)
         data.append(datatemp)
         meta.append(metatemp)
     return data, meta
+
 
 
 def concat(data_list):
