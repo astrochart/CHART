@@ -16,11 +16,13 @@ def timezone_of(latitude, longitude):
     return ZoneInfo(tzname)
 
 
-def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_points, lat_increment, long_increment, delta_time):
+def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_points, lat_increment, long_increment, delta_time, gal_long_start, gal_lat_start):
     year, month, day = int(year), int(month), int(day)
     hour, minute, delay = int(hour), int(minute), int(delay)
-    num_points, long_increment, lat_increment = int(num_points), int(long_increment), int(lat_increment)
+    num_points, long_increment, lat_increment = abs(int(num_points)), int(long_increment), int(lat_increment)
     latitude, longitude = float(latitude), float(longitude)
+    delta_time = abs(int(delta_time))
+    gal_long_start, gal_lat_start = int(gal_long_start), int(gal_lat_start)
 
 
     long_span = abs(long_increment) * num_points
@@ -43,13 +45,14 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
     sgr_a_gal = SkyCoord(ra = 266.41684 * u.deg, dec = -29.00781 * u.deg, frame='icrs').galactic
 
     b0 = sgr_a_gal.b.deg
-    b_final = b0 + lat_increment * (num_points - 1)
+    b_start = b0 + gal_lat_start 
+    b_final = b_start+ lat_increment * (num_points - 1)
     if not -90 <= b_final <= 90:
         # largest i >= 0 keeping b0 + lat_increment*i within +/-90 deg
         if lat_increment > 0:
-            max_points = int((90 - b0) // lat_increment) + 1
+            max_points = int((90 - b_start) // lat_increment) + 1
         elif lat_increment < 0:
-            max_points = int((-90 - b0) // lat_increment) + 1
+            max_points = int((-90 - b_start) // lat_increment) + 1
         else:
             max_points = num_points
         raise ValueError(
@@ -65,35 +68,35 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
     for i in range(num_points):
         obs_time = start + timedelta(minutes = delay + delta_time * i)
         
-        l = sgr_a_gal.l + long_increment * i * u.deg
-        b = sgr_a_gal.b + lat_increment * i * u.deg
+        l = sgr_a_gal.l + long_increment * i * u.deg + gal_long_start * u.deg
+        b = sgr_a_gal.b + lat_increment * i * u.deg + gal_lat_start * u.deg
         offset = SkyCoord(l = l, b = b, frame = 'galactic')
         altaz = offset.transform_to(AltAz(obstime=Time(obs_time), location=location))
 
         results.append({
             "Observation #": i+1,
             "l": l, "b": b,
-            "Galactic longitudinal offset": long_increment * i,
-            "Galactic latitudinal offset": lat_increment * i,
+            "Galactic longitudinal offset": long_increment * i + gal_long_start,
+            "Galactic latitudinal offset": lat_increment * i + gal_lat_start,
             "Altitude": altaz.alt.deg,
             "Azimuth": altaz.az.deg,
             "Local time": obs_time,
             "Galactic Longitudinal Increment": long_increment,
             "Galactic Latitudinal Increment": lat_increment,
-            "Time between observations": delta_time
         })
     return results
 
 
 def azalt(results):
     lines = []
+    lines.append("Here is a plan for your observation today. \nIt is okay if you need to change the plan for your specific conditions. \nThese are recommendations not requirements.\nMost importantly: Have FUN!")
     for i in results:
         lines.append(f"Observation # {i['Observation #']}:")
         lines.append(f"Local time {i['Local time'].strftime('%I:%M %p')}")
         if 0 < abs(i['Galactic Longitudinal Increment']) < 5:
-            lines.append(f"WARNING Galactic Longitudinal Increment is below 5 which is very small")
+            lines.append("WARNING Galactic Longitudinal Increment is below 5 which is very small")
         if 0 < abs(i['Galactic Latitudinal Increment']) < 5:
-            lines.append(f"WARNING Galactic Latitudinal Increment is below 5 which is very small")
+            lines.append("WARNING Galactic Latitudinal Increment is below 5 which is very small")
         lines.append(f"    Galactic longitudinal offset {i['Galactic longitudinal offset']}°")
         lines.append(f"    Galactic latitudinal offset {i['Galactic latitudinal offset']}°")
         if i['Altitude'] < 0:
