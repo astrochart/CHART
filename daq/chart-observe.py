@@ -29,6 +29,7 @@ class ChartApp(customtkinter.CTk):
         self.session = None     # Data collection thread is stored here
         self.jupyter_proc = None    # jupyter local subprocess
         self.last_data_dir = None   # stores last directory created for plotting function
+        self.popup = None       # allows checking for multiple date and time popup windows
 
         #storage for stdout/stderr pipe required to capture GNU radio messages 
         self._log_pipe_r = None
@@ -304,6 +305,10 @@ class ChartApp(customtkinter.CTk):
 
         # a simple popup menu that will set system date and time using spinboxes and submittime() function
 
+        if self.popup is not None:       # checks if popup exists
+            if self.popup.winfo_exists():
+                return
+
         self.popup = customtkinter.CTkToplevel(self)
         self.popup.title("System Date and Time")
         self.popup.geometry("200x200")
@@ -351,7 +356,6 @@ class ChartApp(customtkinter.CTk):
 
         self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
         self.popup.focus() # brings popup in front of GUI
-        self.popup.grab_set() # freezes main GUI
 
     #function to connect lat long in the main menu to lat long in the pointing window in real time
     def syncCoords(self, source, target, event=None):
