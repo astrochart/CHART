@@ -16,7 +16,7 @@ def timezone_of(latitude, longitude):
     return ZoneInfo(tzname)
 
 
-def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_points, lat_increment, long_increment):
+def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_points, lat_increment, long_increment, delta_time):
     year, month, day = int(year), int(month), int(day)
     hour, minute, delay = int(hour), int(minute), int(delay)
     num_points, long_increment, lat_increment = int(num_points), int(long_increment), int(lat_increment)
@@ -60,11 +60,10 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
 
     
     start = datetime(year, month, day, hour, minute, tzinfo = tz)
-    step_size = 10
     results = []
                      
     for i in range(num_points):
-        obs_time = start + timedelta(minutes = delay + step_size * i)
+        obs_time = start + timedelta(minutes = delay + delta_time * i)
         
         l = sgr_a_gal.l + long_increment * i * u.deg
         b = sgr_a_gal.b + lat_increment * i * u.deg
@@ -80,7 +79,8 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
             "Azimuth": altaz.az.deg,
             "Local time": obs_time,
             "Galactic Longitudinal Increment": long_increment,
-            "Galactic Latitudinal Increment": lat_increment
+            "Galactic Latitudinal Increment": lat_increment,
+            "Time between observations": delta_time
         })
     return results
 

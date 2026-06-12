@@ -411,17 +411,23 @@ class ChartApp(customtkinter.CTk):
         self.delay_label.grid(row = 4, column = 1, sticky = "w", padx = 10, pady = 5)
         self.delay_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 2 for 2 minutes", width = 180)
         self.delay_entry.grid(row = 5, column = 1, sticky = "w", padx = 10, pady = 5)
-    
+
+        self.delta_time_label = customtkinter.CTkLabel(self.scroll, text = "Time between datapoints:", justify = "left")
+        self.delta_time_label.grid(row = 6, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.delta_time_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Recommended: 10", width = 180)
+        self.delta_time_entry.grid(row = 7, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        
         # === Row 6: Calculate button (this was missing entirely) ===#
         self.calculate_button = customtkinter.CTkButton(self.scroll, text="Calculate", command=self.calculate, width = 180, hover_color = "dark blue")
-        self.calculate_button.grid(row = 6, column = 0, padx = 10, pady = 5)
+        self.calculate_button.grid(row = 8, column = 0, padx = 10, pady = 5)
 
         self.advanced_button = customtkinter.CTkButton(self.scroll, text="Advanced Pointing", command=self.advancedPointing, width = 180, fg_color = "purple", hover_color = "red")
-        self.advanced_button.grid(row = 6, column = 1,  padx = 10, pady = 5)
+        self.advanced_button.grid(row = 8, column = 1,  padx = 10, pady = 5)
     
         # === Box where the AzAlt text goes ===#
         self.AzAlt_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
-        self.AzAlt_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+        self.AzAlt_box.grid(row = 9, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
     def advancedPointing(self):
         self.window = customtkinter.CTkToplevel(self)
@@ -449,6 +455,10 @@ class ChartApp(customtkinter.CTk):
                     self.longitude_entry.delete(0, "end")
                     self.latitude_entry.insert(0, lat)
                     self.longitude_entry.insert(0, long)
+                    #sync to pointing box
+                    self.syncCoords(self.latitude_entry, "pointing_latitude_entry")
+                    self.syncCoords(self.longitude_entry, "pointing_longitude_entry")
+                    
                 else:
                     messagebox.showerror("Location error", "Please enter a location")
 
@@ -492,6 +502,7 @@ class ChartApp(customtkinter.CTk):
                 num_points = int(self.num_points_entry.get()),
                 lat_increment = float(self.latitude_increment_entry.get()),
                 long_increment = float(self.longitude_increment_entry.get()),
+                delta_time = int(self.delta_time_entry.get())
             )
         
             self.AzAlt = azalt(self.results)
