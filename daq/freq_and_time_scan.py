@@ -201,7 +201,9 @@ def runObservation(cfg, logger=print, stop_event=None):
         time.sleep(cfg["scan_period"])      # only for long time observations
     logger("Observation Complete")
     logger("Creating zip file...")
-    zip_path = shutil.make_archive(cfg["data_dir"], "zip", cfg["data_dir"])     #creates zip
+    zip_dir = os.path.dirname(cfg["data_dir"])
+    zip_file = os.path.basename(cfg["data_dir"])
+    zip_path = shutil.make_archive(cfg["data_dir"], "zip", root_dir=zip_dir, base_dir=zip_file)     #creates zip
     shutil.move(zip_path, cfg["data_dir"])      #moves zip from /data to data directory 
     del tb
 
