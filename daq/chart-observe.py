@@ -195,7 +195,7 @@ class ChartApp(customtkinter.CTk):
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
     def buildSwitches(self):
-        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Defualt Parameters", onvalue="on", offvalue="off", command=self.enableDefaults, corner_radius=0)
+        self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Default Parameters", onvalue="on", offvalue="off", command=self.enableDefaults, corner_radius=0)
         self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
         self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off", command=self.biasTwarn, corner_radius=0)
@@ -365,7 +365,7 @@ class ChartApp(customtkinter.CTk):
     
         self.window = customtkinter.CTkToplevel(self)
         self.window.title("Pointing Calculator")
-        self.window.geometry("500x500")
+        self.window.geometry("500x600")
     
         self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
@@ -422,29 +422,68 @@ class ChartApp(customtkinter.CTk):
         self.delay_label.grid(row = 4, column = 1, sticky = "w", padx = 10, pady = 5)
         self.delay_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 2 for 2 minutes", width = 180)
         self.delay_entry.grid(row = 5, column = 1, sticky = "w", padx = 10, pady = 5)
-    
+
+        self.delta_time_label = customtkinter.CTkLabel(self.scroll, text = "Time between datapoints:", justify = "left")
+        self.delta_time_label.grid(row = 6, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.delta_time_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Recommended: 10", width = 180)
+        self.delta_time_entry.grid(row = 7, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        
         # === Row 6: Calculate button (this was missing entirely) ===#
         self.calculate_button = customtkinter.CTkButton(self.scroll, text="Calculate", command=self.calculate, width = 180, hover_color = "dark blue")
-        self.calculate_button.grid(row = 6, column = 0, padx = 10, pady = 5)
+        self.calculate_button.grid(row = 8, column = 0, padx = 10, pady = 5)
 
-        self.advanced_button = customtkinter.CTkButton(self.scroll, text="Advanced Pointing", command=self.advancedPointing, width = 180, fg_color = "purple", hover_color = "red")
-        self.advanced_button.grid(row = 6, column = 1,  padx = 10, pady = 5)
+        self.advanced_button = customtkinter.CTkButton(self.scroll, text="Advanced Pointing", command=self.advancedPointing, width = 180, hover_color = "dark blue")
+        self.advanced_button.grid(row = 8, column = 1,  padx = 10, pady = 5)
     
         # === Box where the AzAlt text goes ===#
-        self.AzAlt_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
-        self.AzAlt_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+        self.AzAlt_box = customtkinter.CTkTextbox(self.scroll, width=450, height=220, state = "disabled")
+        self.AzAlt_box.grid(row = 9, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
     def advancedPointing(self):
         self.window = customtkinter.CTkToplevel(self)
         self.window.title("Advanced Pointing")
         self.window.geometry("500x500")
-    
+
         self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
+
+
+        self.gal_lat_start_label = customtkinter.CTkLabel(self.scroll, text = "Starting Galactic Latitude", justify = "left")
+        self.gal_lat_start_label.grid(row = 1, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.gal_lat_start_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180)
+        self.gal_lat_start_entry.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        self.gal_long_start_label = customtkinter.CTkLabel(self.scroll, text = "Starting Galactic Longitude", justify = "left")
+        self.gal_long_start_label.grid(row = 1, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.gal_long_start_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180)
+        self.gal_long_start_entry.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
+
+        self.set_params_button = customtkinter.CTkButton(self.scroll, text="Set Parameters", command=self.setParams, width = 180, hover_color = "dark blue")
+        self.set_params_button.grid(row = 3, column = 0, padx = 10, pady = 5)
+
         
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled")
-        self.Advanced_pointing_box.grid(row = 7, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+        self.Advanced_pointing_box.grid(row = 4, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
+
+
+    def setParams(self):
+        try:
+            gal_long_start = int(self.gal_long_start_entry.get().strip() or 0)
+            gal_lat_start  = int(self.gal_lat_start_entry.get().strip()  or 0)
+            text = (f"Starting Galactic Latitude:  {gal_lat_start}°\n"f"Starting Galactic Longitude: {gal_long_start}°")
+        except ValueError:
+            text = "Starting longitude and latitude must be whole numbers."
+
+       
+        self.Advanced_pointing_box.configure(state = "normal")
+        self.Advanced_pointing_box.delete("0.0", "end")
+        self.Advanced_pointing_box.insert("0.0", text)   
+        self.Advanced_pointing_box.configure(state = "disabled")
+
+
+    
     def gpsLocator(self):
 
         #takes location entry and fills latitude and longitude entry
@@ -460,6 +499,10 @@ class ChartApp(customtkinter.CTk):
                     self.longitude_entry.delete(0, "end")
                     self.latitude_entry.insert(0, lat)
                     self.longitude_entry.insert(0, long)
+                    #sync to pointing box
+                    self.syncCoords(self.latitude_entry, "pointing_latitude_entry")
+                    self.syncCoords(self.longitude_entry, "pointing_longitude_entry")
+                    
                 else:
                     messagebox.showerror("Location error", "Please enter a location")
 
@@ -490,7 +533,8 @@ class ChartApp(customtkinter.CTk):
     def calculate(self):
         try:
             now = datetime.datetime.now()
-
+            adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
+            
             self.results = pointing(
                 latitude = float(self.latitude_entry.get()),
                 longitude = float(self.longitude_entry.get()),
@@ -499,10 +543,13 @@ class ChartApp(customtkinter.CTk):
                 day = now.day,
                 hour = now.hour,
                 minute = now.minute,
-                delay = float(self.delay_entry.get()),
-                num_points = int(self.num_points_entry.get()),
-                lat_increment = float(self.latitude_increment_entry.get()),
-                long_increment = float(self.longitude_increment_entry.get()),
+                delay = float(self.delay_entry.get().strip() or 1),
+                num_points = int(self.num_points_entry.get().strip() or 1),
+                lat_increment = float(self.latitude_increment_entry.get().strip() or 0),
+                long_increment = float(self.longitude_increment_entry.get().strip() or 0),
+                delta_time = int(self.delta_time_entry.get().strip() or 10),
+                gal_long_start = int(self.gal_long_start_entry.get().strip() or 0) if adv_open else 0,
+                gal_lat_start = int(self.gal_lat_start_entry.get().strip() or 0) if adv_open else 0
             )
         
             self.AzAlt = azalt(self.results)
