@@ -120,13 +120,60 @@ def gps(location):
     return latitude, longitude
 
 
+def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month, day):
+    result = []
+    
+    tz = timezone_of(latitude, longitude)
+    location = EarthLocation(lat = latitude * u.deg , lon = longitude * u.deg)
+    sgr_a_gal = SkyCoord(ra = 266.41684 * u.deg, dec = -29.00781 * u.deg, frame='icrs').galactic
 
 
+    l = sgr_a_gal.l + gal_long * u.deg
+    b = sgr_a_gal.b + gal_lat * u.deg
 
+    offset = SkyCoord(l = l, b = b, frame = 'galactic')
+    
 
+    start = datetime(year, month, day, hour = 0, minute = 0, tzinfo = tz)
+    end = datetime(year, month, day, hour = 23, minute = 59, tzinfo = tz)
+    time_interval = timedelta(minutes = 5)
 
+    time_array = []
+    current_time = start
+    while current_time <= end:
+        time_array.append(current_time)
+        current_time += time_interval
 
+    Time_Array = Time(time_array)
+    altaz = offset.transform_to(AltAz(obstime=Time_Array, location=location))
 
+    pos_in_sky = altaz.alt.deg.argmax()
+    time_max_alt = time_array[pos_in_sky]
+    result.append(f"Your point will reach its max altitude at {time_max_alt.strftime('%I:%M %p %Z')}")
+    
+    alt = altaz.alt.deg
+    rise_time = None
+    for i in range(1, len(time_array)):
+        if alt[i-1]<0 and alt[i]>=0:
+            rise_time = time_array[i]
+            result.append(f"Your point will cross the horizon at {rise_time.strftime('%I:%M %p %Z')}")
+            break
+    if alt.max() < 0:
+        result.append(f"Altitude of your set point today ({start.strftime('%I:%M %p %Z')}) never goes above the horizon.\nTry another day:/")
+    elif alt.min() > 0:
+        result.append(f"Altitude of your set point today({start.strftime('%I:%M %p %Z')}) never goes below the horizon")
+
+    #this allows us to get the time of a height above the horizon of the point in degrees
+    point_height_time = None
+    for i in range(1, len(time_array)):
+        if alt[i-1]< point_height and alt[i] >= point_height:
+            point_height_time = time_array[i]
+            result.append(f"Your point will reach {point_height}° altitude at {point_height_time.strftime('%I:%M %p %Z')}")
+            break
+    if point_height_time is None:
+        result.append(f"Your point never reaches {point_height}° today")
+
+    return "\n".join(result)
 
 
 
