@@ -68,6 +68,16 @@ def get_meta_param(prompt):
 
 
 def read_run(directory=None, update_v1=False, outpath=None):
+    """Reads a CHART data run from the specified directory.
+    
+    Keyword arguments:
+    directory -- the directory to read from (default: current directory)
+    update_v1 -- if True, update metadata files from v1 to v2 format
+                by asking the user for missing information (default: False)
+    outpath -- if update_v1 is True, the directory to write updated 
+                metadata files to (default: same as input directory, 
+                overwriting existing files)
+    """
     if directory is None:
         directory = os.curdir()
     data_list = find_dat_files(directory=directory)
