@@ -452,21 +452,6 @@ class ChartApp(customtkinter.CTk):
 
         # advanced setting window inside of pointing calculator
 
-        def setParams():
-            try:
-                gal_long_start = int(self.gal_long_start_entry.get().strip() or 0)
-                gal_lat_start  = int(self.gal_lat_start_entry.get().strip()  or 0)
-                text = (f"Starting Galactic Latitude:  {gal_lat_start}°\n"f"Starting Galactic Longitude: {gal_long_start}°")
-            except ValueError:
-                text = "Starting longitude and latitude must be whole numbers."
-
-            self.Advanced_pointing_box.configure(state = "normal")
-            self.Advanced_pointing_box.delete("0.0", "end")
-            self.Advanced_pointing_box.insert("0.0", text)   
-            self.Advanced_pointing_box.configure(state = "disabled")
-
-
-
         self.window = customtkinter.CTkToplevel(self)
         self.window.title("Advanced Pointing")
         self.window.geometry("500x500")
@@ -525,6 +510,9 @@ class ChartApp(customtkinter.CTk):
 
 
     def giveTime(self):
+
+        # collects entries and gets time from azalt gimme_time function
+
         try:
             now = datetime.datetime.now()
             date = self.date_of_observation_entry.get().strip()
@@ -556,7 +544,11 @@ class ChartApp(customtkinter.CTk):
             self.Advanced_pointing_box.delete("0.0", "end")
             self.Advanced_pointing_box.insert("0.0", f"Calculation error: {e}")
             self.Advanced_pointing_box.configure(state = "disabled")
+
     def calculate(self):
+
+        # calculations for pointing calculator
+
         try:
             now = datetime.datetime.now()
             adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
@@ -596,6 +588,9 @@ class ChartApp(customtkinter.CTk):
             self.AzAlt_box.configure(state = "disabled")
 
     def setParams(self):
+
+        # lists params from advanced pointing menu
+
         try:
             gal_long_start = int(self.gal_long_start_entry.get().strip() or 0)
             gal_lat_start  = int(self.gal_lat_start_entry.get().strip()  or 0)
