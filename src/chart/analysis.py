@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import glob
+import time
 
 # Read data file -> something useful
 # Read metadata files
@@ -17,13 +18,17 @@ def print_meta(meta):
         else:
             print(key, ':\t', meta[key])
 
+def get_utc_datetime(time):
+    return time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(time))
+
 def read_data(datafile, metadata_file, verbose=False):
-    meta = np.load(metadata_file, allow_pickle=True)
+    meta = dict(np.load(metadata_file, allow_pickle=True))
     if 'dtype' in meta:
         data = np.fromfile(datafile, dtype=meta['dtype'][0])
     else:
         data = np.fromfile(datafile, dtype=np.float32)
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
+    meta['utc_datetime'] = get_utc_datetime(np.mean(meta['times']))
     if verbose:
         print_meta(meta)
     return data, meta
@@ -86,11 +91,11 @@ def read_run(directory=None, update_v1=False, outpath=None):
     meta = []
     # Check for old data format. Ask user for missing info. 
     # If not known, set to None
-    metatemp = np.load(meta_list[0], allow_pickle=True)
+    metatemp = dict(np.load(meta_list[0], allow_pickle=True))
     if 'azimuth' not in metatemp:
         version = 1
         print(f'CHART v1 data format in {directory}.')
-        print('Please enter the missing information:')
+        print('Please enter the missing information (blank if unknown):')
         latitude = get_meta_param('Latitude [degrees]: ')
         longitude = get_meta_param('Longitude [degrees]: ')
         altitude = get_meta_param('Altitude [degrees]: ')
