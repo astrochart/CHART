@@ -67,7 +67,7 @@ def get_meta_param(prompt):
             return get_meta_param(prompt)
 
 
-def read_run(directory=None, overwrite_v1=False):
+def read_run(directory=None, update_v1=False, outpath=None):
     if directory is None:
         directory = os.curdir()
     data_list = find_dat_files(directory=directory)
@@ -86,9 +86,13 @@ def read_run(directory=None, overwrite_v1=False):
         altitude = get_meta_param('Altitude [degrees]: ')
         azimuth = get_meta_param('Azimuth [degrees]: ')
         
-        if overwrite_v1:
-            print('Overwriting metadata files with new format...')
-    else:
+        if update_v1:
+            if outpath is None:
+                outpath = directory
+                print('Overwriting metadata files with new format...')
+            else:
+                print(f'Writing updated metadata files to {outpath}...')
+    else: 
         version = 2
     for dfile, mfile in zip(data_list, meta_list):
         datatemp, metatemp = read_data(dfile, mfile)
@@ -97,7 +101,7 @@ def read_run(directory=None, overwrite_v1=False):
             metatemp['altitude'] = altitude
             metatemp['latitude'] = latitude
             metatemp['longitude'] = longitude
-            if overwrite_v1:
+            if update_v1:
                 np.savez(mfile, **metatemp)
         data.append(datatemp)
         meta.append(metatemp)
