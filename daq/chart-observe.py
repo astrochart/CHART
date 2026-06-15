@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
-from chart.azalt import pointing, azalt, gps
+from chart.azalt import pointing, azalt, gps, gimme_time
 
 class ChartApp(customtkinter.CTk):
 
@@ -451,26 +451,127 @@ class ChartApp(customtkinter.CTk):
 
         self.scroll = customtkinter.CTkScrollableFrame(master = self.window, width = 460, height = 260, corner_radius = 0)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
+        
+        self.Advanced_function_1_label = customtkinter.CTkLabel(self.scroll, text = "The first 'Advanced Feature' allows you to set the starting \nangle along from the galactic center.", justify = "left")
+        self.Advanced_function_1_label.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
 
         self.gal_lat_start_label = customtkinter.CTkLabel(self.scroll, text = "Starting Galactic Latitude", justify = "left")
-        self.gal_lat_start_label.grid(row = 1, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.gal_lat_start_label.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
         self.gal_lat_start_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
-        self.gal_lat_start_entry.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.gal_lat_start_entry.grid(row = 3, column = 0, sticky = "w", padx = 10, pady = 5)
 
         self.gal_long_start_label = customtkinter.CTkLabel(self.scroll, text = "Starting Galactic Longitude", justify = "left")
-        self.gal_long_start_label.grid(row = 1, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.gal_long_start_label.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
         self.gal_long_start_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
-        self.gal_long_start_entry.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.gal_long_start_entry.grid(row = 3, column = 1, sticky = "w", padx = 10, pady = 5)
 
         self.set_params_button = customtkinter.CTkButton(self.scroll, text="Set Parameters", command=self.setParams, width = 180, hover_color = "dark blue", corner_radius = 0)
-        self.set_params_button.grid(row = 3, column = 0, padx = 10, pady = 5)
+        self.set_params_button.grid(row = 4, column = 0, padx = 10, pady = 5)
+
+
+        # === Give Me Time function === #
+        self.Advanced_function_2_label = customtkinter.CTkLabel(self.scroll, text = "The next 'Advanced Feature' takes in the date you want to go \nobserve, where you want to observe and the angel above the \nhorizon you want to observe and tells you when it'll be in \nthe sky ", justify = "left")
+        self.Advanced_function_2_label.grid(row = 5, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+
+        self.date_of_observation_label = customtkinter.CTkLabel(self.scroll, text = "Planned Date of Observation", justify = "left")
+        self.date_of_observation_label.grid(row = 6, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.date_of_observation_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "e.g.: 07-15-1943", width = 180, corner_radius = 0)
+        self.date_of_observation_entry.grid(row = 7, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        self.point_height_label = customtkinter.CTkLabel(self.scroll, text = "Angle above horizon you \nwant to investigate", justify = "left")
+        self.point_height_label.grid(row = 6, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.point_height_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 10", width = 180, corner_radius = 0)
+        self.point_height_entry.grid(row = 7, column = 1, sticky = "w", padx = 10, pady = 5)
 
         
+        self.gal_lat_label = customtkinter.CTkLabel(self.scroll, text = "Galactic Latitude (b) you \nwant to investigate", justify = "left")
+        self.gal_lat_label.grid(row = 8, column = 0, sticky = "w", padx = 10, pady = 5)
+        self.gal_lat_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
+        self.gal_lat_entry.grid(row = 9, column = 0, sticky = "w", padx = 10, pady = 5)
+
+        self.gal_long_label = customtkinter.CTkLabel(self.scroll, text = "Galactic Longitude (l) you \nwant to investigate", justify = "left")
+        self.gal_long_label.grid(row = 8, column = 1, sticky = "w", padx = 10, pady = 5)
+        self.gal_long_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
+        self.gal_long_entry.grid(row = 9, column = 1, sticky = "w", padx = 10, pady = 5)
+
+        self.gimme_time_button = customtkinter.CTkButton(self.scroll, text="When To Observe", command=self.giveTime, width = 180, hover_color = "dark blue", corner_radius = 0)
+        self.gimme_time_button.grid(row = 10, column = 0, padx = 10, pady = 5)
+        
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled", corner_radius = 0)
-        self.Advanced_pointing_box.grid(row = 4, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
+        self.Advanced_pointing_box.grid(row = 11, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
 
+    def giveTime(self):
+        try:
+            now = datetime.datetime.now()
+            date = self.date_of_observation_entry.get().strip()
+            if date:
+                month, day, year = map(int, re.split(r"[-./ ]", date))
+            else: year, month, day = now.year, now.month, now.day
+
+            self.give_time = gimme_time(latitude = float(self.latitude_entry.get()),
+                                        longitude = float(self.longitude_entry.get()),
+                                        gal_lat = int(self.gal_lat_entry.get() or 0),
+                                        gal_long = int(self.gal_long_entry.get() or 0),
+                                        point_height = int(self.point_height_entry.get() or 10),
+                                        year = year,
+                                        month = month,
+                                        day = day)
+        
+            self.Advanced_pointing_box.configure(state = "normal")
+            self.Advanced_pointing_box.delete("0.0", "end")
+            self.Advanced_pointing_box.insert("0.0", self.give_time)   
+            self.Advanced_pointing_box.configure(state = "disabled")
+
+        except ValueError as e:
+            self.Advanced_pointing_box.configure(state = "normal")
+            self.Advanced_pointing_box.delete("0.0", "end")
+            self.Advanced_pointing_box.insert("0.0", f"Input error: {e}\nCheck that all fields formatted like the examples.")
+            self.Advanced_pointing_box.configure(state = "disabled")
+        except Exception as e:
+            self.Advanced_pointing_box.configure(state = "normal")
+            self.Advanced_pointing_box.delete("0.0", "end")
+            self.Advanced_pointing_box.insert("0.0", f"Calculation error: {e}")
+            self.Advanced_pointing_box.configure(state = "disabled")
+    def calculate(self):
+        try:
+            now = datetime.datetime.now()
+            adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
+            
+            self.results = pointing(
+                latitude = float(self.latitude_entry.get()),
+                longitude = float(self.longitude_entry.get()),
+                year = now.year,
+                month = now.month,
+                day = now.day,
+                hour = now.hour,
+                minute = now.minute,
+                delay = float(self.delay_entry.get().strip() or 1),
+                num_points = int(self.num_points_entry.get().strip() or 1),
+                lat_increment = float(self.latitude_increment_entry.get().strip() or 0),
+                long_increment = float(self.longitude_increment_entry.get().strip() or 0),
+                delta_time = int(self.delta_time_entry.get().strip() or 10),
+                gal_long_start = int(self.gal_long_start_entry.get().strip() or 0) if adv_open else 0,
+                gal_lat_start = int(self.gal_lat_start_entry.get().strip() or 0) if adv_open else 0
+            )
+        
+            self.AzAlt = azalt(self.results)
+            
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", self.AzAlt)   
+            self.AzAlt_box.configure(state = "disabled")
+        except ValueError as e:
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", f"Input error: {e}\nCheck that all fields are filled and formatted like the examples.")
+            self.AzAlt_box.configure(state = "disabled")
+        except Exception as e:
+            self.AzAlt_box.configure(state = "normal")
+            self.AzAlt_box.delete("0.0", "end")
+            self.AzAlt_box.insert("0.0", f"Calculation error: {e}")
+            self.AzAlt_box.configure(state = "disabled")
 
     def setParams(self):
         try:
@@ -485,7 +586,6 @@ class ChartApp(customtkinter.CTk):
         self.Advanced_pointing_box.delete("0.0", "end")
         self.Advanced_pointing_box.insert("0.0", text)   
         self.Advanced_pointing_box.configure(state = "disabled")
-
 
     
     def gpsLocator(self):
@@ -534,44 +634,6 @@ class ChartApp(customtkinter.CTk):
             self.calculate_coordinates_button.configure(text="Internet Required", state="disabled")
         self.after(10000, self.gpsDisable)
 
-    def calculate(self):
-        try:
-            now = datetime.datetime.now()
-            adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
-            
-            self.results = pointing(
-                latitude = float(self.latitude_entry.get()),
-                longitude = float(self.longitude_entry.get()),
-                year = now.year,
-                month = now.month,
-                day = now.day,
-                hour = now.hour,
-                minute = now.minute,
-                delay = float(self.delay_entry.get().strip() or 1),
-                num_points = int(self.num_points_entry.get().strip() or 1),
-                lat_increment = float(self.latitude_increment_entry.get().strip() or 0),
-                long_increment = float(self.longitude_increment_entry.get().strip() or 0),
-                delta_time = int(self.delta_time_entry.get().strip() or 10),
-                gal_long_start = int(self.gal_long_start_entry.get().strip() or 0) if adv_open else 0,
-                gal_lat_start = int(self.gal_lat_start_entry.get().strip() or 0) if adv_open else 0
-            )
-        
-            self.AzAlt = azalt(self.results)
-            
-            self.AzAlt_box.configure(state = "normal")
-            self.AzAlt_box.delete("0.0", "end")
-            self.AzAlt_box.insert("0.0", self.AzAlt)   
-            self.AzAlt_box.configure(state = "disabled")
-        except ValueError as e:
-            self.AzAlt_box.configure(state = "normal")
-            self.AzAlt_box.delete("0.0", "end")
-            self.AzAlt_box.insert("0.0", f"Input error: {e}\nCheck that all fields are filled and formatted like the examples.")
-            self.AzAlt_box.configure(state = "disabled")
-        except Exception as e:
-            self.AzAlt_box.configure(state = "normal")
-            self.AzAlt_box.delete("0.0", "end")
-            self.AzAlt_box.insert("0.0", f"Calculation error: {e}")
-            self.AzAlt_box.configure(state = "disabled")
 
     def saveLocationSettings(self):
 
