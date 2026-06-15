@@ -112,6 +112,8 @@ class ChartApp(customtkinter.CTk):
         self.buildEntries()
         self.buildSwitches()
         self.buildButtons()
+
+        # functions that start at runtime are here
         self.loadSettings()
         self.gpsDisable()
     
@@ -357,8 +359,10 @@ class ChartApp(customtkinter.CTk):
         self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
         self.popup.focus() # brings popup in front of GUI
 
-    #function to connect lat long in the main menu to lat long in the pointing window in real time
     def syncCoords(self, source, target, event=None):
+
+        #function to connect lat long in the main menu to lat long in the pointing window in real time
+
         if isinstance(target, str):
             target = getattr(self, target, None)
         if target is not None and target.winfo_exists():
@@ -445,6 +449,24 @@ class ChartApp(customtkinter.CTk):
         self.AzAlt_box.grid(row = 9, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
     def advancedPointing(self):
+
+        # advanced setting window inside of pointing calculator
+
+        def setParams():
+            try:
+                gal_long_start = int(self.gal_long_start_entry.get().strip() or 0)
+                gal_lat_start  = int(self.gal_lat_start_entry.get().strip()  or 0)
+                text = (f"Starting Galactic Latitude:  {gal_lat_start}°\n"f"Starting Galactic Longitude: {gal_long_start}°")
+            except ValueError:
+                text = "Starting longitude and latitude must be whole numbers."
+
+            self.Advanced_pointing_box.configure(state = "normal")
+            self.Advanced_pointing_box.delete("0.0", "end")
+            self.Advanced_pointing_box.insert("0.0", text)   
+            self.Advanced_pointing_box.configure(state = "disabled")
+
+
+
         self.window = customtkinter.CTkToplevel(self)
         self.window.title("Advanced Pointing")
         self.window.geometry("500x500")
@@ -463,29 +485,12 @@ class ChartApp(customtkinter.CTk):
         self.gal_long_start_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
         self.gal_long_start_entry.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
 
-        self.set_params_button = customtkinter.CTkButton(self.scroll, text="Set Parameters", command=self.setParams, width = 180, hover_color = "dark blue", corner_radius = 0)
+        self.set_params_button = customtkinter.CTkButton(self.scroll, text="Set Parameters", command=setParams, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.set_params_button.grid(row = 3, column = 0, padx = 10, pady = 5)
 
         
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled", corner_radius = 0)
         self.Advanced_pointing_box.grid(row = 4, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
-
-
-
-    def setParams(self):
-        try:
-            gal_long_start = int(self.gal_long_start_entry.get().strip() or 0)
-            gal_lat_start  = int(self.gal_lat_start_entry.get().strip()  or 0)
-            text = (f"Starting Galactic Latitude:  {gal_lat_start}°\n"f"Starting Galactic Longitude: {gal_long_start}°")
-        except ValueError:
-            text = "Starting longitude and latitude must be whole numbers."
-
-       
-        self.Advanced_pointing_box.configure(state = "normal")
-        self.Advanced_pointing_box.delete("0.0", "end")
-        self.Advanced_pointing_box.insert("0.0", text)   
-        self.Advanced_pointing_box.configure(state = "disabled")
-
 
     
     def gpsLocator(self):
@@ -535,6 +540,9 @@ class ChartApp(customtkinter.CTk):
         self.after(10000, self.gpsDisable)
 
     def calculate(self):
+
+        #calculations for advanced pointing menu
+
         try:
             now = datetime.datetime.now()
             adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
@@ -650,8 +658,8 @@ class ChartApp(customtkinter.CTk):
 
         # checks for default switch and returns either default values or text in the entry boxes
         # if default switch is off, data in the entry boxes is collected and is then checked to make sure its valid
-        # a cfg dictionary is then created along with the other entrys in the GUI.  !!! The other entries are checked in the observationSession class as typos are not critical. 
-        # The cfg is then passed to the observation session Class
+        # argumnents are then created with values entered 
+        # The cfg dictionary is made from the arguments and is then passed to the runObservation function
 
         if self.session and self.session.is_alive():
             messagebox.showwarning(
@@ -750,28 +758,20 @@ class ChartApp(customtkinter.CTk):
 
             freq_i=self.freq_i,
             freq_f=self.freq_f,
-
             df=1.0,
 
             veclength=1024,
             samp_rate=2.0,
-
-            #int_length=100, #ignored when int_time is supplied
             int_time=self.int_time,
-
             nint=self.nint,
 
             biasT=self.bias_switch.get() == "on",
-
             data_dir=None,
 
-            sleep_time=5.0,
-
             #causes a single sweep, ignore
-            scan_period=0.001,
-            total_time=0.001
+            scan_period=None,
+            total_time=None
         )
-
 
         self.startLogCapture()
         cfg = buildConfig(args, self.log)
