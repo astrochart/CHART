@@ -197,6 +197,14 @@ class ChartApp(customtkinter.CTk):
         self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10", corner_radius=0)
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
+        self.frequency_start_entry.bind("<KeyRelease>", self.updateTimeEstimate)
+        self.frequency_stop_entry.bind("<KeyRelease>", self.updateTimeEstimate)
+        self.integration_time_entry.bind("<KeyRelease>", self.updateTimeEstimate)
+        self.integration_scans_entry.bind("<KeyRelease>", self.updateTimeEstimate)
+
+        self.estimated_time_label = customtkinter.CTkLabel(self.scroll_frame, text="")
+        self.estimated_time_label.grid(column=3, row=7, padx=10, pady=5, sticky="w")
+
     def buildSwitches(self):
         self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Default Parameters", onvalue="on", offvalue="off", command=self.enableDefaults, corner_radius=0)
         self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
@@ -702,6 +710,36 @@ class ChartApp(customtkinter.CTk):
         )
         self.after(1000, self.updateClock)
     
+    def updateTimeEstimate(self, event=None):
+
+        # grabs the frequency entries and updatees the estimated time displayed on the GUI
+
+        if self.default_switch.get() =="on":
+            freq_i = float(self.default_freq_i)
+            freq_f = float(self.default_freq_f)
+            int_time = float(self.default_int_time)
+            nint = int(self.default_nint)
+
+        else:
+            try:
+                freq_i = float(self.frequency_start_entry.get())
+                freq_f = float(self.frequency_stop_entry.get())
+                int_time = float(self.integration_time_entry.get())
+                nint = int(self.integration_scans_entry.get())
+
+            except ValueError: 
+                self.estimated_time_label.configure(text="")
+                return
+        
+        try: 
+            estimated_time = ((freq_f - freq_i) * int_time * nint)
+            minutes, seconds = divmod(estimated_time, 60)
+            self.estimated_time_label.configure(text=f"Estimated time: {minutes:.0f}m {seconds:.0f}s")
+        except Exception as e:
+            self.estimated_time_label.configure(text="")
+            return
+
+    
     def enableDefaults(self):
 
         # removes text in entrys and disables them
@@ -718,11 +756,13 @@ class ChartApp(customtkinter.CTk):
             self.integration_scans_entry.configure(state="disabled", placeholder_text="10", fg_color=("gray80", "gray10"))
             self.integration_time_entry.configure(state="disabled", placeholder_text="5", fg_color=("gray80", "gray10"))
             self.log("Using default parameters")
+            self.updateTimeEstimate()
         else:
             self.frequency_start_entry.configure(state="normal", placeholder_text="1415", fg_color=("white", "gray21"))
             self.frequency_stop_entry.configure(state="normal", placeholder_text="1425", fg_color=("white", "gray21"))
             self.integration_scans_entry.configure(state="normal", placeholder_text="10", fg_color=("white", "gray21"))
             self.integration_time_entry.configure(state="normal", placeholder_text="5", fg_color=("white", "gray21"))
+            self.updateTimeEstimate()
 
     
     def startCollection(self):
