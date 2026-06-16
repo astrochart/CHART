@@ -1032,6 +1032,8 @@ class ChartApp(customtkinter.CTk):
             messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
 
             self.log("Bias-T will be enabled!")
+        else:
+            self.log("Bias-T disabled")
 
     def onClose(self):
 
