@@ -27,35 +27,13 @@ source chartenv/bin/activate
 ```bash
 sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
 ```
-- The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
-```bash
-sudo apt install libusb-1.0-0-dev
-sudo apt install debhelper
-git clone https://github.com/rtlsdrblog/rtl-sdr-blog
-cd rtl-sdr-blog
-sudo dpkg-buildpackage -b --no-sign
-cd ..
-sudo dpkg -i librtlsdr0_*.deb
-sudo dpkg -i librtlsdr-dev_*.deb
-sudo dpkg -i rtl-sdr_*.deb
-echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
-```
+
 - We rebooted the system.
 - Finally we installed CHART.
 ```bash
 git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
-```
-- We used `vi` to make a bash script called chart-observe on the Desktop with the following lines:
-```bash
-#!/bin/bash
-source /home/pi/chartenv/bin/activate
-chart-observe.py
-```
-- We made the script executable:
-```bash
-chmod 777 ~/Desktop/chart-observe
 ```
 
 At this point everything was installed and the Pi was ready to be used. 

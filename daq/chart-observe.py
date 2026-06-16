@@ -128,22 +128,22 @@ class ChartApp(customtkinter.CTk):
         self.saved_settings_frame.columnconfigure(1, weight=1)
 
         self.observer_name_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Observer Name")
-        self.observer_name_label.grid(column=0, row=0, padx=10, pady=7)
+        self.observer_name_label.grid(column=0, row=0, padx=10, pady=7, sticky="e")
         self.observer_name_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter Here", corner_radius=0)
         self.observer_name_entry.grid(column=1, row=0, padx=10, pady=(10,7), sticky="sew")
 
         self.location_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Location")
-        self.location_label.grid(column=0, row=1, padx=10, pady=0, sticky="n")
+        self.location_label.grid(column=0, row=1, padx=10, pady=0, sticky="ne")
         self.location_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="e.g.: Winona, Minnesota", corner_radius=0)
         self.location_entry.grid(column=1, row=1, padx=10, pady=0, sticky="nwe")
 
-        self.latitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Latitude")
-        self.latitude_label.grid(column=0, row=3, padx=10, pady=7)
+        self.latitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Latitude (deg)")
+        self.latitude_label.grid(column=0, row=3, padx=10, pady=7, sticky="e")
         self.latitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
         self.latitude_entry.grid(column=1, row=3, padx=10, pady=7, sticky="ew")
 
-        self.longitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Longitude")
-        self.longitude_label.grid(column=0, row=4, padx=10, pady=0, sticky="n")
+        self.longitude_label = customtkinter.CTkLabel(self.saved_settings_frame, text="Longitude (deg)")
+        self.longitude_label.grid(column=0, row=4, padx=10, pady=0, sticky="ne")
         self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
         self.longitude_entry.grid(column=1, row=4, padx=10, pady=(0,5), sticky="nwe")
 
