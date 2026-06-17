@@ -139,7 +139,6 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
     b = sgr_a_gal.b + gal_lat * u.deg
 
     offset = SkyCoord(l = l, b = b, frame = 'galactic')
-    date = [month, day, year]
 
     start = datetime(year, month, day, hour = 0, minute = 0, tzinfo = tz)
     end = start + timedelta(days = 2)
@@ -215,6 +214,30 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
     return "\n".join(result)
 
 
+def altitude_plot_data(latitude, longitude, gal_lat, gal_long, year, month, day, days = 2, step_size = 5):
+    latitude, longitude = float(latitude), float(longitude)
+    tz = timezone_of(latitude, longitude)
+    location = EarthLocation(lat = latitude * u.deg , lon = longitude * u.deg)
+    sgr_a_gal = SkyCoord(ra = 266.41684 * u.deg, dec = -29.00781 * u.deg, frame='icrs').galactic
+
+
+    l = sgr_a_gal.l + gal_long * u.deg
+    b = sgr_a_gal.b + gal_lat * u.deg
+
+    offset = SkyCoord(l = l, b = b, frame = 'galactic')
+
+    start = datetime(year, month, day, hour = 0, minute = 0, tzinfo = tz)
+    end = start + timedelta(days = days)
+    time_interval = timedelta(minutes = step_size)
+
+    time_array = []
+    current_time = start
+    while current_time <= end:
+        time_array.append(current_time)
+        current_time += time_interval
+
+    altaz = offset.transform_to(AltAz(obstime=time_array, location=location))
+    return time_array, altaz.alt.deg, tz
 
 
 
