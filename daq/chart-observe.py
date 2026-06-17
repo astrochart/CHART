@@ -693,11 +693,11 @@ class ChartApp(customtkinter.CTk):
             plt.tight_layout()
             plt.show()  
         except Exception as e:
-            self.log(f"Plot error: {e}")
+            self.Advanced_pointing_box.configure(state = "normal")
+            self.Advanced_pointing_box.insert("end", f"\nPlot error: {e}")
+            self.Advanced_pointing_box.configure(state = "disabled")
 
 
-
-    
     def setParams(self):
 
         # lists params from advanced pointing menu
