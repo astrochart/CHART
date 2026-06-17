@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
-from chart.azalt import pointing, azalt, gps, gimme_time
+from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
 
 class ChartApp(customtkinter.CTk):
 
@@ -526,8 +526,11 @@ class ChartApp(customtkinter.CTk):
         self.gal_long_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
         self.gal_long_entry.grid(row = 9, column = 1, sticky = "w", padx = 10, pady = 5)
 
-        self.gimme_time_button = customtkinter.CTkButton(self.scroll, text="When To Observe", command=self.giveTime, width = 180, hover_color = "dark blue", corner_radius = 0)
+        self.gimme_time_button = customtkinter.CTkButton(self.scroll, text = "When To Observe", command = self.giveTime, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.gimme_time_button.grid(row = 10, column = 0, padx = 10, pady = 5)
+        
+        self.altitude_plot_button = customtkinter.CTkButton(self.scroll, text = "Plot your Planned Altitude \n(default today if date empty)", command = self.altitudePlot, width = 180, hover_color = "dark blue", corner_radius = 0)
+        self.altitude_plot_button.grid(row = 10, column = 1, padx = 10, pady = 5)
         
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled", corner_radius = 0)
         self.Advanced_pointing_box.grid(row = 11, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
@@ -645,6 +648,54 @@ class ChartApp(customtkinter.CTk):
         except ValueError:
             kind = "a whole number" if cast is int else "a number"
             raise ValueError(f"{label} must be {kind}, got {raw}")
+
+    def altitudePlot (self):
+        try:
+            now = datetime.datetime.now()
+
+            date = self.date_of_observation_entry.get().strip()
+            if date:
+                try:
+                    month, day, year = map(int, re.split(r"\D+", date))
+                    if year < 100:
+                        year += 2000
+                except ValueError:
+                    raise ValueError("Planned Date of Observation is invalid.\nPlease put in form MM-DD-YYYY")
+            else:
+                year, month, day = now.year, now.month, now.day
+                
+            adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
+            lat = self.specializedErrors(self.latitude_entry, "Observer latitude", float)
+            long = self.specializedErrors(self.longitude_entry, "Observer longitude", float)
+            gal_long = self.specializedErrors(self.gal_long_entry, "Galactic Longitude you want to investigate", int, default = 0) if adv_open else 0
+            gal_lat = self.specializedErrors(self.gal_lat_entry, "Galactic Latitude you want to investigate", int, default = 0) if adv_open else 0
+
+            times, alt, tz = altitude_plot_data(lat, long, gal_lat, gal_long, year, month, day)
+
+            plt.figure(figsize=(4, 2))
+            plt.plot(times, alt)                                       # the sky trace
+            plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
+
+            if (year, month, day) == (now.year, now.month, now.day):
+                now_tz = datetime.datetime.now(tz)
+                i = min(range(len(times)), key = lambda k:abs((times[k] - now_tz).total_seconds()))
+                plt.axvline(now_tz, color="red", linestyle=":", linewidth=1)
+                plt.scatter([times[i]], [alt[i]], color="red", zorder=5)
+                plt.title(f"Current Altitude: {alt[i]:.1f}°")
+            else:
+                j = int(alt.argmax())
+                plt.scatter([times[j]], [alt[j]], color="red", zorder=5)
+                plt.title(f"{month:02d}-{day:02d}-{year} — peak altitude {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
+            
+            plt.xlabel("Time")
+            plt.ylim(bottom = 0)
+            plt.gca().yaxis.set_major_formatter('{x:.0f}°')            
+            plt.tight_layout()
+            plt.show()  
+        except Exception as e:
+            self.log(f"Plot error: {e}")
+
+
 
     
     def setParams(self):
