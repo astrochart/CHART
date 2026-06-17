@@ -18,8 +18,8 @@ def print_meta(meta):
         else:
             print(key, ':\t', meta[key])
 
-def get_utc_datetime(time):
-    return time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(time))
+def get_utc_datetime(t):
+    return time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(t))
 
 def read_data(datafile, metadata_file, verbose=False):
     meta = dict(np.load(metadata_file, allow_pickle=True))
