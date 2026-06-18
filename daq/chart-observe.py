@@ -154,18 +154,18 @@ class ChartApp(customtkinter.CTk):
 
 
         self.altitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Altitude (deg)")
-        self.altitude_label.grid(column=0, row=6, padx=10, pady=5)
+        self.altitude_label.grid(column=0, row=6, padx=10, pady=5, sticky='e')
         self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here", corner_radius=0)
         self.altitude_entry.grid(column=1, row=6, padx=10, pady=5, sticky="ew")
 
         self.azimuth_label = customtkinter.CTkLabel(self.scroll_frame, text="Azimuth (deg)")
-        self.azimuth_label.grid(column=0, row=7, padx=10, pady=5, sticky="n")
+        self.azimuth_label.grid(column=0, row=7, padx=10, pady=5, sticky="en")
         self.azimuth_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here", corner_radius=0)
         self.azimuth_entry.grid(column=1, row=7, padx=10, pady=5, sticky="nwe")
 
         self.description_label = customtkinter.CTkLabel(self.scroll_frame, text="Description (optional)")
         self.description_label.grid(column=0, row=8, padx=10, sticky="new")
-        self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=50, corner_radius=0)
+        self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=65, corner_radius=0)
         self.description_entry.grid(column=0, row=9, padx=10, pady=0, sticky="new", columnspan=2, rowspan=2)
 
 
@@ -181,23 +181,23 @@ class ChartApp(customtkinter.CTk):
         self.frequency_label = customtkinter.CTkLabel(self.scroll_frame, text="Frequency Scan Setup", font=("Arial", 18, "bold")   )
         self.frequency_label.grid(column=2, row=0, padx=10, pady=5, sticky="we", columnspan=2)
 
-        self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="      Start Frequency (MHz)")
-        self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5, sticky="w")
+        self.frequency_start_label = customtkinter.CTkLabel(self.scroll_frame, text="Start Frequency (MHz)")
+        self.frequency_start_label.grid(column=2, row=3, padx=10, pady=5, sticky="e")
         self.frequency_start_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1415", corner_radius=0)
         self.frequency_start_entry.grid(column=3, row=3, padx=10, pady=5, sticky="ew")
 
-        self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="      Stop Frequency (MHz)")
-        self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="wn")
+        self.frequency_stop_label = customtkinter.CTkLabel(self.scroll_frame, text="Stop Frequency (MHz)")
+        self.frequency_stop_label.grid(column=2, row=4, padx=10, pady=5, sticky="en")
         self.frequency_stop_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="1425", corner_radius=0)
         self.frequency_stop_entry.grid(column=3, row=4, padx=10, pady=5, sticky="nwe")
 
-        self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="      Integration time (s)")
-        self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="wn")
+        self.integration_time_label = customtkinter.CTkLabel(self.scroll_frame, text="Integration time (s)")
+        self.integration_time_label.grid(column=2, row=5, padx=10, pady=5, sticky="en")
         self.integration_time_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="5", corner_radius=0)
         self.integration_time_entry.grid(column=3, row=5, padx=10, pady=5, sticky="nwe")
 
-        self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="      Integrations per scan step")
-        self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="nw")
+        self.integration_scans_label = customtkinter.CTkLabel(self.scroll_frame, text="Integrations per scan step")
+        self.integration_scans_label.grid(column=2, row=6, padx=10, pady=5, sticky="ne")
         self.integration_scans_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="10", corner_radius=0)
         self.integration_scans_entry.grid(column=3, row=6, padx=10, pady=5, sticky="nwe")
 
@@ -861,6 +861,7 @@ class ChartApp(customtkinter.CTk):
             self.log("Using default parameters")
             self.updateTimeEstimate()
         else:
+            self.log("Default parameters disabled")
             self.frequency_start_entry.configure(state="normal", placeholder_text="1415", fg_color=("white", "gray21"))
             self.frequency_stop_entry.configure(state="normal", placeholder_text="1425", fg_color=("white", "gray21"))
             self.integration_scans_entry.configure(state="normal", placeholder_text="10", fg_color=("white", "gray21"))
@@ -1123,7 +1124,6 @@ class ChartApp(customtkinter.CTk):
 
         if self.mode_switch.get() == "on":
             customtkinter.set_appearance_mode("Dark")
-            self.log("Dark Mode enabled!")
         else: customtkinter.set_appearance_mode("Light")
     
     def biasTwarn(self):
