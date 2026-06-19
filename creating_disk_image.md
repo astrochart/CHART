@@ -64,7 +64,6 @@ The following steps are used to create the actual `.img.xz` file for backup and 
   xz -T0 -9 chart.img
   ```
 
-```
 
 ## CHART Disk Image Change Log
 
