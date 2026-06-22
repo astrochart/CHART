@@ -85,6 +85,9 @@ The following steps are used to create the actual `.img.xz` file for backup and 
   - Added a script that creates a launcher when installed
   - Added a .toml file due to depreciation of setup.py
 - Updated analysis tutorial
+  - Calibration improvement based on Memo 13
+  - Improvements to interactive fitting
+  - Added simple median filter option
 
 #### v1.1 (30 July, 2024)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.0..v1.1)
