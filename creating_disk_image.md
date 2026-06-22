@@ -51,8 +51,10 @@ The following steps are used to create the actual `.img.xz` file for backup and 
   ```bash 
   sudo dd if=/dev/sdb of=chart.img bs=4M status=progress
   ```
-  >[!WARNING]
-  > `dd` performs a raw disk copy and can permanently overwrite data. Verify the source (`if=`) and destination (`of=`) devices before pressing Enter. An incorrect destination may destroy the contents of a drive.
+
+> [!WARNING]
+> `dd` performs a raw disk copy and can permanently overwrite data. Verify the source (`if=`) and destination (`of=`) devices before pressing Enter. An incorrect destination may destroy the contents of a drive.
+
   - Then we shrunk the image using PiShrink
   ```bash
   wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
