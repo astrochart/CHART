@@ -28,7 +28,7 @@ source chartenv/bin/activate
 - We appended the second line above to the `~.bashrc` file so the `chartenv` environment will always activate when a terminal is opened.
 - Next we installed `gnuradio` and other packages.
 ```bash
-sudo sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
+sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
 ```
 - The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
 ```bash
