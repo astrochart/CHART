@@ -679,16 +679,16 @@ class ChartApp(customtkinter.CTk):
             plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d\n%H:%T'))  # format the x-axis
 
+            j = int(alt.argmax())
             if (year, month, day) == (now.year, now.month, now.day):
                 now_tz = datetime.datetime.now(tz)
                 i = min(range(len(times)), key = lambda k:abs((times[k] - now_tz).total_seconds()))
                 plt.axvline(now_tz, color="red", linestyle=":", linewidth=1)
                 plt.scatter([times[i]], [alt[i]], color="red", zorder=5)
-                plt.title(f"Current Altitude: {alt[i]:.1f}°")
+                plt.title(f"Current Alt: {alt[i]:.1f}°; Peak Alt: {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
             else:
-                j = int(alt.argmax())
                 plt.scatter([times[j]], [alt[j]], color="red", zorder=5)
-                plt.title(f"{month:02d}-{day:02d}-{year} — peak altitude {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
+                plt.title(f"{month:02d}-{day:02d}-{year} — Peak Alt: {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
             
             plt.xlabel(f"Time ({times[0].tzname()})")
             plt.ylim(bottom = 0)
