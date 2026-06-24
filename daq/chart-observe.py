@@ -15,6 +15,7 @@ import chart
 import sys
 import socket
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from tkinter import messagebox
 from argparse import Namespace
@@ -671,10 +672,12 @@ class ChartApp(customtkinter.CTk):
             gal_lat = self.specializedErrors(self.gal_lat_entry, "Galactic Latitude you want to investigate", int, default = 0) if adv_open else 0
 
             times, alt, tz = altitude_plot_data(lat, long, gal_lat, gal_long, year, month, day)
+            times = [t + t.utcoffset() for t in times]  # convert to local time
 
             plt.figure(figsize=(4, 2))
             plt.plot(times, alt)                                       # the sky trace
             plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d\n%H:%T'))  # format the x-axis
 
             if (year, month, day) == (now.year, now.month, now.day):
                 now_tz = datetime.datetime.now(tz)
@@ -687,7 +690,7 @@ class ChartApp(customtkinter.CTk):
                 plt.scatter([times[j]], [alt[j]], color="red", zorder=5)
                 plt.title(f"{month:02d}-{day:02d}-{year} — peak altitude {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
             
-            plt.xlabel("Time")
+            plt.xlabel(f"Time ({times[0].tzname()})")
             plt.ylim(bottom = 0)
             plt.gca().yaxis.set_major_formatter('{x:.0f}°')            
             plt.tight_layout()
