@@ -672,12 +672,11 @@ class ChartApp(customtkinter.CTk):
             gal_lat = self.specializedErrors(self.gal_lat_entry, "Galactic Latitude you want to investigate", int, default = 0) if adv_open else 0
 
             times, alt, tz = altitude_plot_data(lat, long, gal_lat, gal_long, year, month, day)
-            times = [t + t.utcoffset() for t in times]  # convert to local time
-
+            
             plt.figure(figsize=(8, 3))
             plt.plot(times, alt)                                       # the sky trace
             plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
-            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d\n%H:%M'))  # format the x-axis
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d\n%H:%M', times[0].tzinfo))  # format the x-axis
 
             j = int(alt.argmax())
             if (year, month, day) == (now.year, now.month, now.day):
