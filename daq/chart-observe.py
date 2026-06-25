@@ -1070,8 +1070,11 @@ class ChartApp(customtkinter.CTk):
 
             plt.figure(figsize=(8, 4))
 
+            f_e = 1.420405751768
+            plt.axvspan(f_e - 1e-3, f_e + 1e-3, alpha=0.25, color='green')
             for f, s in zip(freqs, spectra):
                 plt.plot(f, s)
+            plt.axvline(f_e, color="k", linestyle="--", linewidth=0.75)
 
             plt.xlabel("Frequency [GHz]")
             plt.ylabel("[dB]")
