@@ -30,6 +30,19 @@ source chartenv/bin/activate
 ```bash
 sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
 ```
+- The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
+```bash
+sudo apt install libusb-1.0-0-dev
+sudo apt install debhelper
+git clone https://github.com/rtlsdrblog/rtl-sdr-blog
+cd rtl-sdr-blog
+sudo dpkg-buildpackage -b --no-sign
+cd ..
+sudo dpkg -i librtlsdr0_*.deb
+sudo dpkg -i librtlsdr-dev_*.deb
+sudo dpkg -i rtl-sdr_*.deb
+echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
+```
 - We rebooted the system.
 - Finally we installed CHART.
 ```bash
@@ -41,11 +54,11 @@ pip install .
 At this point everything was installed and the Pi was ready to be used. 
 
 
-## Clone the disk to an ISO
+## Clone the disk to an IMG
 The following steps are used to create the actual `.img.xz` file for backup and sharing.
 
 - Unnecessary files and the .cache folder were removed from the pi to free up space 
-- On a seperate linux computer:
+- On a separate linux computer:
   - With the sd inserted we found the device using `lsblk`
   - We then made a raw image using `dd` via the following command where `/dev/sdb` is the sd device: 
   ```bash 

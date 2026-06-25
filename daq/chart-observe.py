@@ -6,15 +6,14 @@ import subprocess
 import datetime
 import time
 import glob
-import shutil
 import webbrowser
 import re
 import threading
 import numpy as np
 import chart
-import sys
 import socket
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from tkinter import messagebox
 from argparse import Namespace
@@ -151,8 +150,6 @@ class ChartApp(customtkinter.CTk):
         self.longitude_entry = customtkinter.CTkEntry(self.saved_settings_frame, placeholder_text="Enter or Calculate", corner_radius=0)
         self.longitude_entry.grid(column=1, row=4, padx=10, pady=(0,5), sticky="nwe")
 
-
-
         self.altitude_label = customtkinter.CTkLabel(self.scroll_frame, text="Altitude (deg)")
         self.altitude_label.grid(column=0, row=6, padx=10, pady=5, sticky='e')
         self.altitude_entry = customtkinter.CTkEntry(self.scroll_frame, placeholder_text="Enter Here", corner_radius=0)
@@ -168,14 +165,12 @@ class ChartApp(customtkinter.CTk):
         self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=65, corner_radius=0)
         self.description_entry.grid(column=0, row=9, padx=10, pady=0, sticky="new", columnspan=2, rowspan=2)
 
-
         #adding in a real time monitor of lat and long for the pointing calculator, this will auto input the lat and long from the main menu to the pointing calculator menu
         self.latitude_entry.bind("<KeyRelease>",  lambda e: self.syncCoords(self.latitude_entry,  "pointing_latitude_entry"))
         self.latitude_entry.bind("<FocusOut>",    lambda e: self.syncCoords(self.latitude_entry,  "pointing_latitude_entry"))
         self.longitude_entry.bind("<KeyRelease>", lambda e: self.syncCoords(self.longitude_entry, "pointing_longitude_entry"))
         self.longitude_entry.bind("<FocusOut>",   lambda e: self.syncCoords(self.longitude_entry, "pointing_longitude_entry"))
         #sync coords is defined above the open pointing calculator definition
-
 
         #right side
         self.frequency_label = customtkinter.CTkLabel(self.scroll_frame, text="Frequency Scan Setup", font=("Arial", 18, "bold")   )
@@ -407,7 +402,6 @@ class ChartApp(customtkinter.CTk):
         if existing_lat:                                            # only if non-blank
             self.pointing_latitude_entry.insert(0, existing_lat)
 
-
         existing_long = self.longitude_entry.get()
 
         self.longitude_label = customtkinter.CTkLabel(self.scroll, text = "Observer Longitude:", justify = "left")
@@ -420,7 +414,6 @@ class ChartApp(customtkinter.CTk):
         self.pointing_latitude_entry.bind("<KeyRelease>",  lambda e: self.syncCoords(self.pointing_latitude_entry, self.latitude_entry))
         self.pointing_latitude_entry.bind("<FocusOut>",    lambda e: self.syncCoords(self.pointing_latitude_entry, self.latitude_entry))
 
-        
         self.pointing_longitude_entry.bind("<KeyRelease>", lambda e: self.syncCoords(self.pointing_longitude_entry, self.longitude_entry))
         self.pointing_longitude_entry.bind("<FocusOut>",   lambda e: self.syncCoords(self.pointing_longitude_entry, self.longitude_entry))
 
@@ -479,13 +472,11 @@ class ChartApp(customtkinter.CTk):
         self.advanced_window.geometry("500x500")
         self.advanced_window.protocol("WM_DELETE_WINDOW", self.advanced_window.withdraw)
 
-
         self.scroll = customtkinter.CTkScrollableFrame(master = self.advanced_window, width = 460, height = 260, corner_radius = 0)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
         
         self.Advanced_function_1_label = customtkinter.CTkLabel(self.scroll, text = "The first 'Advanced Feature' allows you to set the starting \nangle along from the galactic center.", justify = "left")
         self.Advanced_function_1_label.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
-
 
         self.gal_lat_start_label = customtkinter.CTkLabel(self.scroll, text = "Starting Galactic Latitude", justify = "left")
         self.gal_lat_start_label.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
@@ -500,7 +491,6 @@ class ChartApp(customtkinter.CTk):
         self.set_params_button = customtkinter.CTkButton(self.scroll, text="Set Parameters", command=self.setParams, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.set_params_button.grid(row = 4, column = 0, padx = 10, pady = 5)
 
-
         # === Give Me Time function === #
         self.Advanced_function_2_label = customtkinter.CTkLabel(self.scroll, text = "The next 'Advanced Feature' takes in the date you want to go \nobserve, where you want to observe and the angle above the \nhorizon you want to observe and tells you when it'll be in \nthe sky ", justify = "left")
         self.Advanced_function_2_label.grid(row = 5, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
@@ -514,7 +504,6 @@ class ChartApp(customtkinter.CTk):
         self.point_height_label.grid(row = 6, column = 1, sticky = "w", padx = 10, pady = 5)
         self.point_height_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 10", width = 180, corner_radius = 0)
         self.point_height_entry.grid(row = 7, column = 1, sticky = "w", padx = 10, pady = 5)
-
         
         self.gal_lat_label = customtkinter.CTkLabel(self.scroll, text = "Galactic Latitude (b) you \nwant to investigate", justify = "left")
         self.gal_lat_label.grid(row = 8, column = 0, sticky = "w", padx = 10, pady = 5)
@@ -601,7 +590,6 @@ class ChartApp(customtkinter.CTk):
             delta_time = self.specializedErrors(self.delta_time_entry, "Time Between Datapoints", int, default = 10)
             gal_long_start = self.specializedErrors(self.gal_long_start_entry, "Starting Galactic Longitude", int, default = 0) if adv_open else 0
             gal_lat_start = self.specializedErrors(self.gal_lat_start_entry, "Starting Galactic Latitude", int, default = 0) if adv_open else 0
-
             
             self.results = pointing(
                 latitude = lat,
@@ -671,23 +659,24 @@ class ChartApp(customtkinter.CTk):
             gal_lat = self.specializedErrors(self.gal_lat_entry, "Galactic Latitude you want to investigate", int, default = 0) if adv_open else 0
 
             times, alt, tz = altitude_plot_data(lat, long, gal_lat, gal_long, year, month, day)
-
-            plt.figure(figsize=(4, 2))
+            
+            plt.figure(figsize=(8, 3))
             plt.plot(times, alt)                                       # the sky trace
             plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d\n%H:%M', times[0].tzinfo))  # format the x-axis
 
+            j = int(alt.argmax())
             if (year, month, day) == (now.year, now.month, now.day):
                 now_tz = datetime.datetime.now(tz)
                 i = min(range(len(times)), key = lambda k:abs((times[k] - now_tz).total_seconds()))
                 plt.axvline(now_tz, color="red", linestyle=":", linewidth=1)
                 plt.scatter([times[i]], [alt[i]], color="red", zorder=5)
-                plt.title(f"Current Altitude: {alt[i]:.1f}°")
+                plt.title(f"Current Alt: {alt[i]:.1f}°; Peak Alt: {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
             else:
-                j = int(alt.argmax())
                 plt.scatter([times[j]], [alt[j]], color="red", zorder=5)
-                plt.title(f"{month:02d}-{day:02d}-{year} — peak altitude {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
+                plt.title(f"{month:02d}-{day:02d}-{year} — Peak Alt: {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
             
-            plt.xlabel("Time")
+            plt.xlabel(f"Time ({times[0].tzname()})")
             plt.ylim(bottom = 0)
             plt.gca().yaxis.set_major_formatter('{x:.0f}°')            
             plt.tight_layout()
@@ -1038,30 +1027,21 @@ class ChartApp(customtkinter.CTk):
             self.log("Creating plot with corrections...")
 
             d, m = chart.analysis.read_run(directory=self.last_data_dir)
-
             d = np.array(d)
-
             nchans = m[0]["vector_length"]
-
             levels = np.median(
                 d[:, :, nchans // 4:(-nchans // 4)],
                 axis=(1, 2)
             )
-
             rescaled = d / levels.reshape(-1, 1, 1)
-
             bp = np.median(rescaled, axis=(0, 1))
-
             spectra = []
             freqs = []
-
             nremove = nchans // 16
 
             for scan_data, metadata in zip(d, m):
-
                 spectrum = np.mean(scan_data, axis=0) / bp
                 spectrum = 10 * np.log10(spectrum)
-
                 spectrum = spectrum[nremove:-nremove]
 
                 frequencies = (
@@ -1071,34 +1051,30 @@ class ChartApp(customtkinter.CTk):
                     / metadata["vector_length"]
                     + metadata["frequency"]
                 )
-
                 frequencies = 1e-9 * frequencies[nremove:-nremove]
-
                 spectra.append(spectrum)
                 freqs.append(frequencies)
 
             for k in range(len(spectra) - 1):
-
                 spec1 = spectra[k]
                 spec2 = spectra[k + 1]
-
                 freq1 = freqs[k]
                 freq2 = freqs[k + 1]
-
                 ncommon = np.sum([1 if f in freq2 else 0 for f in freq1])
-
                 if ncommon > 0:
                     spec2 += (
                         np.median(spec1[-ncommon:])
                         - np.median(spec2[:ncommon])
                     )
-
                     spectra[k + 1] = spec2
 
             plt.figure(figsize=(8, 4))
 
+            f_e = 1.420405751768
+            plt.axvspan(f_e - 1e-3, f_e + 1e-3, alpha=0.25, color='green')
             for f, s in zip(freqs, spectra):
                 plt.plot(f, s)
+            plt.axvline(f_e, color="k", linestyle="--", linewidth=0.75)
 
             plt.xlabel("Frequency [GHz]")
             plt.ylabel("[dB]")
@@ -1180,7 +1156,6 @@ class ChartApp(customtkinter.CTk):
 
         os.close(self._stdout_saved)
         os.close(self._stderr_saved)
-    
 
 
 if __name__ == "__main__":

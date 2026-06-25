@@ -3,13 +3,11 @@
 import argparse
 import os
 import time
-import warnings
 import datetime
 import shutil
 
 import numpy as np
 import chart
-import sys
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -27,7 +25,6 @@ def str2bool(v):
 def collectArgs():
 
     ap = argparse.ArgumentParser(prog="freq_and_time_scan.py", description="CHART data collection utility", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
 
     # long time observation settings
     ap.add_argument("--scan_period", default=None, type=float, help="Time between scans in hours. Enables multiple scans")
@@ -217,13 +214,10 @@ def runObservation(cfg, logger=print, stop_event=None):
         return
 
 
-
 def main():
 
     args = collectArgs()
-
     cfg = buildConfig(args)
-
     runObservation(cfg)
 
 if __name__ == "__main__":
