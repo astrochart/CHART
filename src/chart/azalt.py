@@ -24,7 +24,6 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
     delta_time = abs(int(delta_time))
     gal_long_start, gal_lat_start = int(gal_long_start), int(gal_lat_start)
 
-
     long_span = abs(long_increment) * num_points
     lat_span = abs(lat_increment) * num_points
     
@@ -34,8 +33,6 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
         raise ValueError(f"Latitude spans {lat_span}° which is greater than 180°. \nPlease change the number of points or the Latitude spacing\n")
     if num_points >= 50:
         raise ValueError("Too many points requested please pick a number below 50\n")
-
-        
     
     length_of_observation = num_points * delta_time
     h = 1
@@ -64,7 +61,6 @@ def pointing(latitude, longitude, year, month, day, hour, minute, delay, num_poi
             f"outside the valid ±90° range. With a latitude increment of "
             f"{lat_increment}°, request at most {max_points} point(s).\n"
         )
-
     
     start = datetime(year, month, day, hour, minute, tzinfo = tz)
     results = []
@@ -134,7 +130,6 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
     location = EarthLocation(lat = latitude * u.deg , lon = longitude * u.deg)
     sgr_a_gal = SkyCoord(ra = 266.41684 * u.deg, dec = -29.00781 * u.deg, frame='icrs').galactic
 
-
     l = sgr_a_gal.l + gal_long * u.deg
     b = sgr_a_gal.b + gal_lat * u.deg
 
@@ -152,7 +147,6 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
 
     Time_Array = Time(time_array)
     altaz = offset.transform_to(AltAz(obstime=Time_Array, location=location))
-
     
     alt = altaz.alt.deg
     rise_time = None
@@ -169,9 +163,6 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
     elif alt.min() > 0:
         result.append(f"Altitude of your set point today ({start.strftime('%I:%M %p %Z')}) never goes below the horizon")
 
-
-
-    
     #this allows us to get the time of a height above the horizon of the point in degrees
     point_height_time = None
     up_index = None
@@ -185,7 +176,7 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
         result.append(f"Your point starts above {point_height}° on {start.strftime('%m-%d-%Y')}")
     elif point_height_time is None:
         result.append(f"Your point never reaches {point_height}° on {start.strftime('%m-%d-%Y')}")
-        
+
     if up_index is not None or alt[0] >= point_height:
         start_search = up_index +1 if up_index is not None else 1
         for j in range(start_search, len(time_array)):
@@ -193,10 +184,7 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
                 down_time = time_array[j]
                 result.append(f"Your point will drop down to {point_height}° altitude at {down_time.strftime('%I:%M %p %Z on %m-%d-%Y')}")
                 break
-                
 
-
-    
     if rise_time is not None:
         set_index = None
         for j in range(rise_index + 1, len(time_array)):
@@ -210,7 +198,6 @@ def gimme_time(latitude, longitude, gal_lat, gal_long, point_height, year, month
         time_max_alt = time_array[max_alt]
         result.append(f"Your point will reach its max altitude at {time_max_alt.strftime('%I:%M %p %Z on %m-%d-%Y')}")
 
-
     return "\n".join(result)
 
 
@@ -219,7 +206,6 @@ def altitude_plot_data(latitude, longitude, gal_lat, gal_long, year, month, day,
     tz = timezone_of(latitude, longitude)
     location = EarthLocation(lat = latitude * u.deg , lon = longitude * u.deg)
     sgr_a_gal = SkyCoord(ra = 266.41684 * u.deg, dec = -29.00781 * u.deg, frame='icrs').galactic
-
 
     l = sgr_a_gal.l + gal_long * u.deg
     b = sgr_a_gal.b + gal_lat * u.deg
@@ -238,24 +224,3 @@ def altitude_plot_data(latitude, longitude, gal_lat, gal_long, year, month, day,
 
     altaz = offset.transform_to(AltAz(obstime=time_array, location=location))
     return time_array, altaz.alt.deg, tz
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
