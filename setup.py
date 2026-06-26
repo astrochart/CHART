@@ -15,7 +15,7 @@ setup_args = {
     'packages': ['chart'],
     'include_package_data': True,
     'scripts': ['daq/freq_and_time_scan.py', 'daq/chart-observe.py'],
-    'version': 1.0,
+    'version': '2.0',
     'install_requires': [
         'ipython',
         'jupyter',
@@ -26,14 +26,21 @@ setup_args = {
         'matplotlib',
         'pandas',
         'ipywidgets',
-        'scipy'
+        'scipy',
+        'timezonefinder',
+        'geopy'
     ],
 }
 
 
 if __name__ == '__main__':
     setup(**setup_args)
-    src = shutil.which('chart-observe.py')
-    dest = os.path.expanduser('~') + '/Desktop/chart-observe'
-    if src is not None and not os.path.exists(dest):
-            os.symlink(src, dest)
+    venv_bin = os.path.dirname(sys.executable)
+    activate_script = os.path.join(venv_bin, "activate")
+    launcher = os.path.expanduser("~/Desktop/chart-observe")
+    with open(launcher, 'w') as f:
+        f.write(f"""#!/bin/bash
+source "{activate_script}"
+exec chart-observe.py
+""")
+    os.chmod(launcher, 0o755)

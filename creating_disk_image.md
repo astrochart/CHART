@@ -4,7 +4,7 @@
 If you are looking for the default Raspberry PI setup, use the [latest pre-built sd card image](https://astrochart.github.io/telescope_design#burn-your-micro-sd-card).
 
 What follows is the procedure for building the CHART disk image.
-The latest version is `v1.1` (see changelog below).
+The latest version is `v2.0` (see changelog below).
 
 The basic procedure is to install all the necessary software on Raspberry PI and then clone the disk. We have found that
 sometimes details matter in the setup, so the below is a log of everything we've done for the most recent build. These
@@ -17,7 +17,10 @@ micro SD card.
 The target device was Raspberry Pi 4.
 We used a 16 GB card because we found 8 GB to be a tad too small.
 - Next we booted up the Pi with the new SD card. We set the time zone to US Central, US Keyboard, and we used the generic username and password `pi` and `raspberry`, respectively. We skipped setting up wifi. We selected to use Chromium and uninstalled firefox. We did not enable Raspberry Pi Connect. We did the overall software update.
-- Once everything was updated and rebooted,   we opened a terminal and set up a virtual python environment:
+- In Preferences > Control Centre > System, we disabled Admin Password
+- In File Manager > Edit > Preferences > General, we enabled "Don't ask options on launch executable file"
+- When opening up the web browser a blank keyring was chosen by clicking continue
+- Once everything was updated and rebooted, we opened a terminal and set up a virtual python environment:
 ```bash
 python -m venv --system-site-packages ~/chartenv
 source chartenv/bin/activate
@@ -47,33 +50,57 @@ git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
-- We used `vi` to make a bash script called chart-observe on the Desktop with the following lines:
-```bash
-#!/bin/bash
-source /home/pi/chartenv/bin/activate
-chart-observe.py
-```
-- We made the script executable:
-```bash
-chmod 777 ~/Desktop/chart-observe
-```
 
 At this point everything was installed and the Pi was ready to be used. 
 
 
-## Clone the disk to an ISO
-The following steps are used to create the actual `.iso` file for backup and sharing.
+## Clone the disk to an IMG
+The following steps are used to create the actual `.img.xz` file for backup and sharing.
 
-- We used Mac's Disk Utility app to create an image, using format "DVD/CD Master" with no encryption.
-- When the image was complete, we changed the extension from "cdr" to "iso."
-- We then copied the file to a linux system and used [pishrink](https://github.com/Drewsif/PiShrink) to shrink it.
-```bash
-wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-chmod +x pishrink.sh
-sudo ./pishrink.sh chart.iso
-```
+- Unnecessary files and the .cache folder were removed from the pi to free up space 
+- On a separate linux computer:
+  - With the sd inserted we found the device using `lsblk`
+  - We then made a raw image using `dd` via the following command where `/dev/sdb` is the sd device: 
+  ```bash 
+  sudo dd if=/dev/sdb of=chart.img bs=4M status=progress
+  ```
+
+> [!WARNING]
+> `dd` performs a raw disk copy and can permanently overwrite data. Verify the source (`if=`) and destination (`of=`) devices before pressing Enter. An incorrect destination may destroy the contents of a drive.
+
+  - Then we shrunk the image using PiShrink
+  ```bash
+  wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+  chmod +x pishrink.sh
+  sudo ./pishrink.sh chart.img
+  ```
+  - To further shrink the image size, we compressed the `chart.img` with `xz` 
+  ```bash
+  xz -T0 -9 chart.img
+  ```
+
 
 ## CHART Disk Image Change Log
+
+#### v2.0 (29 June, 2026)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.0..v2.0)
+- Complete GUI overhaul
+  - Added logging and removed the need for terminal
+  - Changed date and time to be handled by the system
+  - Added a plot feature when data collection is finished
+  - Added location calculation and the ability to save settings
+  - New pointing calulator and observation planner
+- Streamlined data collection
+  - Updated the command line tool 
+  - Updated file names 
+  - All user information is now saved through metadata
+- Improved Installation
+  - Added a script that creates a launcher when installed
+  - Added a .toml file due to depreciation of setup.py
+- Updated analysis tutorial
+  - Calibration improvement based on Memo 13
+  - Improvements to interactive fitting
+  - Added simple median filter option
 
 #### v1.1 (30 July, 2024)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.0..v1.1)

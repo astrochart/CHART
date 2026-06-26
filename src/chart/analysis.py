@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import glob
+import time
 
 # Read data file -> something useful
 # Read metadata files
@@ -17,13 +18,17 @@ def print_meta(meta):
         else:
             print(key, ':\t', meta[key])
 
+def get_utc_datetime(t):
+    return time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(t))
+
 def read_data(datafile, metadata_file, verbose=False):
-    meta = np.load(metadata_file, allow_pickle=True)
+    meta = dict(np.load(metadata_file, allow_pickle=True))
     if 'dtype' in meta:
         data = np.fromfile(datafile, dtype=meta['dtype'][0])
     else:
         data = np.fromfile(datafile, dtype=np.float32)
     data = data.reshape(data.size // meta['vector_length'], meta['vector_length'])
+    meta['utc_datetime'] = get_utc_datetime(np.mean(meta['times']))
     if verbose:
         print_meta(meta)
     return data, meta
@@ -42,6 +47,8 @@ def find_dat_files(directory=None):
     if directory is None:
         directory = os.curdir()
     data_list = sorted(glob.glob(os.path.join(directory, '*.dat')))
+    if len(data_list) == 0:
+        raise FileNotFoundError('No data files found in directory: ' + directory)
     return data_list
 
 
@@ -49,19 +56,72 @@ def find_meta_files(directory=None):
     if directory is None:
         directory = os.curdir()
     meta_list = sorted(glob.glob(os.path.join(directory, '*.npz')))
+    if len(meta_list) == 0:
+        raise FileNotFoundError('No metadata files found in directory: ' + directory)
     return meta_list
 
+def get_meta_param(prompt):
+    res = input(prompt)
+    if res == '':
+        return None
+    else:
+        try:
+            return float(res)
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+            return get_meta_param(prompt)
 
-def read_run(directory=None):
+
+def read_run(directory=None, update_v1=False, outpath=None):
+    """Reads a CHART data run from the specified directory.
+    
+    Keyword arguments:
+    directory -- the directory to read from (default: current directory)
+    update_v1 -- if True, update metadata files from v1 to v2 format
+                by asking the user for missing information (default: False)
+    outpath -- if update_v1 is True, the directory to write updated 
+                metadata files to (default: same as input directory, 
+                overwriting existing files)
+    """
+    if directory is None:
+        directory = os.curdir()
     data_list = find_dat_files(directory=directory)
     meta_list = find_meta_files(directory=directory)
     data = []
     meta = []
+    # Check for old data format. Ask user for missing info. 
+    # If not known, set to None
+    metatemp = dict(np.load(meta_list[0], allow_pickle=True))
+    if 'azimuth' not in metatemp:
+        version = 1
+        print(f'CHART v1 data format in {directory}.')
+        print('Please enter the missing information (blank if unknown):')
+        latitude = get_meta_param('Latitude [degrees]: ')
+        longitude = get_meta_param('Longitude [degrees]: ')
+        altitude = get_meta_param('Altitude [degrees]: ')
+        azimuth = get_meta_param('Azimuth [degrees]: ')
+        
+        if update_v1:
+            if outpath is None:
+                outpath = directory
+                print('Overwriting metadata files with new format...')
+            else:
+                print(f'Writing updated metadata files to {outpath}...')
+    else: 
+        version = 2
     for dfile, mfile in zip(data_list, meta_list):
         datatemp, metatemp = read_data(dfile, mfile)
+        if version == 1:
+            metatemp['azimuth'] = azimuth
+            metatemp['altitude'] = altitude
+            metatemp['latitude'] = latitude
+            metatemp['longitude'] = longitude
+            if update_v1:
+                np.savez(mfile, **metatemp)
         data.append(datatemp)
         meta.append(metatemp)
     return data, meta
+
 
 
 def concat(data_list):

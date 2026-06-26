@@ -21,6 +21,7 @@ class meta_trig_py_ff(gr.sync_block):
                                in_sig=[(np.float32, self.veclength)],
                                out_sig=[(np.float32, self.veclength)])
 
+
     def work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
@@ -32,14 +33,13 @@ class meta_trig_py_ff(gr.sync_block):
     def get_times(self):
         return self.times
 
-
 class TopBlock(gr.top_block):
     """Class to collect RTL data and metadata."""
 
     def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
-                 nint=100, bias=False, data_dir=None):
-        """Initialize the collect top block.
+                 nint=100, bias=False, data_dir=None, metadata=None):
 
+        """Initialize the collect top block.    
         Parameters
         ----------
         c_freq : float, optional
@@ -54,6 +54,8 @@ class TopBlock(gr.top_block):
             Number of integrations per file. Default is 100.
         data_dir : str, optional
             Directory for data. Defaults to cwd.
+        metadata : 
+            additional data collected during observation passed from GUI
 
         """
         gr.top_block.__init__(self, "Collectrtldata")
@@ -61,6 +63,7 @@ class TopBlock(gr.top_block):
         ##################################################
         # Variables
         ##################################################
+        self.metadata = metadata if metadata is not None else {}
         self.veclength = veclength
         self.samp_rate = samp_rate
         self.int_length = int_length
@@ -179,4 +182,11 @@ class TopBlock(gr.top_block):
                  metadata_file=self.metadata_file,
                  times=self.chart_meta_trig_py_ff_0.get_times(),
                  dtype=[np.float32],
+                 observer=self.metadata.get("observer", ""),
+                 location=self.metadata.get("location", ""),
+                 altitude=self.metadata.get("altitude", None),
+                 azimuth=self.metadata.get("azimuth", None),
+                 description=self.metadata.get("description", ""),
+                 latitude=self.metadata.get("latitude", None),
+                 longitude=self.metadata.get("longitude", None),
                 )
