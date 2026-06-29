@@ -18,6 +18,7 @@ The target device was Raspberry Pi 4.
 We used a 16 GB card because we found 8 GB to be a tad too small.
 - Next we booted up the Pi with the new SD card. We set the time zone to US Central, US Keyboard, and we used the generic username and password `pi` and `raspberry`, respectively. We skipped setting up wifi. We selected to use Chromium and uninstalled firefox. We did not enable Raspberry Pi Connect. We did the overall software update.
 - In Preferences > Control Centre > System, we disabled Admin Password
+- In Preferences > Control Centre > Screens, we changed the display resolution to `800x600`
 - In File Manager > Edit > Preferences > General, we enabled "Don't ask options on launch executable file"
 - When opening up the web browser a blank keyring was chosen by clicking continue
 - Once everything was updated and rebooted, we opened a terminal and set up a virtual python environment:
@@ -50,6 +51,12 @@ git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
+- In `/home/pi/chartenv/bin/chart-observe.py`, we added the following line to the `buildWindow()` function to launch the GUI in full-screen mode:
+```python
+self.attributes("-zoomed", True)
+``` 
+>[!NOTE]
+>This modification is applied only to the disk image because the `"-zoomed"` window attribute is Linux specific and would not work on other operating systems. 
 
 At this point everything was installed and the Pi was ready to be used. 
 
@@ -57,46 +64,46 @@ At this point everything was installed and the Pi was ready to be used.
 ## Clone the disk to an IMG
 The following steps are used to create the actual `.img.xz` file for backup and sharing.
 
-- Unnecessary files and the .cache folder were removed from the pi to free up space 
-- On a separate linux computer:
-  - With the sd inserted we found the device using `lsblk`
-  - We then made a raw image using `dd` via the following command where `/dev/sdb` is the sd device: 
-  ```bash 
-  sudo dd if=/dev/sdb of=chart.img bs=4M status=progress
-  ```
+- Unnecessary files, Trash and the .cache folder were removed from the pi to free up space 
 
-> [!WARNING]
+**On a separate linux computer:**
+
+- With the sd inserted we found the device using `lsblk`
+- We then made a raw image using `dd` via the following command where `/dev/sdb` is the sd device: 
+```bash 
+sudo dd if=/dev/sdb of=chart.img bs=4M status=progress
+```
+> [!CAUTION]
 > `dd` performs a raw disk copy and can permanently overwrite data. Verify the source (`if=`) and destination (`of=`) devices before pressing Enter. An incorrect destination may destroy the contents of a drive.
-
-  - Then we shrunk the image using PiShrink
-  ```bash
-  wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-  chmod +x pishrink.sh
-  sudo ./pishrink.sh chart.img
-  ```
-  - To further shrink the image size, we compressed the `chart.img` with `xz` 
-  ```bash
-  xz -T0 -9 chart.img
-  ```
+- Then we shrunk the image using PiShrink
+```bash
+wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+chmod +x pishrink.sh
+sudo ./pishrink.sh chart.img
+```
+- To further shrink the image size, we compressed the `chart.img` with `xz` 
+```bash
+xz -T0 -9 chart.img
+```
 
 
 ## CHART Disk Image Change Log
 
 #### v2.0 (29 June, 2026)
-- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.0..v2.0)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.1..v2.0)
 - Complete GUI overhaul
   - Added logging and removed the need for terminal
   - Changed date and time to be handled by the system
   - Added a plot feature when data collection is finished
   - Added location calculation and the ability to save settings
-  - New pointing calulator and observation planner
+  - New pointing calculator and observation planner
 - Streamlined data collection
   - Updated the command line tool 
   - Updated file names 
   - All user information is now saved through metadata
 - Improved Installation
   - Added a script that creates a launcher when installed
-  - Added a .toml file due to depreciation of setup.py
+  - Added a .toml file due to deprecation of setup.py
 - Updated analysis tutorial
   - Calibration improvement based on Memo 13
   - Improvements to interactive fitting
