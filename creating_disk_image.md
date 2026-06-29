@@ -90,7 +90,7 @@ xz -T0 -9 chart.img
 ## CHART Disk Image Change Log
 
 #### v2.0 (29 June, 2026)
-- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.0..v2.0)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.1..v2.0)
 - Complete GUI overhaul
   - Added logging and removed the need for terminal
   - Changed date and time to be handled by the system
