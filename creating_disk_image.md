@@ -19,12 +19,6 @@ We used a 16 GB card because we found 8 GB to be a tad too small.
 - Next we booted up the Pi with the new SD card. We set the time zone to US Central, US Keyboard, and we used the generic username and password `pi` and `raspberry`, respectively. We skipped setting up wifi. We selected to use Chromium and uninstalled firefox. We did not enable Raspberry Pi Connect. We did the overall software update.
 - In Preferences > Control Centre > System, we disabled Admin Password
 - In Preferences > Control Centre > Screens, we changed the display resolution to `800x600`
-- In `/home/pi/chartenv/bin/chart-observe.py`, we added the following line to the `buildWindow()` function to launch the GUI in full-screen mode:
-```python
-self.attributes("-zoomed", True)
-``` 
->[!NOTE]
->This modification is applied only to the disk image because the `"-zoomed"` window attribute is Linux specific and would not work on other operating systems. 
 - In File Manager > Edit > Preferences > General, we enabled "Don't ask options on launch executable file"
 - When opening up the web browser a blank keyring was chosen by clicking continue
 - Once everything was updated and rebooted, we opened a terminal and set up a virtual python environment:
@@ -57,6 +51,12 @@ git clone https://github.com/astrochart/CHART.git
 cd CHART
 pip install .
 ```
+- In `/home/pi/chartenv/bin/chart-observe.py`, we added the following line to the `buildWindow()` function to launch the GUI in full-screen mode:
+```python
+self.attributes("-zoomed", True)
+``` 
+>[!NOTE]
+>This modification is applied only to the disk image because the `"-zoomed"` window attribute is Linux specific and would not work on other operating systems. 
 
 At this point everything was installed and the Pi was ready to be used. 
 
