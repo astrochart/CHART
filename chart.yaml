@@ -1,0 +1,21 @@
+name: CHART
+channels:
+ - conda-forge
+ - defaults
+dependencies:
+ - ipython
+ - jupyter
+ - ipympl
+ - numpy>=1.20
+ - astropy
+ - matplotlib
+ - pandas
+ - ipywidgets
+ - scipy
+ - gnuradio
+ - gnuradio-osmosdr
+ - pip
+ - pip:
+    - customtkinter
+    - timezonefinder
+
