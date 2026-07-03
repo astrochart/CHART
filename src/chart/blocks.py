@@ -3,6 +3,7 @@ import time
 import datetime
 import argparse
 import os
+import threading
 from gnuradio import gr
 from gnuradio import blocks as grblocks
 from gnuradio import fft
@@ -36,8 +37,13 @@ class meta_trig_py_ff(gr.sync_block):
 class TopBlock(gr.top_block):
     """Class to collect RTL data and metadata."""
 
+    # Default display integration length.  GUI can override via
+    # set_display_int_length() before or after start().
+    DEFAULT_DISPLAY_INT_LENGTH = 50
+
     def __init__(self, c_freq=50e6, veclength=1024, samp_rate=2e6, int_length=100,
-                 nint=100, bias=False, data_dir=None, metadata=None):
+                 nint=100, bias=False, data_dir=None, metadata=None,
+                 display_int_length=None):
 
         """Initialize the collect top block.    
         Parameters
@@ -56,7 +62,11 @@ class TopBlock(gr.top_block):
             Directory for data. Defaults to cwd.
         metadata : 
             additional data collected during observation passed from GUI
-
+        display_int_length : int, optional
+            Number of FFT frames averaged in the display branch.
+            Independent of int_length. Defaults to DEFAULT_DISPLAY_INT_LENGTH.
+            Controls update rate vs. noise floor visibility trade-off:
+            lower = faster/noisier, higher = slower/smoother.
         """
         gr.top_block.__init__(self, "Collectrtldata")
 
@@ -69,12 +79,18 @@ class TopBlock(gr.top_block):
         self.int_length = int_length
         self.nint = nint
         self.bias = bias
+        self._display_int_length = (
+            display_int_length
+            if display_int_length is not None
+            else self.DEFAULT_DISPLAY_INT_LENGTH
+        )
         if data_dir is None:
             self.data_dir = os.getcwd()
         else:
             self.data_dir = data_dir
         # Initialize to null to avoid empty file
         self.set_filename()
+
         ##################################################
         # Blocks
         ##################################################
@@ -110,6 +126,26 @@ class TopBlock(gr.top_block):
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_complex_to_mag_squared_0 = grblocks.complex_to_mag_squared(self.veclength)
         self.chart_meta_trig_py_ff_0 = meta_trig_py_ff(self.veclength)
+
+        # ------------------------------------------------------------------
+        # Display branch
+        # Taps off blocks_complex_to_mag_squared_0 — upstream of the science
+        # integration — so display settings are independent of science settings.
+        #
+        # blocks_complex_to_mag_squared_0
+        #         |                    |
+        #  (science branch)     (display branch)
+        # blocks_integrate_xx_0   blocks_integrate_xx_display
+        #         |                    |
+        #   meta_trig_py_ff_0   blocks_probe_signal_vf_0
+        #         |
+        #   blocks_file_sink_0
+        # ------------------------------------------------------------------
+        self.blocks_integrate_xx_display = grblocks.integrate_ff(
+            self._display_int_length, self.veclength
+        )
+        self.blocks_probe_signal_vf_0 = grblocks.probe_signal_vf(self.veclength)
+
         ##################################################
         # Connections
         ##################################################
@@ -118,13 +154,105 @@ class TopBlock(gr.top_block):
         self.connect((self.blocks_head_0, 0), (self.blocks_stream_to_vector_0, 0))
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
         self.connect((self.fft_vxx_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
+
+        # Science branch (unchanged)
         self.connect((self.blocks_complex_to_mag_squared_0, 0),
                      (self.blocks_integrate_xx_0, 0))
         self.connect((self.blocks_integrate_xx_0, 0), (self.chart_meta_trig_py_ff_0, 0))
         self.connect((self.chart_meta_trig_py_ff_0, 0), (self.blocks_file_sink_0, 0))
 
+        # Display branch (fan-out from complex_to_mag_squared)
+        self.connect((self.blocks_complex_to_mag_squared_0, 0),
+                     (self.blocks_integrate_xx_display, 0))
+        self.connect((self.blocks_integrate_xx_display, 0),
+                     (self.blocks_probe_signal_vf_0, 0))
+
         # Get start time
         self.start_time = time.time()
+
+    # ------------------------------------------------------------------
+    # Display branch public API
+    # ------------------------------------------------------------------
+
+    def get_display_spectrum(self):
+        """Return the most recent display-averaged power spectrum.
+
+        Returns a numpy float32 array of length veclength containing linear
+        power values (arbitrary units, not yet converted to dB).  The array
+        is a copy — safe to hold onto after the flowgraph updates.
+
+        Returns None if the flowgraph has not produced a vector yet (i.e.
+        fewer than display_int_length FFT frames have been processed since
+        the last start() call).
+        """
+        vec = self.blocks_probe_signal_vf_0.level()
+        if vec is None:
+            return None
+        arr = np.array(vec, dtype=np.float32)
+        # probe_signal_vf initialises its internal buffer to all-zeros.
+        # An all-zero vector means no data has arrived yet.
+        if not np.any(arr):
+            return None
+        return arr
+
+    def set_display_int_length(self, n):
+        """Change the display averaging depth while the flowgraph is running.
+
+        Parameters
+        ----------
+        n : int
+            Number of FFT frames to average.  Must be >= 1.
+            Lower values give faster updates with more noise.
+            Higher values give slower updates with a smoother spectrum.
+
+        Note: GNU Radio's integrate_ff does not support runtime changes to
+        integration length, so this method stops the flowgraph, rebuilds the
+        display branch blocks with the new length, reconnects, and restarts.
+        Only call this when the flowgraph is running — it handles start/stop
+        internally.  The science branch and file sink are unaffected.
+        """
+        n = max(1, int(n))
+        if n == self._display_int_length:
+            return
+
+        was_running = self.is_running() if hasattr(self, 'is_running') else False
+
+        # GNU Radio top_block doesn't expose is_running() before GR 3.9.
+        # Safest to just stop unconditionally and swallow the error.
+        try:
+            self.stop()
+            self.wait()
+        except Exception:
+            pass
+
+        # Disconnect old display branch
+        try:
+            self.disconnect((self.blocks_complex_to_mag_squared_0, 0),
+                            (self.blocks_integrate_xx_display, 0))
+            self.disconnect((self.blocks_integrate_xx_display, 0),
+                            (self.blocks_probe_signal_vf_0, 0))
+        except Exception:
+            pass
+
+        # Rebuild with new integration length
+        self._display_int_length = n
+        self.blocks_integrate_xx_display = grblocks.integrate_ff(n, self.veclength)
+
+        self.connect((self.blocks_complex_to_mag_squared_0, 0),
+                     (self.blocks_integrate_xx_display, 0))
+        self.connect((self.blocks_integrate_xx_display, 0),
+                     (self.blocks_probe_signal_vf_0, 0))
+
+        if was_running:
+            self.start()
+
+    @property
+    def display_int_length(self):
+        return self._display_int_length
+
+    # ------------------------------------------------------------------
+    # Existing methods (unchanged)
+    # ------------------------------------------------------------------
 
     def set_veclength(self, veclength):
         """Set vector length."""
