@@ -34,7 +34,7 @@ sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake
 - The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
 ```bash
 sudo apt update
-sudo apt install libusb-1.0-0-dev git
+sudo apt install libusb-1.0-0-dev
 sudo apt install debhelper
 
 git clone https://github.com/osmocom/rtl-sdr
