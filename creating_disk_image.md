@@ -33,16 +33,23 @@ sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake
 ```
 - The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
 ```bash
-sudo apt install libusb-1.0-0-dev
+sudo apt update
+sudo apt install libusb-1.0-0-dev git
 sudo apt install debhelper
-git clone https://github.com/rtlsdrblog/rtl-sdr-blog
-cd rtl-sdr-blog
+
+git clone https://github.com/osmocom/rtl-sdr
+cd rtl-sdr
 sudo dpkg-buildpackage -b --no-sign
 cd ..
+
 sudo dpkg -i librtlsdr0_*.deb
 sudo dpkg -i librtlsdr-dev_*.deb
 sudo dpkg -i rtl-sdr_*.deb
 echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
+```
+- Next we performed another update. This upgrades the packages we just installed for v4 support. We found this helped fix an error where the data collection would stop silently. 
+```bash
+sudo apt update && sudo apt upgrade
 ```
 - We rebooted the system.
 - Finally we installed CHART.
