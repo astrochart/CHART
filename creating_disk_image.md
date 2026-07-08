@@ -83,6 +83,13 @@ xz -T0 -9 chart.img
 
 ## CHART Disk Image Change Log
 
+#### v2.0.2 (8 July, 2026)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0..v2.0.2)
+- Changed disk image driver install
+  - Fixed a hanging issue when running a default scan 
+  - Install now uses default Debian packages for librtlsdr and rtl-sdr for Blog v4
+  - Install only requires blacklist for DVB-T drivers 
+
 #### v2.0 (29 June, 2026)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.1..v2.0)
 - Complete GUI overhaul
