@@ -55,7 +55,10 @@ At this point everything was installed and the Pi was ready to be used.
 ## Clone the disk to an IMG
 The following steps are used to create the actual `.img.xz` file for backup and sharing.
 
-- Unnecessary files, Trash and the .cache folder were removed from the pi to free up space 
+- Unnecessary files, Trash and the .cache folder were removed from the pi to free up space. The following command was used to clean up space from the install above: 
+```bash
+sudo apt clean
+```
 
 **On a separate linux computer:**
 
