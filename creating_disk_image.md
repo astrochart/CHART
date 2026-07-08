@@ -29,19 +29,10 @@ source chartenv/bin/activate
 - We appended the second line above to the `~.bashrc` file so the `chartenv` environment will always activate when a terminal is opened.
 - Next we installed `gnuradio` and other packages.
 ```bash
-sudo apt install gnuradio-dev gr-osmosdr librtlsdr-dev build-essential git cmake xterm
+sudo apt install build-essential git cmake xterm gnuradio-dev librtlsdr0 librtlsdr-dev rtl-sdr gr-osmosdr
 ```
-- The next chunk of commands were needed to install the latest RTL-SDR blog driver for v4 support. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
+- Next, we blacklisted the default DVB kernel driver so the RTL-SDR can be accessed by user-space software and prevent Bias-T issues with the Blog v4. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
 ```bash
-sudo apt install libusb-1.0-0-dev
-sudo apt install debhelper
-git clone https://github.com/rtlsdrblog/rtl-sdr-blog
-cd rtl-sdr-blog
-sudo dpkg-buildpackage -b --no-sign
-cd ..
-sudo dpkg -i librtlsdr0_*.deb
-sudo dpkg -i librtlsdr-dev_*.deb
-sudo dpkg -i rtl-sdr_*.deb
 echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
 ```
 - We rebooted the system.
@@ -64,7 +55,10 @@ At this point everything was installed and the Pi was ready to be used.
 ## Clone the disk to an IMG
 The following steps are used to create the actual `.img.xz` file for backup and sharing.
 
-- Unnecessary files, Trash and the .cache folder were removed from the pi to free up space 
+- Unnecessary files, Trash and the .cache folder were removed from the pi to free up space. The following command was used to clean up space from the install above: 
+```bash
+sudo apt clean
+```
 
 **On a separate linux computer:**
 
@@ -88,6 +82,13 @@ xz -T0 -9 chart.img
 
 
 ## CHART Disk Image Change Log
+
+#### v2.0.2 (8 July, 2026)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0..v2.0.2)
+- Changed disk image driver install
+  - Fixed a hanging issue when running a default scan 
+  - Install now uses default Debian packages for librtlsdr and rtl-sdr for Blog v4
+  - Install only requires blacklist for DVB-T drivers 
 
 #### v2.0 (29 June, 2026)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v1.1..v2.0)
