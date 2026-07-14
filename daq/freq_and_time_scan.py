@@ -179,7 +179,6 @@ def runObservation(cfg, logger=print, stop_event=None):
             metadata=cfg,)
 
     except Exception as e:
-
         logger(f"SDR error: {e}\nStopping collection!!!")
         raise
 
@@ -207,7 +206,7 @@ def runObservation(cfg, logger=print, stop_event=None):
         else:
             estimated_time = ((cfg["freq_f"] - cfg["freq_i"]) / cfg["df"]) * ((cfg['veclength'] /cfg['samp_rate']) * cfg['int_length']) * cfg["nint"] #estimated time in seconds
             minutes, seconds_left = divmod(estimated_time, 60)
-            logger(f"Estimated time: {minutes:.0f} Minutes and {seconds_left:.0f} Seconds")
+            logger(f"Estimated time: {minutes:.0f} Minute{'s' if minutes != 1 else ''} and {seconds_left:.0f} Second{'s' if seconds_left != 1 else ''}")
 
             runSweep(tb)
 

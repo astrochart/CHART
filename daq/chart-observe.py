@@ -30,11 +30,13 @@ class ChartApp(customtkinter.CTk):
         self.last_data_dir = None   # stores last directory created for plotting function
         self.popup = None       # allows checking for multiple date and time popup windows
 
-        #storage for stdout/stderr pipe required to capture GNU radio messages 
+        #storage for stdout/stderr pipe required to capture GNU radio messages
         self._log_pipe_r = None
         self._log_pipe_w = None
         self._stdout_saved = None
         self._stderr_saved = None
+
+        self.sdr_error_shown = False    # flag for usb claim error for sdr
 
         self.default_freq_i = "1415"
         self.default_freq_f = "1425"
@@ -63,8 +65,8 @@ class ChartApp(customtkinter.CTk):
             "WM_DELETE_WINDOW",
             self.onClose
         )
-    
-    def buildWidgets(self):  
+
+    def buildWidgets(self):
         #set up GUI frames and widgets that are not inside the scroll frame
 
         # Top bar spanning the full width — its own 3-column grid keeps these
@@ -74,19 +76,19 @@ class ChartApp(customtkinter.CTk):
         self.top_bar.grid_columnconfigure(0, weight=1)   # left  (switch)
         self.top_bar.grid_columnconfigure(1, weight=1)   # center (buttons)
         self.top_bar.grid_columnconfigure(2, weight=1)   # right (clock)
-        
+
         self.mode_switch = customtkinter.CTkSwitch(self.top_bar, text="Dark Mode", command=self.toggleDarkMode, onvalue="on", offvalue="off", corner_radius=0)
         self.mode_switch.grid(column=0, row=0, padx=10, pady=2, sticky="w")
-        
+
         self.button_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
         self.button_frame.grid(column=1, row=0, pady=2)   # centered in its column
-        
+
         self.pointing_button = customtkinter.CTkButton(self.button_frame, text="Pointing Calculator", width=160, command=self.openPointingCalculator, hover_color = "purple", corner_radius=0)
         self.pointing_button.grid(column=0, row=0, padx=5)
-        
+
         self.time_button = customtkinter.CTkButton(self.button_frame, text="Set System DateTime", width=160, command=self.openTimeWindow, corner_radius=0)
         self.time_button.grid(column=1, row=0, padx=5)
-        
+
         self.clock_frame = customtkinter.CTkFrame(self.top_bar, fg_color="transparent")
         self.clock_frame.grid(column=2, row=0, padx=2, pady=2, sticky="e")
         self.clock_label_description = customtkinter.CTkLabel(self.clock_frame, text="Observation Time: ")
@@ -98,7 +100,7 @@ class ChartApp(customtkinter.CTk):
         # defines what rows can expand
         self.rowconfigure(0, weight=0)
         self.rowconfigure(2, weight=0)
-        self.rowconfigure(1, weight=1) 
+        self.rowconfigure(1, weight=1)
         self.rowconfigure(0, weight=0)
         self.columnconfigure(0, weight=1)
 
@@ -119,7 +121,7 @@ class ChartApp(customtkinter.CTk):
         # functions that start at runtime are here
         self.loadSettings()
         self.gpsDisable()
-    
+
     def buildEntries(self):
 
 
@@ -210,7 +212,7 @@ class ChartApp(customtkinter.CTk):
 
         self.bias_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Enable Bias-T", onvalue="on", offvalue="off", command=self.biasTwarn, corner_radius=0)
         self.bias_switch.grid(column=2, row=7, padx=10, pady=5, sticky="w")
-    
+
     def buildButtons(self):
         self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection, corner_radius=0)
         self.start_button.grid(column=2, row=9, padx=10, pady=3, sticky="ew")
@@ -234,10 +236,24 @@ class ChartApp(customtkinter.CTk):
         self.save_settings_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Save Settings", command=self.saveLocationSettings)
         self.save_settings_button.grid(row=0, column=1, padx=2, pady=(0,5))
 
-    
     def log(self, message):
 
         # adds log command to a loop to prevent application freezing as it waits for a log message
+
+        if (("failed to open rtlsdr device" in message.casefold()
+            or "usb_claim_interface error -6" in message.casefold())
+            and not self.sdr_error_shown):
+                self.sdr_error_shown = True
+                self.after(
+                    0,
+                    lambda: messagebox.showerror(
+                        "RTL-SDR Is Busy",
+                        "CHART could not open the RTL-SDR.\n\n"
+                        "Another program or CHART window may be using it. "
+                        "Close other SDR software and try again. If the problem "
+                        "continues, unplug and reconnect the radio.",
+                    ),
+                )
 
         self.after(0, self._log, message)
 
@@ -286,11 +302,11 @@ class ChartApp(customtkinter.CTk):
         if not (0 <= minute <= 59):
             messagebox.showerror("Error", "Minute must be between 0 and 59.", parent=self.popup)
             return
-        
+
         if self.am_pm_menu.get() =="PM":
             if hour != 12:
                 hour += 12
-        else: 
+        else:
             if hour == 12:
                 hour =0
 
@@ -301,9 +317,9 @@ class ChartApp(customtkinter.CTk):
             hour,
             minute
         )
-        
+
         timeChange = subprocess.run(["sudo", "-n", "date", "-s", str(date_time)])
-        
+
         if timeChange.returncode != 0:
             self.log("ERROR: Could not set system date and time. Administrator permissions are required")
         else:
@@ -363,7 +379,7 @@ class ChartApp(customtkinter.CTk):
         self.submit_button = customtkinter.CTkButton(self.popup, text="Set System Time", command=self.submitTime, corner_radius=0)
         self.submit_button.grid(column=0, row=6, sticky="s", columnspan=3, pady=10)
 
-        self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created. 
+        self.popup.wait_visibility() # prevents the GUI trying to access the popup before it is fully created.
         self.popup.focus() # brings popup in front of GUI
 
     def syncCoords(self, source, target, event=None):
@@ -375,7 +391,7 @@ class ChartApp(customtkinter.CTk):
         if target is not None and target.winfo_exists():
             target.delete(0, "end")
             target.insert(0, source.get())
-   
+
     def openPointingCalculator(self):
 
         if self.pointing_window is not None and self.pointing_window.winfo_exists():
@@ -386,10 +402,10 @@ class ChartApp(customtkinter.CTk):
         self.pointing_window.title("Pointing Calculator")
         self.pointing_window.geometry("500x610")
         self.pointing_window.protocol("WM_DELETE_WINDOW", self.pointing_window.withdraw)
-    
+
         self.scroll = customtkinter.CTkScrollableFrame(master = self.pointing_window, width = 460, height = 260, corner_radius = 0)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
-    
+
         # === Row 0-1: Lat-Long ===#
         #Will automatically pull the lat and long from the main window if they're filled in
 
@@ -423,26 +439,26 @@ class ChartApp(customtkinter.CTk):
         self.latitude_increment_label.grid(row = 2, column = 0, sticky = "w", padx = 10, pady = 5)
         self.latitude_increment_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
         self.latitude_increment_entry.grid(row = 3, column = 0, sticky = "w", padx = 10, pady = 5)
-    
+
         self.longitude_increment_label = customtkinter.CTkLabel(
             self.scroll, text="Galactic Longitude Spacing (l)\n(Degrees between points):", justify = "left")
         self.longitude_increment_label.grid(row = 2, column = 1, sticky = "w", padx = 10, pady = 5)
         self.longitude_increment_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
         self.longitude_increment_entry.grid(row = 3, column = 1, sticky = "w", padx = 10, pady = 5)
-    
+
         # === Row 4-5 Num_points and Delay ===#
         self.num_points_label = customtkinter.CTkLabel(self.scroll, text = "Number of Data Points:", justify = "left")
         self.num_points_label.grid(row = 4, column = 0, sticky = "w", padx = 10, pady = 5)
         self.num_points_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 1", width = 180, corner_radius = 0)
         self.num_points_entry.grid(row = 5, column = 0, sticky = "w", padx = 10, pady = 5)
-    
+
         self.delay_label = customtkinter.CTkLabel(self.scroll, text = "Minutes until first point:", justify = "left")
         self.delay_label.grid(row = 4, column = 1, sticky = "w", padx = 10, pady = 5)
         self.delay_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Example: 2 for 2 minutes", width = 180, corner_radius = 0)
         self.delay_entry.grid(row = 5, column = 1, sticky = "w", padx = 10, pady = 5)
 
         self.delta_time_label = customtkinter.CTkLabel(self.scroll, text = "Time between datapoints:", justify = "left")
-        self.delta_time_label.grid(row = 6, column = 0, sticky = "w", padx = 10, pady = 5)        
+        self.delta_time_label.grid(row = 6, column = 0, sticky = "w", padx = 10, pady = 5)
         self.delta_time_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 10 for 10 minutes", width = 180, corner_radius = 0)
         self.delta_time_entry.grid(row = 7, column = 0, sticky = "w", padx = 10, pady = 5)
 
@@ -455,7 +471,7 @@ class ChartApp(customtkinter.CTk):
 
         self.advanced_button = customtkinter.CTkButton(self.scroll, text="Advanced Pointing", command = self.advancedPointing, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.advanced_button.grid(row = 8, column = 1,  padx = 10, pady = 5)
-    
+
         # === Box where the AzAlt text goes ===#
         self.AzAlt_box = customtkinter.CTkTextbox(self.scroll, width=450, height=220, state = "disabled", corner_radius = 0)
         self.AzAlt_box.grid(row = 9, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
@@ -474,7 +490,7 @@ class ChartApp(customtkinter.CTk):
 
         self.scroll = customtkinter.CTkScrollableFrame(master = self.advanced_window, width = 460, height = 260, corner_radius = 0)
         self.scroll.pack(fill = "both", expand = True, padx = 10, pady = 10)
-        
+
         self.Advanced_function_1_label = customtkinter.CTkLabel(self.scroll, text = "The first 'Advanced Feature' allows you to set the starting \nangle along from the galactic center.", justify = "left")
         self.Advanced_function_1_label.grid(row = 1, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
@@ -504,7 +520,7 @@ class ChartApp(customtkinter.CTk):
         self.point_height_label.grid(row = 6, column = 1, sticky = "w", padx = 10, pady = 5)
         self.point_height_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 10", width = 180, corner_radius = 0)
         self.point_height_entry.grid(row = 7, column = 1, sticky = "w", padx = 10, pady = 5)
-        
+
         self.gal_lat_label = customtkinter.CTkLabel(self.scroll, text = "Galactic Latitude (b) you \nwant to investigate", justify = "left")
         self.gal_lat_label.grid(row = 8, column = 0, sticky = "w", padx = 10, pady = 5)
         self.gal_lat_entry = customtkinter.CTkEntry(self.scroll, placeholder_text = "Default: 0", width = 180, corner_radius = 0)
@@ -517,10 +533,10 @@ class ChartApp(customtkinter.CTk):
 
         self.gimme_time_button = customtkinter.CTkButton(self.scroll, text = "When To Observe", command = self.giveTime, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.gimme_time_button.grid(row = 10, column = 0, padx = 10, pady = 5)
-        
+
         self.altitude_plot_button = customtkinter.CTkButton(self.scroll, text = "Plot your Planned Altitude \n(default today if date empty)", command = self.altitudePlot, width = 180, hover_color = "dark blue", corner_radius = 0)
         self.altitude_plot_button.grid(row = 10, column = 1, padx = 10, pady = 5)
-        
+
         self.Advanced_pointing_box = customtkinter.CTkTextbox(self.scroll, width=440, height=200, state = "disabled", corner_radius = 0)
         self.Advanced_pointing_box.grid(row = 11, column = 0, columnspan = 2, sticky = "w", padx = 10, pady = 5)
 
@@ -556,10 +572,10 @@ class ChartApp(customtkinter.CTk):
                                         year = year,
                                         month = month,
                                         day = day)
-        
+
             self.Advanced_pointing_box.configure(state = "normal")
             self.Advanced_pointing_box.delete("0.0", "end")
-            self.Advanced_pointing_box.insert("0.0", self.give_time)   
+            self.Advanced_pointing_box.insert("0.0", self.give_time)
             self.Advanced_pointing_box.configure(state = "disabled")
 
         except ValueError as e:
@@ -590,7 +606,7 @@ class ChartApp(customtkinter.CTk):
             delta_time = self.specializedErrors(self.delta_time_entry, "Time Between Datapoints", int, default = 10)
             gal_long_start = self.specializedErrors(self.gal_long_start_entry, "Starting Galactic Longitude", int, default = 0) if adv_open else 0
             gal_lat_start = self.specializedErrors(self.gal_lat_start_entry, "Starting Galactic Latitude", int, default = 0) if adv_open else 0
-            
+
             self.results = pointing(
                 latitude = lat,
                 longitude = long,
@@ -607,12 +623,12 @@ class ChartApp(customtkinter.CTk):
                 gal_long_start = gal_long_start,
                 gal_lat_start = gal_lat_start
             )
-        
+
             self.AzAlt = azalt(self.results)
-            
+
             self.AzAlt_box.configure(state = "normal")
             self.AzAlt_box.delete("0.0", "end")
-            self.AzAlt_box.insert("0.0", self.AzAlt)   
+            self.AzAlt_box.insert("0.0", self.AzAlt)
             self.AzAlt_box.configure(state = "disabled")
         except ValueError as e:
             self.AzAlt_box.configure(state = "normal")
@@ -651,7 +667,7 @@ class ChartApp(customtkinter.CTk):
                     raise ValueError("Planned Date of Observation is invalid.\nPlease put in form MM-DD-YYYY")
             else:
                 year, month, day = now.year, now.month, now.day
-                
+
             adv_open = hasattr(self, "gal_long_start_entry") and self.gal_long_start_entry.winfo_exists()
             lat = self.specializedErrors(self.latitude_entry, "Observer latitude", float)
             long = self.specializedErrors(self.longitude_entry, "Observer longitude", float)
@@ -659,7 +675,7 @@ class ChartApp(customtkinter.CTk):
             gal_lat = self.specializedErrors(self.gal_lat_entry, "Galactic Latitude you want to investigate", int, default = 0) if adv_open else 0
 
             times, alt, tz = altitude_plot_data(lat, long, gal_lat, gal_long, year, month, day)
-            
+
             plt.figure(figsize=(8, 3))
             plt.plot(times, alt)                                       # the sky trace
             plt.axhline(0, color="gray", linestyle="--", linewidth=1)  # horizon
@@ -675,12 +691,12 @@ class ChartApp(customtkinter.CTk):
             else:
                 plt.scatter([times[j]], [alt[j]], color="red", zorder=5)
                 plt.title(f"{month:02d}-{day:02d}-{year} — Peak Alt: {alt[j]:.1f}° at {times[j].strftime('%I:%M %p %Z')}")
-            
+
             plt.xlabel(f"Time ({times[0].tzname()})")
             plt.ylim(bottom = 0)
-            plt.gca().yaxis.set_major_formatter('{x:.0f}°')            
+            plt.gca().yaxis.set_major_formatter('{x:.0f}°')
             plt.tight_layout()
-            plt.show()  
+            plt.show()
         except Exception as e:
             self.Advanced_pointing_box.configure(state = "normal")
             self.Advanced_pointing_box.insert("end", f"\nPlot error: {e}")
@@ -698,13 +714,13 @@ class ChartApp(customtkinter.CTk):
         except ValueError:
             text = "Starting longitude and latitude must be whole numbers."
 
-       
+
         self.Advanced_pointing_box.configure(state = "normal")
         self.Advanced_pointing_box.delete("0.0", "end")
-        self.Advanced_pointing_box.insert("0.0", text)   
+        self.Advanced_pointing_box.insert("0.0", text)
         self.Advanced_pointing_box.configure(state = "disabled")
 
-    
+
     def gpsLocator(self):
 
         #takes location entry and fills latitude and longitude entry
@@ -723,7 +739,7 @@ class ChartApp(customtkinter.CTk):
                     #sync to pointing box
                     self.syncCoords(self.latitude_entry, "pointing_latitude_entry")
                     self.syncCoords(self.longitude_entry, "pointing_longitude_entry")
-                    
+
                 else:
                     messagebox.showerror("Location error", "Please enter a location")
 
@@ -731,11 +747,11 @@ class ChartApp(customtkinter.CTk):
                 self.log(f"Unable to find location: {e}")
         else:
             self.log("No internet connection!! Unable to find location.")
-    
+
     def testInternet(self):
         #simple ping test to check internet
 
-        try: 
+        try:
             socket.create_connection(("8.8.8.8", 53), timeout=3)
             return True
         except OSError:
@@ -744,7 +760,7 @@ class ChartApp(customtkinter.CTk):
     def gpsDisable(self):
 
         #disables calculate location button if no internet is found
-        
+
         if self.testInternet():
             self.calculate_coordinates_button.configure(text="Calculate Coordinates", state="normal")
         else:
@@ -801,7 +817,7 @@ class ChartApp(customtkinter.CTk):
             text=now.strftime("%Y-%m-%d %H:%M:%S")
         )
         self.after(1000, self.updateClock)
-    
+
     def updateTimeEstimate(self, event=None):
 
         # grabs the frequency entries and updates the estimated time displayed on the GUI
@@ -819,11 +835,11 @@ class ChartApp(customtkinter.CTk):
                 int_time = float(self.integration_time_entry.get())
                 nint = int(self.integration_scans_entry.get())
 
-            except ValueError: 
+            except ValueError:
                 self.estimated_time_label.configure(text="")
                 return
-        
-        try: 
+
+        try:
             estimated_time = ((freq_f - freq_i) * int_time * nint)
             minutes, seconds = divmod(estimated_time, 60)
             self.estimated_time_label.configure(text=f"Estimated time: {minutes:.0f}m {seconds:.0f}s")
@@ -831,7 +847,7 @@ class ChartApp(customtkinter.CTk):
             self.estimated_time_label.configure(text="")
             return
 
-    
+
     def enableDefaults(self):
 
         # removes text in entries and disables them
@@ -857,12 +873,12 @@ class ChartApp(customtkinter.CTk):
             self.integration_time_entry.configure(state="normal", placeholder_text="5", fg_color=("white", "gray21"))
             self.updateTimeEstimate()
 
-    
+
     def startCollection(self):
 
         # checks for default switch and returns either default values or text in the entry boxes
         # if default switch is off, data in the entry boxes is collected and is then checked to make sure it's valid
-        # arguments are then created with values entered 
+        # arguments are then created with values entered
         # The cfg dictionary is made from the arguments and is then passed to the runObservation function
 
         if self.session and self.session.is_alive():
@@ -876,7 +892,7 @@ class ChartApp(customtkinter.CTk):
             self.freq_f = float(self.default_freq_f)
             self.int_time = float(self.default_int_time)
             self.nint = int(self.default_nint)
-            
+
         else:
             try:
                 self.freq_i = float(self.frequency_start_entry.get())
@@ -889,7 +905,7 @@ class ChartApp(customtkinter.CTk):
                     "Frequency, integration time, and integrations per scan must be numeric."
                 )
                 return
-            
+
             if self.freq_i <= 0:
                 messagebox.showerror(
                     "Invalid Frequency",
@@ -977,6 +993,7 @@ class ChartApp(customtkinter.CTk):
             total_time=None
         )
 
+        self.sdr_error_shown = False    # resets sdr flag
         self.startLogCapture()
         cfg = buildConfig(args, self.log)
         self.last_data_dir = cfg["data_dir"]
@@ -993,7 +1010,7 @@ class ChartApp(customtkinter.CTk):
 
     def stopCollection(self):
 
-        #sends a command to stop data collection 
+        #sends a command to stop data collection
 
         if not self.session or not self.session.is_alive():
             self.log("Data collection hasn't started")
@@ -1011,7 +1028,7 @@ class ChartApp(customtkinter.CTk):
 
         if self.session is None:
             return
-        
+
         if self.session.is_alive():
             self.after(1000, self.plotObservation)
 
@@ -1019,7 +1036,7 @@ class ChartApp(customtkinter.CTk):
             if not self.last_data_dir:
                 self.log("No observation data found.")
                 return
-            
+
             if not glob.glob(os.path.join(self.last_data_dir, "*.dat")):
                 self.log("No data files found - skipping plot.")
                 return
@@ -1101,7 +1118,7 @@ class ChartApp(customtkinter.CTk):
         if self.mode_switch.get() == "on":
             customtkinter.set_appearance_mode("Dark")
         else: customtkinter.set_appearance_mode("Light")
-    
+
     def biasTwarn(self):
 
         # displays a warning message if BiasT is enabled
@@ -1146,7 +1163,7 @@ class ChartApp(customtkinter.CTk):
                     self.log(line)
 
         threading.Thread(target=reader, daemon=True).start()
-    
+
     def stopLogCapture(self):
         if self._stdout_saved is None:
             return
@@ -1162,4 +1179,3 @@ if __name__ == "__main__":
 
     app = ChartApp()
     app.mainloop()
-           
