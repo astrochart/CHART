@@ -37,6 +37,7 @@ class ChartApp(customtkinter.CTk):
         self._stderr_saved = None
 
         self.sdr_error_shown = False    # flag for usb claim error for sdr
+        self.user_updated_time = self.testInternet()   # flag if user updated time
 
         self.default_freq_i = "1415"
         self.default_freq_f = "1425"
@@ -323,6 +324,7 @@ class ChartApp(customtkinter.CTk):
         if timeChange.returncode != 0:
             self.log("ERROR: Could not set system date and time. Administrator permissions are required")
         else:
+            self.user_updated_time = True
             self.log(f"{date_time} is set!")
             self.updateClock()
 
@@ -763,6 +765,7 @@ class ChartApp(customtkinter.CTk):
 
         if self.testInternet():
             self.calculate_coordinates_button.configure(text="Calculate Coordinates", state="normal")
+            self.user_updated_time = True   # since gps works, the pi has proper date and time
         else:
             self.calculate_coordinates_button.configure(text="Internet Required", state="disabled")
         self.after(10000, self.gpsDisable)
@@ -886,6 +889,17 @@ class ChartApp(customtkinter.CTk):
                 "Observation Running",
                 "Stop the current observation before starting another.")
             return
+
+        if not self.user_updated_time:
+            user_time_correct = messagebox.askokcancel(
+                "Date and Time not Updated",
+                "This device is not connected to the internet, so its clock may not be accurate.\n\n"
+                "Please verify the System Date and Time before starting an observation.\n\n"
+                "Click OK to ignore this warning and start the observation anyway, or Cancel to return."
+            )
+            if not user_time_correct:
+                return
+            self.user_updated_time = True
 
         if self.default_switch.get() == "on":
             self.freq_i = float(self.default_freq_i)
