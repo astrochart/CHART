@@ -251,7 +251,7 @@ class ChartApp(customtkinter.CTk):
                         "RTL-SDR Is Busy",
                         "CHART could not open the RTL-SDR.\n\n"
                         "Another program or CHART window may be using it. "
-                        "Close other SDR software and try again. If the problem "
+                        "Close other SDR software or CHART window and try again. If the problem "
                         "continues, unplug and reconnect the radio.",
                     ),
                 )
