@@ -135,7 +135,7 @@ def buildConfig(args, logger=print):
     return cfg
 
 
-def runObservation(cfg, logger=print, stop_event=None):
+def runObservation(cfg, logger=print, stop_event=None, on_tb_ready=None):
 
     def runSweep(tb):
         for freq in np.arange(cfg["freq_i"],cfg["freq_f"],cfg["df"]):           #loops through each frequency step but not the final
@@ -173,7 +173,13 @@ def runObservation(cfg, logger=print, stop_event=None):
 
         logger(f"SDR error: {e}\nStopping collection!!!")
         raise
-    
+    # Hand the live TopBlock to an optional observer (e.g. a live-display
+    # producer thread).  No-op when on_tb_ready is None, so CLI and existing
+    # GUI behaviour are unchanged.  The same tb is reused for every frequency
+    # step in the sweep, so this fires exactly once per observation.
+    if on_tb_ready is not None:
+        on_tb_ready(tb)
+ 
     try:
         os.remove(tb.data_file)   #removes data file created when tb is created 
     except FileNotFoundError:
