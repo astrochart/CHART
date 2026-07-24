@@ -21,6 +21,19 @@ from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
 from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
 
+# Live waterfall display.  WaterfallPanel and the display constants are reused
+# unchanged from the standalone live_view tool; only the producer wiring is
+# re-implemented here because chart-observe already owns the science thread.
+import queue
+from live_view import (
+    WaterfallPanel,
+    LiveViewWorker,
+    CENTER_FREQ,
+    GUI_POLL_MS,
+    RESIZE_REDRAW_MS,
+    QUEUE_MAXDEPTH,
+)
+
 class ChartApp(customtkinter.CTk):
 
     def __init__(self):
@@ -30,6 +43,26 @@ class ChartApp(customtkinter.CTk):
         self.jupyter_proc = None    # jupyter local subprocess
         self.last_data_dir = None   # stores last directory created for plotting function
         self.popup = None       # allows checking for multiple date and time popup windows
+
+        # --- Live display state -------------------------------------------
+        # The science thread (self.session) feeds spectra to the Display tab
+        # through this queue.  A separate producer thread polls the GNU Radio
+        # probe once the TopBlock exists; the GUI drains the queue on a timer.
+        self.spectrum_queue   = queue.Queue(maxsize=QUEUE_MAXDEPTH)
+        self.display_tb       = None    # live TopBlock, handed over by on_tb_ready
+        self.display_tb_ready = None    # threading.Event, set when tb available
+        self.display_stop     = None    # threading.Event to halt the producer
+        self.display_producer = None    # producer thread handle
+        self.waterfall        = None    # WaterfallPanel, built in buildDisplayTab
+        self.frames_drawn     = 0
+        self.display_last_freq = None   # last freq the waterfall axis was set to
+        self.display_poll_id  = None    # after() id for the queue-drain loop
+
+        # Monitor (standalone live view) state.  Mutually exclusive with a
+        # science sweep — both drive the same waterfall through spectrum_queue,
+        # but only one can hold the SDR at a time.
+        self.monitor_worker = None      # LiveViewWorker instance when active
+        self._last_display_state = "idle"   # for detecting state transitions
 
         #storage for stdout/stderr pipe required to capture GNU radio messages 
         self._log_pipe_r = None
@@ -96,20 +129,68 @@ class ChartApp(customtkinter.CTk):
         self.clock_label.grid(column=1, row=0, padx=2, pady=2, sticky="w")
         self.updateClock()
 
+        # Global recording indicator — always visible regardless of tab, so the
+        # user knows a scan is in progress even from the Configuration tab.
+        # Sits just under the clock.  Driven by pollDisplayQueue.
+        self.record_indicator = customtkinter.CTkLabel(
+            self.clock_frame, text="\u25cf  Idle",
+            text_color=("gray60", "gray50"),
+        )
+        self.record_indicator.grid(column=0, row=1, columnspan=2, padx=2,
+                                   pady=(0, 2), sticky="e")
+
         # defines what rows can expand
+        # row 0: top bar (fixed)   row 1: body/tabview (expands)
+        # row 2: control strip (fixed)   row 3: terminal (fixed)
         self.rowconfigure(0, weight=0)
+        self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=0)
-        self.rowconfigure(1, weight=1) 
-        self.rowconfigure(0, weight=0)
+        self.rowconfigure(3, weight=0)
         self.columnconfigure(0, weight=1)
 
-        self.scroll_frame = customtkinter.CTkScrollableFrame(self, corner_radius=0)
-        self.scroll_frame.grid(column=0, row=1, padx=10, pady=0, sticky="nsew")
+        # --- Body tabview (row 1) -----------------------------------------
+        # Two tabs: "Configuration" holds the existing settings (the scroll
+        # frame, unchanged) and "Display" will hold the live waterfall.
+        # The tabview is the expanding region; the control strip and terminal
+        # below it stay persistent across both tabs.
+        self.tabview = customtkinter.CTkTabview(self, corner_radius=0)
+        self.tabview.grid(column=0, row=1, padx=10, pady=0, sticky="nsew")
+        self.tab_config  = self.tabview.add("Configuration")
+        self.tab_display = self.tabview.add("Display")
+
+        # The scroll frame now lives inside the Configuration tab.  Keeping the
+        # name self.scroll_frame unchanged means every widget parented to it
+        # (buildEntries, buildSwitches, buildButtons, ...) works untouched —
+        # only the parent changed, from self to the tab.
+        self.scroll_frame = customtkinter.CTkScrollableFrame(self.tab_config, corner_radius=0)
+        self.scroll_frame.pack(fill="both", expand=True)
         self.scroll_frame.columnconfigure(1, weight=1)
         self.scroll_frame.columnconfigure(3, weight=1)
 
+        # --- Persistent control strip (row 2) -----------------------------
+        # A fixed-height band that always stays visible (never scrolls), set
+        # off from the body above by a thin separator line.  Start/Stop live
+        # here so the primary actions are reachable no matter what the body
+        # is showing.  Colours come from the active theme so dark mode is
+        # honoured automatically.
+        self.control_strip = customtkinter.CTkFrame(self, corner_radius=0,
+                                                    fg_color="transparent")
+        self.control_strip.grid(row=2, column=0, sticky="ew", padx=10, pady=(0, 2))
+        # Column weights for the strip's contents are set in buildButtons,
+        # which owns the sweep-button / monitor-group layout.
+
+        # Thin separator across the top of the strip: a 1px frame using a
+        # theme-aware colour tuple (light_mode, dark_mode) so it flips with
+        # the appearance mode.  Spans both button columns.
+        self.control_separator = customtkinter.CTkFrame(
+            self.control_strip, height=1, corner_radius=0,
+            fg_color=("gray70", "gray30"),
+        )
+        self.control_separator.grid(row=0, column=0, columnspan=6,
+                                    sticky="ew", pady=(0, 5))
+
         self.terminal = customtkinter.CTkTextbox(self, height=80, corner_radius=0, border_width=3, border_color="gray")
-        self.terminal.grid(row=2, column=0, sticky="ew", padx=10, pady=(0,10))
+        self.terminal.grid(row=3, column=0, sticky="ew", padx=10, pady=(0,10))
         self.terminal.configure(state="disabled")
 
         #widgets inside of the scroll frame is called with the following functions
@@ -117,9 +198,22 @@ class ChartApp(customtkinter.CTk):
         self.buildSwitches()
         self.buildButtons()
 
+        # Display tab contents (status line, parameter summary, waterfall)
+        self.buildDisplayTab()
+
         # functions that start at runtime are here
         self.loadSettings()
         self.gpsDisable()
+        self.syncControlStates()   # set initial sweep/monitor control states
+
+        # Start the queue-drain loop for the live waterfall.  Runs continuously;
+        # it simply finds an empty queue when no observation is active.
+        self.display_poll_id = self.after(GUI_POLL_MS, self.pollDisplayQueue)
+
+        # Separate slow timer that redraws the waterfall's static background
+        # (axes/ticks/colorbar) after a resize or frequency-axis change.  Kept
+        # off the data path so an expensive redraw never delays a spectrum.
+        self.display_resize_id = self.after(RESIZE_REDRAW_MS, self.checkDisplayResize)
     
     def buildEntries(self):
 
@@ -209,6 +303,281 @@ class ChartApp(customtkinter.CTk):
         self.estimated_time_label = customtkinter.CTkLabel(self.scroll_frame, text="")
         self.estimated_time_label.grid(column=3, row=7, padx=10, pady=5, sticky="w")
 
+    # ======================================================================
+    # Live Display tab
+    # ======================================================================
+
+    def buildDisplayTab(self):
+        """Build the Display tab: status line, parameter summary, waterfall.
+
+        Layout: the tab is split left/right — a parameter summary panel on the
+        left and the waterfall on the right.  The summary itself contains two
+        groups (observer info, SDR/scan settings); whether those groups stack
+        vertically (compact) or sit side by side (mirroring Configuration) is
+        controlled by a single knob below — see SETTINGS_PLACEMENT.
+        """
+        tab = self.tab_display
+
+        # === TUNABLE KNOBS ================================================
+        # Width ratio of summary vs waterfall.  weights are relative ints, so
+        # 1:2 gives the waterfall ~2/3 of the width.  Bump WATERFALL_WEIGHT to
+        # 3 for ~3/4, etc.
+        SUMMARY_WEIGHT   = 1
+        WATERFALL_WEIGHT = 2
+
+        # How the two summary groups are arranged:
+        #   "stacked"    → settings below observer  (compact, one narrow column)
+        #   "side"       → settings right of observer (two columns, mirrors the
+        #                  Configuration tab's geography)
+        SETTINGS_PLACEMENT = "stacked"
+        # ==================================================================
+
+        # Outer grid: row 0 = status (full width), row 1 = body (expands).
+        tab.rowconfigure(0, weight=0)
+        tab.rowconfigure(1, weight=1)
+        tab.columnconfigure(0, weight=SUMMARY_WEIGHT)    # summary panel
+        tab.columnconfigure(1, weight=WATERFALL_WEIGHT)  # waterfall
+
+        # --- Status line: indicator dot + state + tuning + rate -----------
+        # Spans both columns across the top.
+        status_row = customtkinter.CTkFrame(tab, fg_color="transparent")
+        status_row.grid(row=0, column=0, columnspan=2, sticky="ew",
+                        padx=6, pady=(6, 2))
+
+        # Unicode filled circle; colour flips green (active) / gray (idle).
+        self.display_dot = customtkinter.CTkLabel(
+            status_row, text="\u25cf", width=18,
+            text_color=("gray60", "gray50"),
+        )
+        self.display_dot.grid(row=0, column=0, padx=(2, 6))
+
+        self.display_status = customtkinter.CTkLabel(status_row, text="Idle")
+        self.display_status.grid(row=0, column=1, sticky="w")
+
+        # --- Parameter summary panel (left) -------------------------------
+        # sticky="new" keeps the params hugging the top-left of their column
+        # rather than centering in the tall left cell.
+        summary = customtkinter.CTkFrame(tab, border_color="gray",
+                                         border_width=2, corner_radius=0)
+        summary.grid(row=1, column=0, sticky="new", padx=6, pady=(2, 6))
+        summary.columnconfigure(0, weight=1)
+
+        # Two groups, each its own frame.  observer_frame always sits top-left;
+        # settings_frame placement is the knob above.
+        observer_frame = customtkinter.CTkFrame(summary, fg_color="transparent")
+        settings_frame = customtkinter.CTkFrame(summary, fg_color="transparent")
+
+        observer_frame.grid(row=0, column=0, sticky="new", padx=4, pady=4)
+        if SETTINGS_PLACEMENT == "side":
+            settings_frame.grid(row=0, column=1, sticky="new", padx=4, pady=4)
+            summary.columnconfigure(1, weight=1)
+        else:   # "stacked"
+            settings_frame.grid(row=1, column=0, sticky="new", padx=4, pady=4)
+
+        # Read-only value labels stored in a dict so updateDisplaySummary can
+        # refresh them from the entry fields when an observation starts.
+        self._summary_values = {}
+
+        def add_row(parent, r, key, label_text):
+            parent.columnconfigure(1, weight=1)
+            lbl = customtkinter.CTkLabel(parent, text=label_text, anchor="e")
+            lbl.grid(row=r, column=0, padx=(6, 4), pady=1, sticky="e")
+            val = customtkinter.CTkLabel(parent, text="—", anchor="w")
+            val.grid(row=r, column=1, padx=(4, 6), pady=1, sticky="w")
+            self._summary_values[key] = val
+
+        observer_cfg = (
+            ("observer",  "Observer:"),
+            ("location",  "Location:"),
+            ("latitude",  "Latitude:"),
+            ("longitude", "Longitude:"),
+            ("altitude",  "Altitude:"),
+            ("azimuth",   "Azimuth:"),
+        )
+        settings_cfg = (
+            ("freq_i",   "Start Freq (MHz):"),
+            ("freq_f",   "Stop Freq (MHz):"),
+            ("int_time", "Integration (s):"),
+            ("nint",     "Ints / step:"),
+        )
+        for r, (key, text) in enumerate(observer_cfg):
+            add_row(observer_frame, r, key, text)
+        for r, (key, text) in enumerate(settings_cfg):
+            add_row(settings_frame, r, key, text)
+
+        # --- Waterfall (right) --------------------------------------------
+        wf_frame = customtkinter.CTkFrame(tab, corner_radius=0,
+                                          fg_color="#1a1a2e")
+        wf_frame.grid(row=1, column=1, sticky="nsew", padx=6, pady=(0, 6))
+        self.waterfall = WaterfallPanel(wf_frame)
+
+    def updateDisplaySummary(self):
+        """Copy the current entry-field values into the Display tab summary.
+
+        Called when an observation starts, so the front panel reflects what is
+        actually being observed.  Reads the same entries the Configuration tab
+        edits; shows a dash for blanks.
+        """
+        def txt(entry):
+            v = entry.get().strip()
+            return v if v else "—"
+
+        self._summary_values["observer"].configure(text=txt(self.observer_name_entry))
+        self._summary_values["location"].configure(text=txt(self.location_entry))
+        self._summary_values["latitude"].configure(text=txt(self.latitude_entry))
+        self._summary_values["longitude"].configure(text=txt(self.longitude_entry))
+        self._summary_values["altitude"].configure(text=txt(self.altitude_entry))
+        self._summary_values["azimuth"].configure(text=txt(self.azimuth_entry))
+        # Scan settings come from the validated values set in startCollection.
+        self._summary_values["freq_i"].configure(text=f"{self.freq_i:g}")
+        self._summary_values["freq_f"].configure(text=f"{self.freq_f:g}")
+        self._summary_values["int_time"].configure(text=f"{self.int_time:g}")
+        self._summary_values["nint"].configure(text=f"{self.nint:g}")
+
+    # --- Display producer (taps the science TopBlock) ---------------------
+
+    def onDisplayTbReady(self, tb):
+        """Callback handed to runObservation; receives the live TopBlock.
+
+        Runs in the science thread.  Stashes tb and unblocks the producer.
+        """
+        self.display_tb = tb
+        if self.display_tb_ready is not None:
+            self.display_tb_ready.set()
+
+    def displayProducerLoop(self):
+        """Poll the TopBlock's display branch, push (freq, spectrum) to queue.
+
+        Mirrors the producer loop proven in live_view, but lives here because
+        chart-observe owns the science thread (self.session) directly.  Runs in
+        its own thread so it can read the probe while the science thread is
+        blocked in tb.wait().
+        """
+        if not self.display_tb_ready.wait(timeout=15.0):
+            return
+        tb = self.display_tb
+        if tb is None:
+            return
+
+        last_vec = None
+        while not self.display_stop.is_set():
+            tb = self.display_tb
+            if tb is None:
+                break
+            vec = tb.get_display_spectrum()
+            if vec is not None:
+                if last_vec is None or not np.array_equal(vec, last_vec):
+                    if self.spectrum_queue.full():
+                        try:
+                            self.spectrum_queue.get_nowait()
+                        except queue.Empty:
+                            pass
+                    self.spectrum_queue.put_nowait((tb.c_freq, vec.copy()))
+                    last_vec = vec
+            time.sleep(0.05)
+
+    def startDisplayProducer(self):
+        """Spin up the display tap for a newly started observation."""
+        self.display_tb        = None
+        self.display_tb_ready  = threading.Event()
+        self.display_stop      = threading.Event()
+        self.frames_drawn      = 0
+        self.display_last_freq = None
+        self.display_producer  = threading.Thread(
+            target=self.displayProducerLoop, daemon=True,
+            name="display-producer")
+        self.display_producer.start()
+
+    def stopDisplayProducer(self):
+        """Signal the display tap to stop and drop its TopBlock reference."""
+        if self.display_stop is not None:
+            self.display_stop.set()
+        if self.display_producer is not None:
+            self.display_producer.join(timeout=2.0)
+        self.display_tb = None
+
+    def pollDisplayQueue(self):
+        """Drain the spectrum queue into the waterfall (GUI thread, on timer).
+
+        Always reschedules itself.  Draws spectra from whichever producer is
+        active (science sweep or monitor) — the queue is source-agnostic.  Keeps
+        the indicator, status line, and control enable/disable in sync with the
+        current instrument state.
+        """
+        state = self.displayState()
+        active = state in ("sweep", "monitor")
+
+        # Only draw when the Display tab is actually visible.  Blitting to an
+        # unmapped canvas (user on the Configuration tab) can corrupt the saved
+        # background.  We still drain the queue so it can't back up; the frames
+        # are simply discarded while hidden and drawing resumes on return.
+        display_visible = self.tabview.get() == "Display"
+
+        drained = 0
+        while True:
+            try:
+                c_freq, spectrum = self.spectrum_queue.get_nowait()
+            except queue.Empty:
+                break
+            if active and display_visible and self.waterfall is not None:
+                if c_freq != self.display_last_freq:
+                    self.waterfall.set_center_freq(c_freq)
+                    self.display_last_freq = c_freq
+                self.waterfall.push(spectrum)
+                self.frames_drawn += 1
+            drained += 1
+            if drained >= 5:
+                break
+
+        # Re-sync the control widgets only when the state actually changes
+        # (e.g. a sweep finishing on its own), to avoid reconfiguring widgets
+        # every tick.
+        if state != self._last_display_state:
+            self.syncControlStates()
+            self._last_display_state = state
+
+        # Indicator: green = recording sweep, blue = monitoring, gray = idle.
+        if state == "sweep":
+            freq_str = (f"{self.display_last_freq / 1e6:.3f} MHz"
+                        if self.display_last_freq else "tuning…")
+            green = ("#2e7d32", "#66bb6a")
+            self.display_dot.configure(text_color=green)
+            self.display_status.configure(
+                text=f"Observing — {freq_str}   |   {self.frames_drawn} frames")
+            self.record_indicator.configure(text="\u25cf  Recording",
+                                            text_color=green)
+        elif state == "monitor":
+            freq_str = (f"{self.display_last_freq / 1e6:.3f} MHz"
+                        if self.display_last_freq else "tuning…")
+            blue = ("#1565c0", "#42a5f5")
+            self.display_dot.configure(text_color=blue)
+            self.display_status.configure(
+                text=f"Monitoring — {freq_str}   |   {self.frames_drawn} frames")
+            self.record_indicator.configure(text="\u25cf  Monitoring",
+                                            text_color=blue)
+        else:  # idle
+            gray = ("gray60", "gray50")
+            self.display_dot.configure(text_color=gray)
+            if self.frames_drawn > 0:
+                self.display_status.configure(
+                    text=f"Idle — last run drew {self.frames_drawn} frames")
+            else:
+                self.display_status.configure(text="Idle")
+            self.record_indicator.configure(text="\u25cf  Idle", text_color=gray)
+
+        self.display_poll_id = self.after(GUI_POLL_MS, self.pollDisplayQueue)
+
+    def checkDisplayResize(self):
+        """Slow timer: redraw the waterfall background when dirty.
+
+        Only acts when the Display tab is visible — redrawing a hidden canvas
+        is wasted work and can touch an unmapped widget.  Reschedules itself.
+        """
+        if (self.waterfall is not None
+                and self.tabview.get() == "Display"):
+            self.waterfall.redraw_background()
+        self.display_resize_id = self.after(RESIZE_REDRAW_MS, self.checkDisplayResize)
+
     def buildSwitches(self):
         self.default_switch = customtkinter.CTkSwitch(self.scroll_frame, text="Use Default Parameters", onvalue="on", offvalue="off", command=self.enableDefaults, corner_radius=0)
         self.default_switch.grid(column=2, row=1, padx=10, pady=10, sticky="w")
@@ -217,11 +586,52 @@ class ChartApp(customtkinter.CTk):
         self.bias_switch.grid(column=2, row=7, padx=10, pady=5, sticky="w")
     
     def buildButtons(self):
-        self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection, corner_radius=0)
-        self.start_button.grid(column=2, row=9, padx=10, pady=3, sticky="ew")
+        # The persistent control strip holds two mutually-exclusive instrument
+        # controls side by side: the science sweep (a single toggle button) and
+        # the monitor (a live-view switch with its own tuning + LNA controls).
+        # Start Sweep always takes priority — starting it stops the monitor.
+        strip = self.control_strip
 
-        self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection, corner_radius=0)
-        self.stop_button.grid(column=3, row=9, padx=10, pady=3, sticky="ew")
+        # Columns: 0 sweep button | 1 divider | 2 "Monitor" switch |
+        #          3 "Tune" label | 4 freq entry | 5 LNA checkbox
+        strip.columnconfigure(0, weight=1)   # sweep button expands
+        strip.columnconfigure(2, weight=0)
+        strip.columnconfigure(4, weight=0)
+
+        # Sweep toggle — replaces the old Start/Stop pair.  Text and colour
+        # reflect state; the command routes to the toggle handler.
+        self.sweep_button = customtkinter.CTkButton(
+            strip, text="Start Sweep", command=self.toggleSweep, corner_radius=0)
+        self.sweep_button.grid(column=0, row=1, padx=(0, 8), pady=2, sticky="ew")
+
+        # Thin vertical divider between the sweep and monitor groups.
+        # Fixed height (not sticky="ns") so it acts as a visual rule without
+        # driving the strip's height.
+        divider = customtkinter.CTkFrame(strip, width=2, height=28,
+                                         corner_radius=0,
+                                         fg_color=("gray70", "gray30"))
+        divider.grid(column=1, row=1, padx=4, pady=2)
+
+        # Monitor switch (live view, no recording).
+        self.monitor_switch = customtkinter.CTkSwitch(
+            strip, text="Monitor", command=self.toggleMonitor,
+            onvalue="on", offvalue="off", corner_radius=0)
+        self.monitor_switch.grid(column=2, row=1, padx=(8, 8), pady=2, sticky="w")
+
+        # Monitor tuning entry, defaulting to the 21 cm line.
+        self.monitor_tune_label = customtkinter.CTkLabel(strip, text="Tune (MHz):")
+        self.monitor_tune_label.grid(column=3, row=1, padx=(4, 2), pady=2, sticky="e")
+        self.monitor_freq_entry = customtkinter.CTkEntry(
+            strip, width=80, corner_radius=0)
+        self.monitor_freq_entry.insert(0, "1420.4")
+        self.monitor_freq_entry.grid(column=4, row=1, padx=(0, 8), pady=2, sticky="w")
+
+        # LNA power checkbox — kept in sync with the Configuration tab's
+        # Bias-T switch and firing the same warning.
+        self.monitor_lna_check = customtkinter.CTkCheckBox(
+            strip, text="LNA power", command=self.monitorLnaToggled,
+            onvalue="on", offvalue="off", corner_radius=0)
+        self.monitor_lna_check.grid(column=5, row=1, padx=(0, 2), pady=2, sticky="w")
 
         self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub", command=self.jupyter_upload, corner_radius=0)
         self.jupyter_upload_button.grid(column=2, row=10, padx=10, pady=3, sticky="new")
@@ -869,6 +1279,136 @@ class ChartApp(customtkinter.CTk):
             self.updateTimeEstimate()
 
     
+    # ======================================================================
+    # Sweep / Monitor mutual-exclusion control
+    # ======================================================================
+
+    def displayState(self):
+        """Return the current instrument state: 'sweep', 'monitor', or 'idle'.
+
+        Single source of truth for the indicator, the control enable/disable
+        logic, and the swap behaviour.  Sweep takes priority: if a science
+        thread is alive we report 'sweep' regardless of anything else.
+        """
+        if self.session is not None and self.session.is_alive():
+            return "sweep"
+        if self.monitor_worker is not None and self.monitor_worker.is_running():
+            return "monitor"
+        return "idle"
+
+    def toggleSweep(self):
+        """Sweep button handler.  Start Sweep always takes priority.
+
+        - idle      → start the sweep
+        - monitor   → stop the monitor (release the SDR), then start the sweep
+        - sweep     → stop the sweep
+        """
+        state = self.displayState()
+        if state == "sweep":
+            self.stopCollection()
+            return
+
+        # Starting a sweep: if the monitor is up, take the device from it first.
+        if state == "monitor":
+            self.stopMonitor()
+
+        self.startCollection()
+
+    def toggleMonitor(self):
+        """Monitor switch handler.
+
+        Only reachable when no sweep is running (the switch is disabled during
+        a sweep).  Turns the standalone live view on or off.
+        """
+        if self.monitor_switch.get() == "on":
+            self.startMonitor()
+        else:
+            self.stopMonitor()
+
+    def startMonitor(self):
+        """Start the standalone live view at the chosen tuning frequency."""
+        # Parse the tuning entry; fall back to the 21 cm line on bad input.
+        try:
+            freq_mhz = float(self.monitor_freq_entry.get())
+        except ValueError:
+            messagebox.showerror("Invalid Frequency",
+                                 "Monitor tuning must be numeric (MHz).")
+            self.monitor_switch.deselect()
+            return
+
+        bias = self.monitor_lna_check.get() == "on"
+
+        self.frames_drawn = 0
+        self.display_last_freq = None
+        self.monitor_worker = LiveViewWorker(
+            self.spectrum_queue,
+            center_freq=freq_mhz * 1e6,
+            bias=bias,
+        )
+        try:
+            self.monitor_worker.start()
+        except Exception as e:
+            self.log(f"Monitor failed to start: {e}")
+            self.monitor_worker = None
+            self.monitor_switch.deselect()
+            return
+
+        self.log(f"Monitor started at {freq_mhz:.3f} MHz"
+                 f"{' with LNA power' if bias else ''}.")
+        self.syncControlStates()
+        self.tabview.set("Display")
+
+    def stopMonitor(self):
+        """Stop the standalone live view and release the SDR."""
+        if self.monitor_worker is not None:
+            self.monitor_worker.stop()
+            self.monitor_worker = None
+            self.log("Monitor stopped.")
+        # Reflect the off state on the switch (covers the swap case, where the
+        # sweep button — not the switch — triggered the stop).
+        self.monitor_switch.deselect()
+        self.syncControlStates()
+
+    def monitorLnaToggled(self):
+        """LNA checkbox handler — keep the Bias-T switch in sync and warn.
+
+        The monitor's LNA power and the Configuration tab's Bias-T are the same
+        physical setting, so toggling one updates the other and fires the same
+        warning the Configuration switch does.
+        """
+        if self.monitor_lna_check.get() == "on":
+            self.bias_switch.select()
+        else:
+            self.bias_switch.deselect()
+        self.biasTwarn()
+
+    def syncControlStates(self):
+        """Enable/disable the control widgets to match the current state.
+
+        - sweep   : monitor switch + tuning + LNA all disabled (device busy)
+        - monitor : tuning + LNA disabled (can't change mid-run); switch stays
+                    enabled so it can be turned off; sweep button stays enabled
+                    so it can perform the swap
+        - idle    : everything enabled
+        """
+        state = self.displayState()
+
+        if state == "sweep":
+            self.sweep_button.configure(text="Stop Sweep")
+            self.monitor_switch.configure(state="disabled")
+            self.monitor_freq_entry.configure(state="disabled")
+            self.monitor_lna_check.configure(state="disabled")
+        elif state == "monitor":
+            self.sweep_button.configure(text="Start Sweep")
+            self.monitor_switch.configure(state="normal")
+            self.monitor_freq_entry.configure(state="disabled")
+            self.monitor_lna_check.configure(state="disabled")
+        else:  # idle
+            self.sweep_button.configure(text="Start Sweep")
+            self.monitor_switch.configure(state="normal")
+            self.monitor_freq_entry.configure(state="normal")
+            self.monitor_lna_check.configure(state="normal")
+
     def startCollection(self):
 
         # checks for default switch and returns either default values or text in the entry boxes
@@ -992,14 +1532,28 @@ class ChartApp(customtkinter.CTk):
         cfg = buildConfig(args, self.log)
         self.last_data_dir = cfg["data_dir"]
         self.stop_event = threading.Event()
+
+        # Populate the Display tab's read-only summary from the entered values,
+        # then start the display tap that will feed the waterfall.
+        self.updateDisplaySummary()
+        self.startDisplayProducer()
+
         self.session = threading.Thread(
             target=runObservation,
             args=(cfg, self.log, self.stop_event),
+            kwargs={"on_tb_ready": self.onDisplayTbReady},
             daemon=True
         )
         self.session.start()
         time.sleep(0.2)    #wait for GNU Radio logs
         self.stopLogCapture()
+
+        # Bring the user to the live view now that data is flowing.  Start was
+        # reachable from either tab (it lives in the persistent strip), so this
+        # is a convenience, not a required navigation.
+        self.tabview.set("Display")
+        self.syncControlStates()
+
         self.plotObservation()
 
     def stopCollection(self):
@@ -1012,6 +1566,10 @@ class ChartApp(customtkinter.CTk):
 
         if self.stop_event:
             self.stop_event.set()
+
+        # Stop the display tap as well; the science thread will wind down at
+        # the next frequency-step boundary on its own.
+        self.stopDisplayProducer()
 
         self.log("Stopping observation...\nWaiting for current frequency scan to finish...")
 
@@ -1027,6 +1585,10 @@ class ChartApp(customtkinter.CTk):
             self.after(1000, self.plotObservation)
 
         else:
+            # Observation finished on its own — wind down the display tap too.
+            # Idempotent: harmless if stopCollection already stopped it.
+            self.stopDisplayProducer()
+
             if not self.last_data_dir:
                 self.log("No observation data found.")
                 return
@@ -1131,6 +1693,15 @@ class ChartApp(customtkinter.CTk):
         # displays a warning message if BiasT is enabled
         # !!! This function does not enable BiasT. Instead the startCollection() function passes along the value for the switch, which is then enabled when the data collection is started.
 
+        # Keep the monitor's LNA-power checkbox in sync with this switch (they
+        # are the same physical setting).  select()/deselect() are programmatic
+        # and do not re-fire monitorLnaToggled, so there is no recursion.
+        if hasattr(self, "monitor_lna_check"):
+            if self.bias_switch.get() == "on":
+                self.monitor_lna_check.select()
+            else:
+                self.monitor_lna_check.deselect()
+
         if self.bias_switch.get() == "on":
             messagebox.showwarning('WARNING', 'Only have this on if you know FOR SURE the BIAS-T is being used. \nIf you are following the CHART tutorial with the recommended LNA, it should be ON')
 
@@ -1141,6 +1712,10 @@ class ChartApp(customtkinter.CTk):
     def onClose(self):
 
         # defines a safe shutdown procedure that closes all subprocesses before exiting the GUI
+
+        # Release the SDR if the monitor is running.
+        if self.monitor_worker is not None and self.monitor_worker.is_running():
+            self.monitor_worker.stop()
 
         if self.jupyter_proc is not None:
             self.jupyter_proc.terminate()
