@@ -29,11 +29,15 @@ source chartenv/bin/activate
 - We appended the second line above to the `~.bashrc` file so the `chartenv` environment will always activate when a terminal is opened.
 - Next we installed `gnuradio` and other packages.
 ```bash
-sudo apt install build-essential git cmake xterm gnuradio-dev librtlsdr0 librtlsdr-dev rtl-sdr gr-osmosdr
+sudo apt install build-essential git cmake xterm gnuradio-dev librtlsdr0 librtlsdr-dev rtl-sdr gr-osmosdr stellarium
 ```
 - Next, we blacklisted the default DVB kernel driver so the RTL-SDR can be accessed by user-space software and prevent Bias-T issues with the Blog v4. See [their user guide](https://www.rtl-sdr.com/V4/) for details.
 ```bash
 echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-dvb_usb_rtl28xxu.conf
+```
+The BNO085 seems to work best on the Raspberry Pi with an I2C clock frequency of 400kHz. You can make that change by adding this line to your /boot/firmware/config.txt file.
+```
+dtparam=i2c_arm_baudrate=400000
 ```
 - We rebooted the system.
 - Finally we installed CHART.
