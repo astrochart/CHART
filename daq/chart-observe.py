@@ -418,12 +418,11 @@ class ChartApp(customtkinter.CTk):
 
     def getAzAlt(self):
 
-        if self.stellarium_proc is None or self.stellarium_proc.poll() is not None:
-            az, alt = AzAlt()
-            self.azimuth_entry.delete(0, "end")
-            self.azimuth_entry.insert(0, az)
-            self.altitude_entry.delete(0, "end")
-            self.altitude_entry.insert(0, alt)
+        az, alt = AzAlt()
+        self.azimuth_entry.delete(0, "end")
+        self.azimuth_entry.insert(0, f'{az:.1f}')
+        self.altitude_entry.delete(0, "end")
+        self.altitude_entry.insert(0, f'{alt:.1f}')
 
 
     def openPointingCalculator(self):

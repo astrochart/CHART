@@ -101,6 +101,24 @@ def AzAlt():
 
 def runStellarium():
 
+    # Wait for Stellarium's Remote Control API
+    while True:
+        try:
+            response = requests.get(
+                "http://localhost:8090/api/main/status",
+                timeout=1
+            )
+
+            if response.status_code == 200:
+                print("Connected to Stellarium.")
+                break
+
+        except requests.exceptions.RequestException:
+            pass
+
+        print("Waiting for Stellarium...")
+        time.sleep(0.5)
+
     while True:
 
         az, alt = get_az_alt()
