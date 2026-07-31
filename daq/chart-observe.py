@@ -19,7 +19,7 @@ from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
 from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
-from chart.bno08X import getAzalt, runStellarium
+from chart.bno08X import AzAlt, runStellarium
 
 class ChartApp(customtkinter.CTk):
 
@@ -230,10 +230,10 @@ class ChartApp(customtkinter.CTk):
         self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local, corner_radius=0)
         self.jupyter_local_button.grid(column=3, row=10, padx=10, pady=3, sticky="new")
 
-        self.update_azalt_button = customtkinter.CTkButton(self.scroll_frame, text="Get AzAlt", corner_radius=0)
+        self.update_azalt_button = customtkinter.CTkButton(self.scroll_frame, text="Get AzAlt", corner_radius=0, command=self.getAzAlt)
         self.update_azalt_button.grid(column=1, row=8, padx=10, pady=3, sticky="new")
 
-        self.open_stellarium_button = customtkinter.CTkButton(self.scroll_frame, text="Open Stellarium", corner_radius=0)
+        self.open_stellarium_button = customtkinter.CTkButton(self.scroll_frame, text="Open Stellarium", corner_radius=0, command=self.openStellarium)
         self.open_stellarium_button.grid(column=0, row=8, padx=10, pady=3, sticky="new")
 
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
@@ -404,8 +404,10 @@ class ChartApp(customtkinter.CTk):
 
     def openStellarium(self):
 
-        if self.stellarium_proc is not None and self.stellarium_proc.poll() is None:
+        self.log("test")
+        if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
             self.stellarium_proc = subprocess.Popen(["QT_QPA_PLATFORM=xcd", "stellarium", "--opengl-compat"])
+            self.log("test")
             self.azaltloop = threading.Thread(
                 target=runStellarium,
                 args=(),
@@ -415,6 +417,11 @@ class ChartApp(customtkinter.CTk):
 
 
     def getAzAlt(self):
+
+        if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
+            az, alt = AzAlt()
+            self.azimuth_entry.insert(0, az)
+            self.altitude_entry.insert(0, alt)
 
 
 

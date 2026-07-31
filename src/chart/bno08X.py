@@ -65,7 +65,7 @@ def move_stellarium(az_deg, alt_deg):
     except requests.exceptions.RequestException as e:
         print("Stellarium connection error:", e)
 
-def getAzalt():
+def AzAlt():
 
     i2c = I2C(SCL, SDA, frequency=800000)
 
