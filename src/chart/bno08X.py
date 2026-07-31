@@ -161,10 +161,15 @@ def runStellarium(stop_event):
             az, alt = get_az_alt()
             move_stellarium(az, alt)
 
-        except Exception as e:
-            print("IMU thread error:",repr(e))
+        except RuntimeError as e:
+            print("IMU runtime error:", repr(e))
+
             recover_bno()
+
             time.sleep(2)
+
+        except Exception as e:
+            print("IMU thread error:", repr(e))
 
         time.sleep(0.05)
 
