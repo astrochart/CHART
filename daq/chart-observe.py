@@ -404,10 +404,10 @@ class ChartApp(customtkinter.CTk):
 
     def openStellarium(self):
 
-        self.log("test")
         if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
-            self.stellarium_proc = subprocess.Popen(["QT_QPA_PLATFORM=xcd", "stellarium", "--opengl-compat"])
-            self.log("test")
+            self.stellarium_proc = subprocess.Popen(
+                "QT_QPA_PLATFORM=xcb stellarium --opengl-compat",
+                shell=True)
             self.azaltloop = threading.Thread(
                 target=runStellarium,
                 args=(),
@@ -420,9 +420,10 @@ class ChartApp(customtkinter.CTk):
 
         if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
             az, alt = AzAlt()
+            self.azimuth_entry.delete("0.0", "end")
             self.azimuth_entry.insert(0, az)
+            self.altitude_entry.delete("0.0", "end")
             self.altitude_entry.insert(0, alt)
-
 
 
     def openPointingCalculator(self):
