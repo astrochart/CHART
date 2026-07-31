@@ -1186,6 +1186,9 @@ class ChartApp(customtkinter.CTk):
             self.jupyter_proc.terminate()
         if self.stellarium_proc is not None:
             self.stellarium_proc.terminate()
+        if self.azaltloop is not None:
+            self.stop_stellarium.set()
+            self.azaltloop.join(timeout=2)
         self.destroy()
 
     def startLogCapture(self):
