@@ -404,7 +404,7 @@ class ChartApp(customtkinter.CTk):
 
     def openStellarium(self):
 
-        if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
+        if self.stellarium_proc is None or self.stellarium_proc.poll() is not None:
             self.stellarium_proc = subprocess.Popen(
                 "QT_QPA_PLATFORM=xcb stellarium --opengl-compat",
                 shell=True)
@@ -418,11 +418,11 @@ class ChartApp(customtkinter.CTk):
 
     def getAzAlt(self):
 
-        if self.stellarium_proc is None or self.stellarium_proc.poll() is None:
+        if self.stellarium_proc is None or self.stellarium_proc.poll() is not None:
             az, alt = AzAlt()
-            self.azimuth_entry.delete("0.0", "end")
+            self.azimuth_entry.delete(0, "end")
             self.azimuth_entry.insert(0, az)
-            self.altitude_entry.delete("0.0", "end")
+            self.altitude_entry.delete(0, "end")
             self.altitude_entry.insert(0, alt)
 
 
