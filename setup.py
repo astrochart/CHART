@@ -28,7 +28,9 @@ setup_args = {
         'ipywidgets',
         'scipy',
         'timezonefinder',
-        'geopy'
+        'geopy',
+        'adafruit-blinka',
+        'adafruit-circuitpython-bno08x'
     ],
 }
 

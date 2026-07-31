@@ -19,6 +19,7 @@ from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
 from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
+from chart.bno08X import getAzalt, runStellarium
 
 class ChartApp(customtkinter.CTk):
 
@@ -26,7 +27,9 @@ class ChartApp(customtkinter.CTk):
         super().__init__()
 
         self.session = None     # Data collection thread is stored here
+        self.azaltloop = None   # thead for bno085x stellarium loop
         self.jupyter_proc = None    # jupyter local subprocess
+        self.stellarium_proc = None     # stellarium subprocess
         self.last_data_dir = None   # stores last directory created for plotting function
         self.popup = None       # allows checking for multiple date and time popup windows
 
@@ -164,9 +167,9 @@ class ChartApp(customtkinter.CTk):
         self.azimuth_entry.grid(column=1, row=7, padx=10, pady=5, sticky="nwe")
 
         self.description_label = customtkinter.CTkLabel(self.scroll_frame, text="Description (optional)")
-        self.description_label.grid(column=0, row=8, padx=10, sticky="new")
+        self.description_label.grid(column=0, row=9, padx=10, sticky="new")
         self.description_entry = customtkinter.CTkTextbox(self.scroll_frame, height=65, corner_radius=0)
-        self.description_entry.grid(column=0, row=9, padx=10, pady=0, sticky="new", columnspan=2, rowspan=2)
+        self.description_entry.grid(column=0, row=10, padx=10, pady=0, sticky="new", columnspan=2, rowspan=2)
 
         #adding in a real time monitor of lat and long for the pointing calculator, this will auto input the lat and long from the main menu to the pointing calculator menu
         self.latitude_entry.bind("<KeyRelease>",  lambda e: self.syncCoords(self.latitude_entry,  "pointing_latitude_entry"))
@@ -227,6 +230,11 @@ class ChartApp(customtkinter.CTk):
         self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local, corner_radius=0)
         self.jupyter_local_button.grid(column=3, row=10, padx=10, pady=3, sticky="new")
 
+        self.update_azalt_button = customtkinter.CTkButton(self.scroll_frame, text="Get AzAlt", corner_radius=0)
+        self.update_azalt_button.grid(column=1, row=8, padx=10, pady=3, sticky="new")
+
+        self.open_stellarium_button = customtkinter.CTkButton(self.scroll_frame, text="Open Stellarium", corner_radius=0)
+        self.open_stellarium_button.grid(column=0, row=8, padx=10, pady=3, sticky="new")
 
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
         self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
@@ -393,6 +401,22 @@ class ChartApp(customtkinter.CTk):
         if target is not None and target.winfo_exists():
             target.delete(0, "end")
             target.insert(0, source.get())
+
+    def openStellarium(self):
+
+        if self.stellarium_proc is not None and self.stellarium_proc.poll() is None:
+            self.stellarium_proc = subprocess.Popen(["QT_QPA_PLATFORM=xcd", "stellarium", "--opengl-compat"])
+            self.azaltloop = threading.Thread(
+                target=runStellarium,
+                args=(),
+                daemon=True
+            )
+            self.azaltloop.start()
+
+
+    def getAzAlt(self):
+
+
 
     def openPointingCalculator(self):
 
@@ -1151,6 +1175,8 @@ class ChartApp(customtkinter.CTk):
 
         if self.jupyter_proc is not None:
             self.jupyter_proc.terminate()
+        if self.stellarium_proc is not None:
+            self.stellarium_proc.terminate()
         self.destroy()
 
     def startLogCapture(self):
