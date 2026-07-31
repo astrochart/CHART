@@ -19,7 +19,14 @@ from tkinter import messagebox
 from argparse import Namespace
 from freq_and_time_scan import buildConfig, runObservation
 from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
-from chart.bno08X import AzAlt, runStellarium
+try:
+    from chart.bno08X import AzAlt, runStellarium
+    i2c_exists = True
+except Exception as e:
+    print("BNO085 i2c device unavailable)")
+    i2c_exists = False
+    pass
+
 
 class ChartApp(customtkinter.CTk):
 
@@ -28,6 +35,7 @@ class ChartApp(customtkinter.CTk):
 
         self.session = None     # Data collection thread is stored here
         self.azaltloop = None   # thead for bno085x stellarium loop
+        self.i2c = i2c_exists   # checks for sensor.
         self.jupyter_proc = None    # jupyter local subprocess
         self.stellarium_proc = None     # stellarium subprocess
         self.last_data_dir = None   # stores last directory created for plotting function
@@ -219,25 +227,27 @@ class ChartApp(customtkinter.CTk):
 
     def buildButtons(self):
         self.start_button = customtkinter.CTkButton(self.scroll_frame, text="Start", command=self.startCollection, corner_radius=0)
-        self.start_button.grid(column=2, row=9, padx=10, pady=3, sticky="ew")
+        self.start_button.grid(column=2, row=10, padx=10, pady=3, sticky="ew")
 
         self.stop_button = customtkinter.CTkButton(self.scroll_frame, text="Stop", command=self.stopCollection, corner_radius=0)
-        self.stop_button.grid(column=3, row=9, padx=10, pady=3, sticky="ew")
+        self.stop_button.grid(column=3, row=10, padx=10, pady=3, sticky="ew")
 
         self.jupyter_upload_button = customtkinter.CTkButton(self.scroll_frame, text="Upload to Jupyter Hub", command=self.jupyter_upload, corner_radius=0)
-        self.jupyter_upload_button.grid(column=2, row=10, padx=10, pady=3, sticky="new")
+        self.jupyter_upload_button.grid(column=2, row=11, padx=10, pady=3, sticky="new")
 
         self.jupyter_local_button = customtkinter.CTkButton(self.scroll_frame, text="Local Jupyter Notebook", command=self.jupyter_local, corner_radius=0)
-        self.jupyter_local_button.grid(column=3, row=10, padx=10, pady=3, sticky="new")
+        self.jupyter_local_button.grid(column=3, row=11, padx=10, pady=3, sticky="new")
 
-        self.update_azalt_button = customtkinter.CTkButton(self.scroll_frame, text="Get AzAlt", corner_radius=0, command=self.getAzAlt)
-        self.update_azalt_button.grid(column=1, row=8, padx=10, pady=3, sticky="new")
+        if self.i2c:
 
-        self.open_stellarium_button = customtkinter.CTkButton(self.scroll_frame, text="Open Stellarium", corner_radius=0, command=self.openStellarium)
-        self.open_stellarium_button.grid(column=0, row=8, padx=10, pady=3, sticky="new")
+            self.update_azalt_button = customtkinter.CTkButton(self.scroll_frame, text="Get AzAlt", corner_radius=0, command=self.getAzAlt)
+            self.update_azalt_button.grid(column=1, row=8, padx=10, pady=3, sticky="new")
+
+            self.open_stellarium_button = customtkinter.CTkButton(self.scroll_frame, text="Open Stellarium", corner_radius=0, command=self.openStellarium)
+            self.open_stellarium_button.grid(column=0, row=8, padx=10, pady=3, sticky="new")
 
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
-        self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
+        self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)S
 
         self.calculate_coordinates_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Coordinates", command=self.gpsLocator)
         self.calculate_coordinates_button.grid(row=0,column=0, pady=(0,5))
