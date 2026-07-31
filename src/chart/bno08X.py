@@ -121,8 +121,13 @@ def runStellarium(stop_event):
         time.sleep(0.5)
 
     while not stop_event.is_set():
+        try:
             az, alt = get_az_alt()
             move_stellarium(az, alt)
-            time.sleep(0.01)
+
+        except Exception as e:
+            print("IMU thread error:", repr(e))
+
+        time.sleep(0.01)
 
     print("Stellarium thread exiting")
