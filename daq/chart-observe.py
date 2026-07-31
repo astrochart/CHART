@@ -404,13 +404,15 @@ class ChartApp(customtkinter.CTk):
 
     def openStellarium(self):
 
+        self.stop_stellarium = threading.Event()
+
         if self.stellarium_proc is None or self.stellarium_proc.poll() is not None:
             self.stellarium_proc = subprocess.Popen(
                 "QT_QPA_PLATFORM=xcb stellarium --opengl-compat",
                 shell=True)
             self.azaltloop = threading.Thread(
                 target=runStellarium,
-                args=(),
+                args=(self.stop_stellarium,),
                 daemon=True
             )
             self.azaltloop.start()

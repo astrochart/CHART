@@ -99,7 +99,8 @@ def AzAlt():
     return get_az_alt()
 
 
-def runStellarium():
+def runStellarium(stop_event):
+
 
     # Wait for Stellarium's Remote Control API
     while True:
@@ -119,10 +120,9 @@ def runStellarium():
         print("Waiting for Stellarium...")
         time.sleep(0.5)
 
-    while True:
+    while not stop_event.is_set():
+            az, alt = get_az_alt()
+            move_stellarium(az, alt)
+            time.sleep(0.01)
 
-        az, alt = get_az_alt()
-
-        move_stellarium(az, alt)
-
-        time.sleep(0.01)
+    print("Stellarium thread exiting")
