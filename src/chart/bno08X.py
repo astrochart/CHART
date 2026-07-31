@@ -171,6 +171,6 @@ def runStellarium(stop_event):
         except Exception as e:
             print("IMU thread error:", repr(e))
 
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     print("Stellarium thread exiting")

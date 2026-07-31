@@ -23,7 +23,7 @@ try:
     from chart.bno08X import AzAlt, runStellarium
     i2c_exists = True
 except Exception as e:
-    print("BNO085 i2c device unavailable)")
+    print("BNO085 i2c device unavailable")
     i2c_exists = False
     pass
 
