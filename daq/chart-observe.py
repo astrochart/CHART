@@ -247,7 +247,7 @@ class ChartApp(customtkinter.CTk):
             self.open_stellarium_button.grid(column=0, row=8, padx=10, pady=3, sticky="new")
 
         self.save_button_frame = customtkinter.CTkFrame(self.saved_settings_frame, corner_radius=0, fg_color="transparent", bg_color="transparent")
-        self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)S
+        self.save_button_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
         self.calculate_coordinates_button = customtkinter.CTkButton(self.save_button_frame, corner_radius=0, text="Calculate Coordinates", command=self.gpsLocator)
         self.calculate_coordinates_button.grid(row=0,column=0, pady=(0,5))
