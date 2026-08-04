@@ -10,7 +10,7 @@ from setuptools.command.install import install as _install
 setup_args = {
     'name': 'chart',
     'author': 'CHART',
-    'url': 'https://github.com/adampbeardsley/CHART',
+    'url': 'https://github.com/astrochart/CHART',
     'license': 'BSD',
     'description': 'Completely Hackable Amateur Radio Telescope',
     'package_dir': {'chart': 'src/chart'},
