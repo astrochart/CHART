@@ -75,16 +75,16 @@ def buildConfig(args, logger=print):
         data_dir = os.path.expanduser(args.data_dir)
         logger(f"Data directory: {data_dir}")
 
-    try: 
-        os.makedirs(data_dir)        #makes data directory and checks for errors 
-    
+    try:
+        os.makedirs(data_dir)        #makes data directory and checks for errors
+
     except FileExistsError:
         logger(f"Data directory already exists: {data_dir}")
         raise
-    
+
     except OSError as e:
         logger(f"Could not create data directory: {e} \nCheck for write permissions or for illegal characters in observer name!!! ")
-        raise 
+        raise
 
     #make description.txt
     try:
@@ -124,9 +124,9 @@ def buildConfig(args, logger=print):
         "freq_f": args.freq_f * 1e6,                                                            # ending frequency in MHz
         "df": args.df * 1e6,                                                                    # Frequency step size
         "scan_period": args.scan_period * 3600 if args.scan_period is not None else None,       # wait period between serperate scans - not used by chart GUI
-        "total_time": args.total_time * 3600 if args.total_time is not None else None,          # Total time for repeated scans - not used by chart GUI           
+        "total_time": args.total_time * 3600 if args.total_time is not None else None,          # Total time for repeated scans - not used by chart GUI
         "veclength": args.veclength,                                                            # FFT length. 1024 bins per frequency - controls resoluton
-        "samp_rate": args.samp_rate * 1e6,                                                      # 2.0 ~= to +-1MHz 
+        "samp_rate": args.samp_rate * 1e6,                                                      # 2.0 ~= to +-1MHz
         "int_length": int_length,                                                               # how many scans averaged together to reach integragtion time
         "nint": args.nint,                                                                      # number of integrations to add together
         "bias_t": args.biasT,                                                                   # enables power through LNA
@@ -138,15 +138,24 @@ def buildConfig(args, logger=print):
 def runObservation(cfg, logger=print, stop_event=None):
 
     def runSweep(tb):
+        count = 1
+        time_remaining = estimated_time
         for freq in np.arange(cfg["freq_i"],cfg["freq_f"],cfg["df"]):           #loops through each frequency step but not the final
 
             if stop_event and stop_event.is_set():
                 del tb
                 logger("Observation Halted!!")
                 return
-
-            logger(f"Frequency: {freq / 1e6:.3f} MHz")
-
+            if estimated_time != None:
+                minutes, seconds_left = divmod(time_remaining, 60)
+                if minutes:
+                    logger(f"{freq / 1e6:.3f} MHz — {minutes:.0f} Minute{'s' if minutes != 1 else ''} and {seconds_left:.0f} Second{'s' if seconds_left != 1 else ''} remaining")
+                else:
+                    logger(f"{freq / 1e6:.3f} MHz — {seconds_left:.0f} Second{'s' if seconds_left != 1 else ''} remaining")
+                time_remaining = estimated_time - count * ((cfg['veclength'] / cfg['samp_rate']) * cfg['int_length']) * cfg["nint"]
+                count += 1
+            else:
+                logger(f"{freq / 1e6:.3f} MHz")
             tb.set_c_freq(freq)
             tb.blocks_head_0.reset()
             tb.set_filename()
@@ -168,14 +177,13 @@ def runObservation(cfg, logger=print, stop_event=None):
             bias=cfg["bias_t"],
             data_dir=cfg["data_dir"],
             metadata=cfg,)
-    
-    except Exception as e:
 
+    except Exception as e:
         logger(f"SDR error: {e}\nStopping collection!!!")
         raise
-    
+
     try:
-        os.remove(tb.data_file)   #removes data file created when tb is created 
+        os.remove(tb.data_file)   #removes data file created when tb is created
     except FileNotFoundError:
         pass
 
@@ -185,19 +193,20 @@ def runObservation(cfg, logger=print, stop_event=None):
     #runs data collection
     try:
 
-        if (multi_scan == True)   :     
+        if (multi_scan == True)   :
             while (time.time() - start_time < cfg["total_time"]): # only for long time observations
-                
+                logger("starting multi-scan")
                 if stop_event and stop_event.is_set():
                     del tb
                     logger("Observation Halted!!")
                     return
+                estimated_time = None
                 runSweep(tb)
-                time.sleep(cfg["scan_period"]) 
+                time.sleep(cfg["scan_period"])
         else:
             estimated_time = ((cfg["freq_f"] - cfg["freq_i"]) / cfg["df"]) * ((cfg['veclength'] /cfg['samp_rate']) * cfg['int_length']) * cfg["nint"] #estimated time in seconds
             minutes, seconds_left = divmod(estimated_time, 60)
-            logger(f"Estimated time: {minutes:.0f} Minutes and {seconds_left:.0f} Seconds")
+            logger(f"Estimated time: {minutes:.0f} Minute{'s' if minutes != 1 else ''} and {seconds_left:.0f} Second{'s' if seconds_left != 1 else ''}")
 
             runSweep(tb)
 
@@ -205,8 +214,7 @@ def runObservation(cfg, logger=print, stop_event=None):
         logger("Creating zip file...")
         zip_dir = os.path.dirname(cfg["data_dir"])
         zip_file = os.path.basename(cfg["data_dir"])
-        zip_path = shutil.make_archive(cfg["data_dir"], "zip", root_dir=zip_dir, base_dir=zip_file)     #creates zip
-        shutil.move(zip_path, cfg["data_dir"])      #moves zip from /data to data directory 
+        shutil.make_archive(cfg["data_dir"], "zip", root_dir=zip_dir, base_dir=zip_file)     #creates zip
         del tb
 
     except Exception as e:
