@@ -194,29 +194,35 @@ def find_array_with_number(arrs, number):
             return k_index, k
     return None, None
 
-def average_overlapping(x1, y1, x2, y2):
+def average_overlapping(x1, y1, x2, y2, x3, y3):
     """
-    Averages the y values where the x values are shared between two arrays and keeps y values for x values that are not shared.
+    Averages the y values where the x values are shared between 
+    arrays and keeps y values for x values that are not shared.
+    Assumes an x value is shared by at most two arrays.
     
     :param x1: First x array
     :param y1: First y array
     :param x2: Second x array
     :param y2: Second y array
+    :param x3: Third x array
+    :param y3: Third y array
     :return: Tuple of combined x values and averaged/kept y values
     """
     # Find the unique x values in both arrays
     unique_x = np.union1d(x1, x2)
+    unique_x = np.union1d(unique_x, x3)
     
     # Create an array to store the averaged/kept y values
-    avg_y = np.zeros_like(unique_x)
+    avg_y = np.zeros(unique_x.shape)
     
     # Iterate over the unique x values
     for i in range(len(unique_x)):
         # Find the indices of the current x value in the two x arrays
         ind1 = np.where(x1 == unique_x[i])[0]
         ind2 = np.where(x2 == unique_x[i])[0]
+        ind3 = np.where(x3 == unique_x[i])[0]
         
-        # If the current x value is in both arrays
+        # If the current x value is arrays 1 and 2
         if len(ind1) > 0 and len(ind2) > 0:
             # Compute the average of the two corresponding y values
             avg_y[i] = (y1[ind1[0]] + y2[ind2[0]]) / 2
@@ -224,10 +230,18 @@ def average_overlapping(x1, y1, x2, y2):
         elif len(ind1) > 0:
             # Keep the corresponding y value from the first array
             avg_y[i] = y1[ind1[0]]
+        # If the current x value is in arrays 2 and 3
+        elif len(ind2) > 0 and len(ind3) > 0:
+            # Compute the average of the two corresponding y values
+            avg_y[i] = (y2[ind2[0]] + y3[ind3[0]]) / 2
         # If the current x value is only in the second array
         elif len(ind2) > 0:
             # Keep the corresponding y value from the second array
             avg_y[i] = y2[ind2[0]]
+        # If the current x value is only in the third array
+        elif len(ind3) > 0:
+            # Keep the corresponding y value from the second array
+            avg_y[i] = y3[ind3[0]]
     
     return unique_x, avg_y
 
