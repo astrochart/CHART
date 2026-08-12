@@ -246,47 +246,59 @@ def average_overlapping(x1, y1, x2, y2, x3, y3):
     return unique_x, avg_y
 
 
-def interactive_plot(unique_x):
+def interactive_plot(x, max_amp=100, max_offset=100, max_width=15):
     """
     Creates a plot that can be modified with sliders.
     
-    param unique_x: x values of overlapping CHART data
+    :param x: x values of overlapping CHART data
+    :param max_amp (optional): Maximum amplitude for sliders. Default is 100.
+    :param max_offset (optional): Maximum offset for sliders. Default is 100.
+    :param max_width (optional): Maximum width for sliders. Default is 15.
     """
-    x = unique_x
-    e = 2.71828  
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    a = b = c = [1]*4
+    amp_default = 0
+    offset_default = 0
+    width_default = 5
+    amps = [amp_default] * 4
+    offsets = [offset_default] * 4
+    widths = [width_default] * 4
 
-    lines = [ax.plot(x, (a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2))))))[0] for i in range(4)]
-    lines.append(ax.plot(x, sum([a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2)))) for i in range(4)]))[0])
+    lines = [ax.plot(x, (amps[i]*(np.exp(-(((x-offsets[i])**2) / (2*(widths[i]**2)))))))[0] for i in range(4)]
+    lines.append(ax.plot(x, sum([amps[i]*(np.exp(-(((x-offsets[i])**2) / (2*(widths[i]**2))))) for i in range(4)]))[0])
 
-    sliders = [FloatSlider(min=-100, max=100, step=1, value=1) for _ in range(12)]
+    amp_sliders = [FloatSlider(min=0, max=max_amp, step=0.1, value=amp_default, description=f'Amp {i+1}') for i in range(4)]
+    offset_sliders = [FloatSlider(min=-100, max=max_offset, step=0.1, value=offset_default, description=f'Offset {i+1}') for i in range(4)]
+    width_sliders = [FloatSlider(min=0, max=max_width, step=0.1, value=width_default, description=f'Width {i+1}') for i in range(4)]
     colors = ['black']*4 + ['red']
-    color_dropdowns = [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[i]) for i in range(5)]
-
-    def update(a1=1, b1=1, c1=1, a2=1, b2=1, c2=1, a3=1, b3=1, c3=1, a4=1, b4=1, c4=1,
-               color1='black', color2='black', color3='black', color4='black', color5='red'):
-        a = [a1,a2,a3,a4]
-        b = [b1,b2,b3,b4]
-        c = [c1,c2,c3,c4]
+    color_dropdowns = [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[i], description=f'Color {i+1}') for i in range(4)]
+    # display(HBox(color_dropdowns))
+    
+    ui = VBox([HBox(color_dropdowns), HBox(amp_sliders), HBox(offset_sliders), HBox(width_sliders)])
+    color_dropdowns += [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[4], description=f'Sum color')]
+    display(color_dropdowns[-1])
+    def update(amp1=amp_default, offset1=offset_default, width1=width_default,
+               amp2=amp_default, offset2=offset_default, width2=width_default,
+               amp3=amp_default, offset3=offset_default, width3=width_default,
+               amp4=amp_default, offset4=offset_default, width4=width_default):
+        a = [amp1,amp2,amp3,amp4];
+        b = [offset1,offset2,offset3,offset4]
+        c = [width1,width2,width3,width4]
         for i in range(4):
-            lines[i].set_ydata((a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2))))))
-        lines[4].set_ydata(sum([a[i]*(e ** -(((x-b[i])**2) / (2*(c[i]**2)))) for i in range(4)]))
+            lines[i].set_ydata((a[i]*(np.exp(-(((x-b[i])**2) / (2*(c[i]**2)))))))
+        lines[4].set_ydata(sum([a[i]*(np.exp(-(((x-b[i])**2) / (2*(c[i]**2))))) for i in range(4)]))
         for i in range(5):
-            lines[i].set_color([color1,color2,color3,color4,color5][i])
+            lines[i].set_color(color_dropdowns[i].value)
         fig.canvas.draw_idle()
 
-    interact(update,
-             a1=sliders[0], b1=sliders[1], c1=sliders[2],
-             a2=sliders[3], b2=sliders[4], c2=sliders[5],
-             a3=sliders[6], b3=sliders[7], c3=sliders[8],
-             a4=sliders[9], b4=sliders[10], c4=sliders[11],
-             color1=color_dropdowns[0], color2=color_dropdowns[1],
-             color3=color_dropdowns[2], color4=color_dropdowns[3],
-             color5=color_dropdowns[4])
-     
-    return ax
+    out = widgets.interactive_output(update, {'amp1':amp_sliders[0], 'offset1':offset_sliders[0], 'width1':width_sliders[0],
+            'amp2':amp_sliders[1], 'offset2':offset_sliders[1], 'width2':width_sliders[1],
+            'amp3':amp_sliders[2], 'offset3':offset_sliders[2], 'width3':width_sliders[2],
+            'amp4':amp_sliders[3], 'offset4':offset_sliders[3], 'width4':width_sliders[3]})
+    display(ui, out)
+    
+    return ax, offset_sliders
+
 
     
 def goodness_of_fit(unique_x, combined_gauss, avg_y):
