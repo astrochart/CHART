@@ -128,31 +128,37 @@ def concat(data_list):
     raise NotImplementedError()
 
 
-def LSR_shift(longitude, latitude, elevation, time, altitude, azimuth):
+def get_gal_coords(longitude, latitude, time, 
+                   altitude, azimuth, return_vadj=False):
     """
-    Identifies the exact postion at which the observations were taken and corrects for the Local Standard of Rest. 
-    Along with this it also converts location, altitude, and azimuth to galactic coordinates.
+    Determines galactic coordinates of an observation and
+    optionally also calculates the velocity adjustment
+    for the Local Standard of Rest.  
     
     :param latitude: latitude in degrees
     :param longitude: longitude in degrees
-    :param elevation: elevation in meters
     :param time: observation time in UTC format string
     :param altitude: altitude in degrees
     :param azimuth: azimuth in degrees
+    :param return_vadj (optional): If set to True, returns the 
+                             velocity adjustment for the
+                             Local Standard of Rest in addition
+                             to the galactic coordinates (l, b).
+                             If False (default) only returns (l, b).
     """
     
-    loc = EarthLocation(lat=latitude*u.deg, lon=longitude*u.deg, height=elevation*u.m)
+    loc = EarthLocation(lat=latitude*u.deg, lon=longitude*u.deg, height=0*u.m)
     altaz = AltAz(obstime=Time(time), location=loc, alt=altitude*u.deg, az=azimuth*u.deg)
-    skycoord = SkyCoord(altaz.transform_to(ICRS))
-    location = EarthLocation.from_geodetic(longitude, latitude, elevation*u.m) #Lon, Lat, elevation
-    location = location.get_itrs(obstime=Time(time)) #To ITRS frame, makes Earth stationary with Sun 
-    pointing_45deg = SkyCoord(altaz.transform_to(ICRS)) #Center of CHART pointing
-    frequency = SpectralCoord(1.420405751768e9 * u.Hz, observer=location, target=pointing_45deg) #Shift expected from just local motion
-    f0_shifted = frequency.with_observer_stationary_relative_to('lsrk') #correct for kinematic local standard of rest
-    f0_shifted = f0_shifted.to(u.GHz)
-    v = doppler(f0_shifted,f0)
-    v_adjustment = v.to(u.km/u.second)
-    return v_adjustment, skycoord.galactic
+    skycoord = SkyCoord(altaz.transform_to(ICRS()))
+    if not return_vadj:
+        return skycoord.galactic
+    loc = loc.get_itrs(obstime=Time(time)) #To ITRS frame, makes Earth stationary with Sun 
+    frequency = SpectralCoord(f_e, observer=loc, target=skycoord) #Shift expected from just local motion
+    f_shifted = frequency.with_observer_stationary_relative_to('lsrk') #correct for kinematic local standard of rest
+    f_shifted = f_shifted.to(u.GHz)
+    v = -freq2vel(f_shifted, f_e)
+    v_adj = v.to(u.km/u.second)
+    return skycoord.galactic, v_adj
 
 def find_array_with_number(freqs, j, number):
     for k_index, k in enumerate(freqs[j]):
