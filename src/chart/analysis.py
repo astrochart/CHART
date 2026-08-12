@@ -3,7 +3,15 @@ import matplotlib.pyplot as plt
 import os
 import glob
 import time
+from astropy import units as u
+from astropy.coordinates import SpectralCoord, EarthLocation, SkyCoord, AltAz, ICRS
+from astropy.time import Time
+from ipywidgets import interact, FloatSlider, Dropdown, HBox, VBox, widgets
+import scipy.constants as const
+from scipy.ndimage import median_filter
 
+f_e = 1.420405751768 * u.GHz  # Rest frequency of HI hyperfine transition
+speed_of_light = const.speed_of_light * (u.meter / u.second)
 # Read data file -> something useful
 # Read metadata files
 # averaging
@@ -126,6 +134,17 @@ def read_run(directory=None, update_v1=False, outpath=None):
 
 def concat(data_list):
     raise NotImplementedError()
+
+
+def freq2vel(freq, rest=f_e):
+    """
+    Calculates velocity from measured frequency via doppler shift.
+    
+    :param freq: array of frequency quantities (including units)
+    :param rest (optional): Rest frequency, defaults to 1.42 GHz
+    :returns vel: velocity inferred by doppler shift
+    """
+    return (rest - freq) * speed_of_light / freq
 
 
 def get_gal_coords(longitude, latitude, time, 
