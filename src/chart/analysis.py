@@ -160,9 +160,18 @@ def get_gal_coords(longitude, latitude, time,
     v_adj = v.to(u.km/u.second)
     return skycoord.galactic, v_adj
 
-def find_array_with_number(freqs, j, number):
-    for k_index, k in enumerate(freqs[j]):
-        if numpy.any((k[:-1] <= number) & (number <= k[1:])):
+def find_array_with_number(arrs, number):
+    """
+    Find a number within a list of arrays. This is typically used to find
+    the frequency tuning that contains a given frequency.
+
+    :param arrs: List of arrays
+    :param number: Number to find
+
+    :returns: Index and array containing the number, or (None, None) if not found
+    """
+    for k_index, k in enumerate(arrs):
+        if np.any((k[:-1] <= number) & (number <= k[1:])):
             return k_index, k
     return None, None
 
