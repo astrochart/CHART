@@ -299,35 +299,3 @@ def interactive_plot(x, max_amp=100, max_offset=100, max_width=15):
     
     return ax, offset_sliders
 
-
-    
-def goodness_of_fit(unique_x, combined_gauss, avg_y):
-    """Performs a chi-squared goodness of fit test between the CHART data and the user created combined Gaussian curve.
-    
-    param unique_x: x values of overlapping CHART data
-    param combined_gauss: y values of combined Gaissian curve
-    param avg: y values of overlapping CHART data
-    """
-    x_observed = np.array(unique_x)
-    y_observed = np.array(combined_gauss)
-    x_expected = np.array(unique_x) * 2
-    y_expected = np.array(avg_y) * 2
-
-    observed = np.concatenate((x_observed.reshape(-1,1), y_observed.reshape(-1,1)), axis=1)
-    expected = np.concatenate((x_expected.reshape(-1,1), y_expected.reshape(-1,1)), axis=1)
-
-    mask = (observed[:,0] >= -100) & (observed[:,0] <= 100)
-    observed_masked = observed[mask]
-    expected_masked = expected[mask]
-
-    chi_squared_statistic_x = np.sum((observed_masked[:,0] - expected_masked[:,0])**2 / expected_masked[:,0])
-    chi_squared_statistic_y = np.sum((y_observed - y_expected)**2 / y_expected)
-
-    p_value_x = chi2.sf(chi_squared_statistic_x, len(observed_masked[:,0]) - 1)
-    p_value_y = chi2.sf(chi_squared_statistic_y, len(y_observed) - 1)
-
-    chi_squared_statistic_xy = chi_squared_statistic_x + chi_squared_statistic_y
-    degrees_of_freedom_xy = len(observed) - 2
-    reduced_chi_squared_statistic_xy = chi_squared_statistic_xy / degrees_of_freedom_xy
-    p_value_xy = chi2.sf(reduced_chi_squared_statistic_xy, degrees_of_freedom_xy)
-    return reduced_chi_squared_statistic_xy, p_value_xy
