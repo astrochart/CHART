@@ -74,12 +74,6 @@ echo 'blacklist dvb_usb_rtl28xxu' | sudo tee --append /etc/modprobe.d/blacklist-
 ```
 Reboot the system.
 
-To use the GPS submodule (optional), run these lines:
-```bash
-sudo apt install gpsd gpsd-clients
-pip install gps
-```
-
 Clone this repository and install.
 ```bash
 git clone https://github.com/astrochart/CHART.git
