@@ -6,9 +6,8 @@ import time
 from astropy import units as u
 from astropy.coordinates import SpectralCoord, EarthLocation, SkyCoord, AltAz, ICRS
 from astropy.time import Time
-from ipywidgets import interact, FloatSlider, Dropdown, HBox, VBox, widgets
+from ipywidgets import FloatSlider, Dropdown, HBox, VBox, widgets
 import scipy.constants as const
-from scipy.ndimage import median_filter
 
 f_e = 1.420405751768 * u.GHz  # Rest frequency of HI hyperfine transition
 speed_of_light = const.speed_of_light * (u.meter / u.second)
