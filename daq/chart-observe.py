@@ -25,7 +25,7 @@ from chart.azalt import pointing, azalt, gps, gimme_time, altitude_plot_data
 # unchanged from the standalone live_view tool; only the producer wiring is
 # re-implemented here because chart-observe already owns the science thread.
 import queue
-from live_view import (
+from chart.live_view import (
     WaterfallPanel,
     LiveViewWorker,
     CENTER_FREQ,
