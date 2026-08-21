@@ -12,11 +12,6 @@ import scipy.constants as const
 
 f_e = 1.420405751768 * u.GHz  # Rest frequency of HI hyperfine transition
 speed_of_light = const.speed_of_light * (u.meter / u.second)
-# Read data file -> something useful
-# Read metadata files
-# averaging
-# stacking
-# combining frequencies into one spectrum ?
 
 
 def print_meta(meta):
@@ -278,7 +273,6 @@ def interactive_plot(x, max_amp=100, max_offset=100, max_width=15):
     width_sliders = [FloatSlider(min=0, max=max_width, step=0.1, value=width_default, description=f'Width {i+1}') for i in range(4)]
     colors = ['black']*4 + ['red']
     color_dropdowns = [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[i], description=f'Color {i+1}') for i in range(4)]
-    # display(HBox(color_dropdowns))
     
     ui = VBox([HBox(color_dropdowns), HBox(amp_sliders), HBox(offset_sliders), HBox(width_sliders)])
     color_dropdowns += [Dropdown(options=['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black'], value=colors[4], description=f'Sum color')]
