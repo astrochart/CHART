@@ -7,6 +7,7 @@ from astropy import units as u
 from astropy.coordinates import SpectralCoord, EarthLocation, SkyCoord, AltAz, ICRS
 from astropy.time import Time
 from ipywidgets import FloatSlider, Dropdown, HBox, VBox, widgets
+from IPython.display import display
 import scipy.constants as const
 
 f_e = 1.420405751768 * u.GHz  # Rest frequency of HI hyperfine transition
