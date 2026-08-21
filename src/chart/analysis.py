@@ -181,17 +181,23 @@ def get_gal_coords(longitude, latitude, time,
 
 def find_array_with_number(arrs, number):
     """
-    Find a number within a list of arrays. This is typically used to find
-    the frequency tuning that contains a given frequency.
+    Find a number within a list of arrays. 
+    This assumes that the arrays are monotonically increasing or decreasing.
+    This is typically used to find the frequency tuning that 
+    contains a given frequency.
 
     :param arrs: List of arrays
     :param number: Number to find
 
     :returns: Index and array containing the number, or (None, None) if not found
     """
-    for k_index, k in enumerate(arrs):
-        if np.any((k[:-1] >= number) & (number >= k[1:])):
-            return k_index, k
+    for k_index, arr in enumerate(arrs):
+        # First assume monotonically increasing array.
+        if np.any((arr[:-1] <= number) & (number <= arr[1:])):
+            return k_index, arr
+        # Now try monotonically decreasing array.
+        if np.any((arr[:-1] >= number) & (number >= arr[1:])):
+            return k_index, arr
     return None, None
 
 def average_overlapping(x1, y1, x2, y2, x3, y3):
