@@ -190,7 +190,7 @@ def find_array_with_number(arrs, number):
     :returns: Index and array containing the number, or (None, None) if not found
     """
     for k_index, k in enumerate(arrs):
-        if np.any((k[:-1] <= number) & (number <= k[1:])):
+        if np.any((k[:-1] >= number) & (number >= k[1:])):
             return k_index, k
     return None, None
 
