@@ -33,13 +33,13 @@ If you are only using the analysis code, you can simply clone the repo and use p
 ```bash
 git clone git@github.com:astrochart/CHART.git
 cd CHART
-pip install .
+pip install . --install-option="--analysis"
 ```
 If you want to use https, use this:
 ```bash
 git clone https://github.com/astrochart/CHART.git
 cd CHART
-pip install .
+pip install . --install-option="--analysis"
 ```
 </details>
 
