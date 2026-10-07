@@ -4,7 +4,7 @@
 If you are looking for the default Raspberry PI setup, use the [latest pre-built sd card image](https://astrochart.github.io/telescope_design#burn-your-micro-sd-card).
 
 What follows is the procedure for building the CHART disk image.
-The latest version is `v2.0.3` (see changelog below).
+The latest version is `v2.1` (see changelog below).
 
 The basic procedure is to install all the necessary software on Raspberry PI and then clone the disk. We have found that
 sometimes details matter in the setup, so the below is a log of everything we've done for the most recent build. These
@@ -86,8 +86,8 @@ xz -T0 -9 chart.img
 
 ## CHART Disk Image Change Log
 
-#### v2.0.3 (7 October, 2026)
-- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0.2..v2.0.3)
+#### v2.1 (7 October, 2026)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0.2..v2.1)
 - GUI improvements
   - Moved location of data zip files 
   - Added warnings if system time is not set
