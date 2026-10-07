@@ -4,7 +4,7 @@
 If you are looking for the default Raspberry PI setup, use the [latest pre-built sd card image](https://astrochart.github.io/telescope_design#burn-your-micro-sd-card).
 
 What follows is the procedure for building the CHART disk image.
-The latest version is `v2.0` (see changelog below).
+The latest version is `v2.0.3` (see changelog below).
 
 The basic procedure is to install all the necessary software on Raspberry PI and then clone the disk. We have found that
 sometimes details matter in the setup, so the below is a log of everything we've done for the most recent build. These
@@ -15,8 +15,8 @@ instructions work as of the most recent entry in the changelog below.
 - We used the official [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to put Raspberry Pi OS (64-bit) on a
 micro SD card.
 The target device was Raspberry Pi 4.
-We used a 16 GB card because we found 8 GB to be a tad too small.
-- Next we booted up the Pi with the new SD card. We set the time zone to US Central, US Keyboard, and we used the generic username and password `pi` and `raspberry`, respectively. We skipped setting up wifi. We selected to use Chromium and uninstalled firefox. We did not enable Raspberry Pi Connect. We did the overall software update.
+We used a 16 or 32 GB card because we found 8 GB to be a tad too small.
+- Next we booted up the Pi with the new SD card. We set the time zone to US Central, US Keyboard, and we used the generic username and password `pi` and `raspberry`, respectively. We skipped setting up wifi. We selected to use Chromium and uninstalled firefox. We did not enable Raspberry Pi Connect if prompted. We did the overall software update.
 - In Preferences > Control Centre > System, we disabled Admin Password
 - In Preferences > Control Centre > Screens, we changed the display resolution to `800x600`
 - In File Manager > Edit > Preferences > General, we enabled "Don't ask options on launch executable file"
@@ -26,7 +26,10 @@ We used a 16 GB card because we found 8 GB to be a tad too small.
 python -m venv --system-site-packages ~/chartenv
 source chartenv/bin/activate
 ```
-- We appended the second line above to the `~.bashrc` file so the `chartenv` environment will always activate when a terminal is opened.
+- We appended the second line using the following command to the `~.bashrc` file so the `chartenv` environment will always activate when a terminal is opened:
+```bash
+echo 'source ~/chartenv/bin/activate' >> ~/.bashrc
+```
 - Next we installed `gnuradio` and other packages.
 ```bash
 sudo apt install build-essential git cmake xterm gnuradio-dev librtlsdr0 librtlsdr-dev rtl-sdr gr-osmosdr
@@ -82,6 +85,22 @@ xz -T0 -9 chart.img
 
 
 ## CHART Disk Image Change Log
+
+#### v2.0.3(7 October, 2026)
+- [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0.2..v2.0.3)
+- GUI improvements
+  - Moved location of data zip files 
+  - Added warnings if system time is not set
+  - Added clearer error messages if SDR is in use.
+  - Added remaining time message during a frequency scan
+- Analysis notebook tweaks
+  - Fixed image rendering errors
+  - Corrected calibration sign error
+  - Better handles pulling data from sliders, and harder to mix-up slider indexing 
+  - Added sun to rotation curve plot
+  - Filters out high galactic latitudes from rotation curve
+  - Extended plot velocities
+  - Moved functions to analysis module
 
 #### v2.0.2 (8 July, 2026)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0..v2.0.2)
