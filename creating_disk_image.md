@@ -86,7 +86,7 @@ xz -T0 -9 chart.img
 
 ## CHART Disk Image Change Log
 
-#### v2.0.3(7 October, 2026)
+#### v2.0.3 (7 October, 2026)
 - [View detailed changes to CHART](https://github.com/astrochart/CHART/compare/v2.0.2..v2.0.3)
 - GUI improvements
   - Moved location of data zip files 
